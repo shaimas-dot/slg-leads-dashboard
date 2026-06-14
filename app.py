@@ -572,6 +572,71 @@ else:
         'pct_of_impressions': [0.2, 61.4, 30.4, 8.0],
     })
 
+    # ── PMO HIGHLIGHTS BANNER ─────────────────────────────────────────────────────
+    with st.expander("⚡ Key Highlights & Incremental Growth Summary", expanded=True):
+        ph1, ph2, ph3 = st.columns(3)
+        with ph1:
+            st.markdown("### What LinkedIn Did")
+            st.markdown("""
+- ✅ Reached **71%** of 1,220 target accounts (871 companies)
+- ✅ Delivered **1.60M impressions** across 22 weeks
+- ✅ High-impression accounts (>10k): avg **136 engagements**
+- ✅ UTM signals: `abm` / `slg` / `ppm` / `pmo` campaign tags
+- ✅ **~920 total accounts** touched across all signals
+            """)
+        with ph2:
+            st.markdown("### Incremental Pipeline")
+            st.markdown("""
+- Total PMO pipeline: **$235K ARR** (early, mostly open opps)
+- SFDC Accounts in campaign: **1,401**
+- MQLs generated: **236** (27% of reached accounts)
+- Opps created: **105** (44% of MQLs)
+- Accounts with opp: **53**
+            """)
+        with ph3:
+            st.markdown("### Budget Signal")
+            st.markdown("""
+- Estimated H1 spend: **~$156K**
+- Current pipeline ROI: **~1.5x** (early stage)
+- Engagement rate: **0.70%** vs 1.49% Marketing
+- Recommendation: **Hold & optimize targeting**
+- Priority: **Tighten to Mid-Market+ company size**
+            """)
+
+        st.info("📌 PMO TAL accounts are matched via LinkedIn impressions + UTM keywords (abm / slg / ppm / pmo). LinkedIn gets 0 last-touch UTM credit — account-level matching is the only attribution method.")
+        st.markdown("---")
+        st.markdown("### Correlation Summary")
+        pmo_corr_df = pd.DataFrame({
+            'Signal Pair': [
+                'Impressions → Engagements',
+                'Company Size → Impressions Served',
+                'Impression Tier → Engagement Rate',
+                'LinkedIn Reach → MQL Rate',
+                'LinkedIn Exposure → Pipeline Lift',
+            ],
+            'Method': ['Pearson r','Spearman ρ','Lift Index','Funnel Rate','Incremental Model'],
+            'Score': ['r = 0.94+','ρ = 0.97+','Flat (1.0x)','27% of reached','~1.5x (early)'],
+            'Strength': ['Very Strong ✅','Very Strong ✅','Flat ⚠️','Strong ✅','Growing ✅'],
+            'Insight': [
+                'More impressions = more engagement linearly',
+                'Mid-Market gets 12x more impressions than SMB',
+                'Engagement rate flat across tiers — optimize creative',
+                '236 MQLs from 871 reached accounts',
+                'Early signal — pipeline still maturing H1→H2',
+            ],
+        })
+        st.dataframe(pmo_corr_df, use_container_width=True, hide_index=True)
+
+        st.markdown("### Attribution Coverage")
+        pmo_attr_df = pd.DataFrame({
+            'Layer': ['Impression reach (LinkedIn CSV)','UTM: abm / slg tags',
+                      'UTM: ppm / pmo tags','Total LinkedIn-influenced'],
+            'Accounts': ['871','~83','~66','~920'],
+            'Type': ['Indirect / Awareness','Direct UTM','Direct UTM','Combined'],
+            'Pipeline': ['105 opps / $235K','Included','Included','105 opps / $235K'],
+        })
+        st.dataframe(pmo_attr_df, use_container_width=True, hide_index=True)
+
     # ── KPI Row ───────────────────────────────────────────────────────────────────
     pk1,pk2,pk3,pk4,pk5,pk6 = st.columns(6)
     pk1.metric("SFDC Accounts","1,401")
@@ -633,7 +698,7 @@ else:
     with ptab2:
         st.subheader("PMO — Correlation & Lift")
         pc1,pc2,pc3 = st.columns(3)
-        pc1.metric("Engagement Rate","0.70%","vs 1.49% Work Mgmt")
+        pc1.metric("Engagement Rate","0.70%","vs 1.49% Marketing")
         pc2.metric("High-Tier Lift","1.0x","Flat across tiers")
         pc3.metric("MQL→Opp Rate","44%","105 opps / 236 MQLs")
 
@@ -655,15 +720,15 @@ else:
                                 yaxis_title='Lift Index', height=400)
         st.plotly_chart(fig_lift, use_container_width=True)
 
-        st.subheader("PMO vs Work Mgmt — Lift Comparison")
+        st.subheader("PMO vs Marketing — Lift Comparison")
         lift_compare = pd.DataFrame({
             'Tier': ['None','Minimal','Low','Medium','Med-High','High'],
-            'Work Mgmt': [0.00, 0.73, 0.82, 1.28, 1.46, 1.55],
+            'Marketing': [0.00, 0.73, 0.82, 1.28, 1.46, 1.55],
             'PMO': [0.00, 0.43, 1.00, 1.00, 1.00, 1.00],
         })
-        fig_lc = px.line(lift_compare, x='Tier', y=['Work Mgmt','PMO'],
+        fig_lc = px.line(lift_compare, x='Tier', y=['Marketing','PMO'],
                          markers=True,
-                         title='Engagement Lift: Work Mgmt shows clear gradient; PMO is flat',
+                         title='Engagement Lift: Marketing shows clear gradient; PMO is flat',
                          color_discrete_sequence=['#2196F3','#9C27B0'])
         fig_lc.add_hline(y=1.0, line_dash='dash', line_color='gray')
         st.plotly_chart(fig_lc, use_container_width=True)
@@ -708,12 +773,12 @@ else:
 
         size_compare = pd.DataFrame({
             'Size Band': ['SMB (<200)','Mid-Market (200-1k)','Enterprise (1k-5k)'],
-            'Work Mgmt %': [50.6, 40.8, 8.5],
+            'Marketing %': [50.6, 40.8, 8.5],
             'PMO %': [61.4, 30.4, 8.0],
         })
         fig_sc = px.bar(size_compare, x='Size Band',
-                        y=['Work Mgmt %','PMO %'], barmode='group',
-                        title='Impression Distribution by Size — Work Mgmt vs PMO',
+                        y=['Marketing %','PMO %'], barmode='group',
+                        title='Impression Distribution by Size — Marketing vs PMO',
                         color_discrete_sequence=['#2196F3','#9C27B0'],
                         labels={'value':'% of Impressions','variable':'Campaign'})
         st.plotly_chart(fig_sc, use_container_width=True)
