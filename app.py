@@ -50,15 +50,20 @@ if "PMO" not in page:
                               920,1100,1450,780,660,540,890,1200,980,1340],
     })
 
-    # SFDC pipeline accounts
+    # Account-level NAM pipeline: all opps on campaign accounts (company_id join, NAM region)
     sfdc = pd.DataFrame({
-        'account': ['MediaSense','Hilton Grand Vacations','Wahl Clipper','Omnicom Group',
-                    'Brownstein','Land O\'Lakes','Baker McKenzie','Adobe','Citi','SAP'],
-        'employee_count': [270,13838,1355,74200,118,10000,12137,29000,220000,105000],
-        'industry': ['Professional Services','Hotels & Leisure','Manufacturing','Media',
-                     'Media','Agriculture','Professional Services','Technology','Finance','Technology'],
-        'opp_count': [4,4,2,2,1,1,1,1,1,1],
-        'arr': [331935,90480,68328,61680,49920,46800,37336,18000,15000,12000],
+        'account': ['Logitech','Visual Storytelling','Fanduel','Petiq',
+                    'Omnicom Health Group','Gravity Global','Fitzco','Corteva',
+                    'EWTN','Volta Charging','Songtradr','MediaSense',
+                    'Hilton Grand Vacations','Wahl Clipper','Baker McKenzie',
+                    'Land O\'Lakes','Brownstein','Adobe','Citi','SAP'],
+        'opp_count': [45,4,28,8,2,1,9,6,28,8,38,4,4,2,1,1,1,1,1,1],
+        'total_arr': [702264,391555,372960,168938,163800,151632,147600,126729,
+                      110580,109440,101808,80000,70000,60000,37336,46800,49920,18000,15000,12000],
+        'won_arr':   [529788,0,96480,0,0,0,0,108009,
+                      32364,45600,101808,40000,0,0,37336,46800,49920,18000,15000,12000],
+        'open_arr':  [0,0,0,0,31200,0,0,18720,
+                      0,0,0,0,0,0,0,0,0,0,0,0],
     })
 
     # Company size breakdown
@@ -123,22 +128,21 @@ if "PMO" not in page:
     - ✅ **~1,925 total accounts** touched across all signals
             """)
         with h2:
-            st.markdown("### Incremental Pipeline")
+            st.markdown("### Pipeline (Account-Level, NAM)")
             st.markdown("""
-    - Total ABM pipeline: **$1.14M ARR**
-    - Baseline opp rate (no exposure): ~4%
-    - Observed rate (high impressions): ~17%
-    - **Incremental lift: 4.25x**
-    - Incremental ARR from LinkedIn: **~$690K–$850K**
-    - Cost per incremental opp: **~$1,040**
+- Total pipeline ARR: **$5,609,486** (522 opps, 221 accounts)
+- Won ARR: **$1,502,829** (27% win rate)
+- Open pipeline: **$668,229**
+- Method: all opps on campaign accounts, NAM region filter
+- Top account: Logitech — **$702K** (45 opps)
             """)
         with h3:
             st.markdown("### Budget Signal")
             st.markdown("""
-    - Current spend: **$156K** → ROI: **7.3x**
-    - Optimal ceiling: **~$10–12K/week**
-    - Recommendation: **Increase to $10K/wk for H2**
-    - Expected H2 incremental pipeline: **+$400–600K**
+- Current spend: **$156K** → Pipeline ROI: **36x**
+- Won ARR ROI: **9.6x** ($1.5M / $156K)
+- Optimal ceiling: **~$10–12K/week**
+- Recommendation: **Increase to $10K/wk for H2**
             """)
 
         st.info("📌 LinkedIn gets 0 last-touch UTM credit but accounts with high exposure convert at 4.25x the rate of unexposed accounts — this IS the proof of incremental value.")
@@ -174,19 +178,21 @@ if "PMO" not in page:
                       'Campaign UTM (abm/slg/mktg tags)','Total LinkedIn-influenced'],
             'Accounts': ['1,040','1,679','330','~1,925'],
             'Type': ['Indirect / Awareness','Direct UTM','Direct UTM','Combined'],
-            'Pipeline': ['104 opps / $1.14M ARR','Included','Included','184 opps / $1.14M ARR'],
+            'Pipeline': ['522 opps / $5.6M ARR (account-level NAM)','Included','Included','522 opps / $5.6M ARR'],
         })
         st.dataframe(attr_df, use_container_width=True, hide_index=True)
 
     # ── KPI ROW ───────────────────────────────────────────────────────────────────
     st.markdown("---")
-    k1,k2,k3,k4,k5,k6 = st.columns(6)
+    k1,k2,k3,k4,k5,k6,k7,k8 = st.columns(8)
     k1.metric("Total Spend (H1)","$156K")
     k2.metric("Accounts Targeted","1,271")
     k3.metric("Accounts Reached","1,040","82% reach rate")
     k4.metric("Total Impressions","1,442,468")
-    k5.metric("Opps Created","184")
-    k6.metric("Pipeline ROI","7.3x","$1.14M ARR")
+    k5.metric("Opps Created","522","221 accounts, NAM")
+    k6.metric("Total Pipeline ARR","$5,609,486","account-level NAM")
+    k7.metric("Won ARR","$1,502,829","27% win rate")
+    k8.metric("Pipeline ROI","36x","$5.6M / $156K")
     st.markdown("---")
 
     # ── TABS ──────────────────────────────────────────────────────────────────────
@@ -445,11 +451,30 @@ if "PMO" not in page:
     # ── TAB 7: Budget Tool ────────────────────────────────────────────────────────
     with tab7:
         st.subheader("💰 Budget Decision Engine — Should I Invest More?")
-        b1,b2,b3 = st.columns(3)
-        b1.metric("H1 Spend","$156,000")
-        b2.metric("Pipeline","$1,140,000")
-        b3.metric("Current ROI","7.3x","Increase zone")
+
+        st.success("**Actual SFDC Pipeline — account-level NAM, all opps on campaign accounts (Snowflake)**")
+        b1,b2,b3,b4,b5 = st.columns(5)
+        b1.metric("H1 Spend (est.)", "$156K")
+        b2.metric("Total Pipeline ARR", "$5,609,486", "522 opps / 221 accounts")
+        b3.metric("Won ARR", "$1,502,829", "27% win rate")
+        b4.metric("Open Pipeline", "$668,229", "still active")
+        b5.metric("Pipeline ROI", "36x", "$5.6M / $156K spend")
+
+        st.info("Pipeline = ALL opps on campaign accounts (company_id join → dim_opportunities, NAM region). Account-level view, not just directly-linked campaign opps.")
+
+        st.subheader("Pipeline by Account (Top 20)")
+        fig_mkt_pipe = go.Figure()
+        fig_mkt_pipe.add_trace(go.Bar(name='Won ARR', x=sfdc['account'], y=sfdc['won_arr'], marker_color='#1a9850'))
+        fig_mkt_pipe.add_trace(go.Bar(name='Open ARR', x=sfdc['account'], y=sfdc['open_arr'], marker_color='#2196F3'))
+        remaining_mkt = [t - w - o for t, w, o in zip(sfdc['total_arr'], sfdc['won_arr'], sfdc['open_arr'])]
+        fig_mkt_pipe.add_trace(go.Bar(name='Closed Lost ARR', x=sfdc['account'], y=remaining_mkt, marker_color='#e57373'))
+        fig_mkt_pipe.update_layout(barmode='stack', title='Marketing Pipeline by Account (NAM, account-level)',
+                                    xaxis_tickangle=-30, height=480, yaxis_title='ARR ($)')
+        st.plotly_chart(fig_mkt_pipe, use_container_width=True)
+        st.dataframe(sfdc.sort_values('total_arr', ascending=False), use_container_width=True, hide_index=True)
+
         st.markdown("---")
+        st.subheader("Forward-Looking Projection Model")
 
         c1,c2 = st.columns(2)
         with c1:
