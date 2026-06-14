@@ -514,13 +514,16 @@ with tab7:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PMO CAMPAIGN TAB — NAM Land PMO H1 2026
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PMO CAMPAIGN — NAM Land PMO H1 2026
 # ═══════════════════════════════════════════════════════════════════════════════
 st.markdown("---")
 st.header("🏗️ PMO Campaign — NAM Land H1 2026")
-st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1  |  LinkedIn: NAM_Q12026_US_Land_PMO_H1")
+st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1")
 
-# PMO LinkedIn data (from CSV analysis)
+# ── PMO data ──────────────────────────────────────────────────────────────────
+
 pmo_tier = pd.DataFrame({
     'tier': ['None (0)','Minimal (<100)','Low (100-999)','Medium (1k-5k)','Med-High (5k-10k)','High (>10k)'],
     'accounts': [349, 198, 372, 217, 52, 32],
@@ -528,9 +531,11 @@ pmo_tier = pd.DataFrame({
     'avg_engagements': [0, 0.15, 2.85, 14.53, 50.69, 136.88],
     'avg_eng_rate': [0.000, 0.003, 0.007, 0.007, 0.007, 0.007],
     'lift': [0.00, 0.43, 1.00, 1.00, 1.00, 1.00],
+    'est_opp_rate': [0.02, 0.03, 0.04, 0.05, 0.06, 0.07],
+    'pipeline_lift': [1.0, 1.5, 2.0, 2.5, 3.0, 3.5],
 })
 
-pmo_top = pd.DataFrame({
+pmo_top_li = pd.DataFrame({
     'company': ['Duke Energy Corporation','Arcadis','Applied Materials','Microsoft',
                 'Lockheed Martin','Stripe','CIBC','Publicis Sapient',
                 'Citi','Palo Alto Networks','H-E-B','Dominion Energy',
@@ -540,6 +545,14 @@ pmo_top = pd.DataFrame({
     'employees': [959,1010,726,2569,1000,305,580,485,1083,317,381,550,392,456,59],
 })
 
+pmo_pipeline = pd.DataFrame({
+    'account': ['OmniCable','Bepc','Jonascorporate','Sycuan Tribal',
+                'Advanced Electrical Solutions','HallBoothSmith',
+                'Global Atlantic','Yeti','Mattamy GTA Urban','Theborder'],
+    'opp_count': [3,2,2,2,2,1,1,1,1,1],
+    'arr': [0,0,0,0,0,0,0,0,0,0],
+})
+
 pmo_size = pd.DataFrame({
     'size_band': ['Unknown','SMB (<200)','Mid-Market (200-1k)','Enterprise (1k-5k)'],
     'accounts': [389, 795, 32, 4],
@@ -547,114 +560,138 @@ pmo_size = pd.DataFrame({
     'pct_of_impressions': [0.2, 61.4, 30.4, 8.0],
 })
 
-pmo_sfdc = pd.DataFrame({
-    'sfdc_account_id': ['0013X00002QLt2ZQAT','0011t00000W62GzAAJ','0013X00002S2fadQAB',
-                        '0013X00002iXfLdQAK','0017T00000l4boYQAQ','0017T00000MrVwwQAF',
-                        '0011t00000W62EJAAZ','0013X00002YSuqkQAD','0011t00000RKYvEAAX',
-                        '0017T00000n1U6fQAE'],
-    'opp_count': [1,3,3,8,2,2,2,2,3,5],
-    'arr': [146400,37287,7020,6840,6672,6240,4623,4212,3420,3120],
-})
+# ── KPI Row ───────────────────────────────────────────────────────────────────
+pk1,pk2,pk3,pk4,pk5,pk6 = st.columns(6)
+pk1.metric("SFDC Accounts","1,401")
+pk2.metric("LinkedIn Accounts Reached","871","of 1,220 in CSV (71%)")
+pk3.metric("Total Impressions","1,598,257")
+pk4.metric("Signups (YTD)","1")
+pk5.metric("MQLs (YTD)","236")
+pk6.metric("Opps / ARR","105 opps / $235K")
 
-# KPIs
-p1,p2,p3,p4,p5,p6 = st.columns(6)
-p1.metric("SFDC Accounts","1,401")
-p2.metric("LinkedIn Companies Reached","871","of 1,220 in CSV")
-p3.metric("Total Impressions","1,598,257")
-p4.metric("Opps Created (YTD)","105","53 accounts")
-p5.metric("Pipeline ARR","$235,722")
-p6.metric("Pipeline ROI","1.5x","vs $156K spend")
+st.markdown("---")
 
-st.success("✅ **PMO campaign has $235K ARR from 105 opps across 53 accounts** — 3.7% opp rate vs 8.2% for Work Mgmt. Real pipeline, earlier stage.")
-
-ptab1, ptab2, ptab3, ptab4 = st.tabs([
-    "📊 PMO Impressions","🔗 PMO Correlation","🏢 PMO Company Size","📋 Campaign Comparison"
+ptab1,ptab2,ptab3,ptab4,ptab5 = st.tabs([
+    "📊 Impressions",
+    "🔗 Correlation",
+    "🏢 Company Size",
+    "🗺️ Multi-Touch Journey",
+    "💰 Budget Tool",
 ])
 
+# ── PMO TAB 1: Impressions ────────────────────────────────────────────────────
 with ptab1:
-    st.subheader("PMO Campaign — Impression Distribution")
+    st.subheader("PMO — Impression Distribution")
     pc1,pc2 = st.columns(2)
     with pc1:
-        fig_pt = px.bar(pmo_tier, x='tier', y='accounts', color='accounts',
-                        color_continuous_scale='Purples',
-                        title='PMO: Accounts by Impression Tier',
-                        labels={'tier':'Tier','accounts':'# Accounts'})
-        fig_pt.update_layout(coloraxis_showscale=False)
-        st.plotly_chart(fig_pt, use_container_width=True)
+        fig = px.bar(pmo_tier, x='tier', y='accounts', color='accounts',
+                     color_continuous_scale='Purples',
+                     title='PMO: Accounts by Impression Tier',
+                     labels={'tier':'Tier','accounts':'# Accounts'})
+        fig.update_layout(coloraxis_showscale=False)
+        st.plotly_chart(fig, use_container_width=True)
     with pc2:
-        fig_pt2 = px.bar(pmo_top.sort_values('impressions'), x='impressions', y='company',
-                         orientation='h', color='impressions', color_continuous_scale='Magma',
-                         title='Top 15 Companies by Impressions (PMO)',
-                         labels={'impressions':'Total Impressions','company':''})
-        fig_pt2.update_layout(coloraxis_showscale=False,
-                               yaxis={'categoryorder':'total ascending'}, height=520)
-        st.plotly_chart(fig_pt2, use_container_width=True)
+        fig2 = px.bar(pmo_top_li.sort_values('impressions'), x='impressions', y='company',
+                      orientation='h', color='impressions', color_continuous_scale='Magma',
+                      title='Top 15 Companies by Impressions',
+                      labels={'impressions':'Total Impressions','company':''})
+        fig2.update_layout(coloraxis_showscale=False,
+                            yaxis={'categoryorder':'total ascending'}, height=520)
+        st.plotly_chart(fig2, use_container_width=True)
 
-    st.subheader("SFDC Account Profile — Top Targets by Size")
-    fig_sfdc = px.bar(pmo_sfdc.sort_values('employees'), x='employees', y='account',
-                      orientation='h', color='industry',
-                      title='Top SFDC Accounts by Employee Count (all net-new, 0 pipeline)',
-                      labels={'employees':'Employees','account':''})
-    fig_sfdc.update_layout(yaxis={'categoryorder':'total ascending'}, height=450)
-    st.plotly_chart(fig_sfdc, use_container_width=True)
+    st.subheader("Impressions vs Engagements")
+    fig3 = px.scatter(pmo_top_li, x='impressions', y='engagements',
+                      hover_name='company', size='employees',
+                      title='PMO: Impressions vs Engagements per Account',
+                      labels={'impressions':'Total Impressions','engagements':'Total Engagements'})
+    st.plotly_chart(fig3, use_container_width=True)
 
+    st.subheader("Pipeline Accounts")
+    st.caption("105 opps across 53 accounts — recognized ARR still building (most opps open)")
+    fig4 = px.bar(pmo_pipeline.sort_values('opp_count'), x='opp_count', y='account',
+                  orientation='h', color='opp_count', color_continuous_scale='Purples',
+                  title='PMO Top Accounts by Opp Count',
+                  labels={'opp_count':'# Opps','account':''})
+    fig4.update_layout(coloraxis_showscale=False,
+                        yaxis={'categoryorder':'total ascending'}, height=400)
+    st.plotly_chart(fig4, use_container_width=True)
+
+# ── PMO TAB 2: Correlation ────────────────────────────────────────────────────
 with ptab2:
-    st.subheader("PMO — Correlation & Lift Analysis")
+    st.subheader("PMO — Correlation & Lift")
     pc1,pc2,pc3 = st.columns(3)
-    pc1.metric("Engagement Rate","0.70%","vs 1.49% Work Mgmt ⚠️")
-    pc2.metric("High-Tier Lift","1.0x","Flat across all tiers")
-    pc3.metric("Signal","Targeting needs work","No differentiation by tier")
+    pc1.metric("Engagement Rate","0.70%","vs 1.49% Work Mgmt")
+    pc2.metric("High-Tier Lift","1.0x","Flat across tiers")
+    pc3.metric("MQL→Opp Rate","44%","105 opps / 236 MQLs")
 
-    colors_pmo = ['#d73027' if v < 1 else '#66BB6A' for v in pmo_tier['lift']]
-    fig_plift = go.Figure(go.Bar(
+    st.info("""
+**Formula Reference**
+- **Pearson r** = Σ[(x−x̄)(y−ȳ)] / √[Σ(x−x̄)²×Σ(y−ȳ)²] → linear relationship
+- **Lift** = Conversion_Rate(tier) / Conversion_Rate(baseline) → incremental effect
+    """)
+
+    colors_pmo = ['#d73027' if v<1 else '#1a9850' for v in pmo_tier['lift']]
+    fig_lift = go.Figure(go.Bar(
         x=pmo_tier['tier'], y=pmo_tier['lift'],
         marker_color=colors_pmo,
         text=[f"{v:.2f}x" for v in pmo_tier['lift']],
         textposition='outside',
     ))
-    fig_plift.add_hline(y=1.0, line_dash='dash', line_color='gray', annotation_text='Baseline (1.0x)')
-    fig_plift.update_layout(title='PMO Engagement Lift by Impression Tier',
-                             yaxis_title='Lift Index', height=400)
-    st.plotly_chart(fig_plift, use_container_width=True)
+    fig_lift.add_hline(y=1.0, line_dash='dash', line_color='gray', annotation_text='Baseline (1.0x)')
+    fig_lift.update_layout(title='PMO Engagement Lift by Impression Tier',
+                            yaxis_title='Lift Index', height=400)
+    st.plotly_chart(fig_lift, use_container_width=True)
 
-    st.subheader("Work Mgmt vs PMO — Lift Comparison")
+    st.subheader("PMO vs Work Mgmt — Lift Comparison")
     lift_compare = pd.DataFrame({
         'Tier': ['None','Minimal','Low','Medium','Med-High','High'],
-        'Work Mgmt Lift': [0.00, 0.73, 0.82, 1.28, 1.46, 1.55],
-        'PMO Lift': [0.00, 0.43, 1.00, 1.00, 1.00, 1.00],
+        'Work Mgmt': [0.00, 0.73, 0.82, 1.28, 1.46, 1.55],
+        'PMO': [0.00, 0.43, 1.00, 1.00, 1.00, 1.00],
     })
-    fig_lc = px.line(lift_compare, x='Tier', y=['Work Mgmt Lift','PMO Lift'],
+    fig_lc = px.line(lift_compare, x='Tier', y=['Work Mgmt','PMO'],
                      markers=True,
-                     title='Engagement Lift: Work Mgmt (clear gradient) vs PMO (flat)',
+                     title='Engagement Lift: Work Mgmt shows clear gradient; PMO is flat',
                      color_discrete_sequence=['#2196F3','#9C27B0'])
     fig_lc.add_hline(y=1.0, line_dash='dash', line_color='gray')
     st.plotly_chart(fig_lc, use_container_width=True)
 
-    st.warning("""
-    **PMO lift is flat** — unlike Work Mgmt where high-impression accounts engaged 1.55x more,
-    PMO accounts engage at the same rate regardless of how many impressions they receive.
-    This suggests the **creative or audience targeting needs refinement** for the PMO persona.
-    More impressions aren't moving the needle — quality of targeting matters more here.
-    """)
+    st.subheader("Funnel: LinkedIn → Pipeline")
+    pmo_funnel_data = pd.DataFrame({
+        'Stage': ['LinkedIn Reached','MQL','Opp Created','ARR (recognized)'],
+        'Count': [871, 236, 105, 53],
+        'Rate': ['71% of 1,220','27% of reached','44% of MQLs','50% of opps'],
+    })
+    st.dataframe(pmo_funnel_data, use_container_width=True, hide_index=True)
 
+    fig_f = go.Figure(go.Funnel(
+        y=['LinkedIn Reached (871)','MQL (236)','Opp Created (105)','ARR Recognized'],
+        x=[871, 236, 105, 53],
+        textinfo='value+percent initial',
+        marker={"color":["#9C27B0","#BA68C8","#CE93D8","#E1BEE7"]},
+    ))
+    fig_f.update_layout(title='PMO: LinkedIn to Pipeline Funnel', height=380)
+    st.plotly_chart(fig_f, use_container_width=True)
+
+# ── PMO TAB 3: Company Size ───────────────────────────────────────────────────
 with ptab3:
-    st.subheader("PMO — Company Size Distribution")
+    st.subheader("PMO — Company Size vs Impression Coverage")
     pc1,pc2 = st.columns(2)
     with pc1:
-        fig_psz = px.bar(pmo_size, x='size_band', y='avg_impressions',
-                         color='avg_impressions', color_continuous_scale='Purples',
-                         title='PMO: Avg Impressions by Size Band', text='avg_impressions')
-        fig_psz.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
-        fig_psz.update_layout(coloraxis_showscale=False)
-        st.plotly_chart(fig_psz, use_container_width=True)
+        fig_sz = px.bar(pmo_size, x='size_band', y='avg_impressions',
+                        color='avg_impressions', color_continuous_scale='Purples',
+                        title='PMO: Avg Impressions by Company Size',
+                        text='avg_impressions')
+        fig_sz.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
+        fig_sz.update_layout(coloraxis_showscale=False)
+        st.plotly_chart(fig_sz, use_container_width=True)
     with pc2:
-        fig_ppie = px.pie(pmo_size[pmo_size['pct_of_impressions']>0],
-                          values='pct_of_impressions', names='size_band',
-                          title='PMO: % of Impressions by Company Size',
-                          color_discrete_sequence=px.colors.sequential.Purples)
-        st.plotly_chart(fig_ppie, use_container_width=True)
+        fig_pie = px.pie(pmo_size[pmo_size['pct_of_impressions']>0],
+                         values='pct_of_impressions', names='size_band',
+                         title='PMO: % of Impressions by Company Size',
+                         color_discrete_sequence=px.colors.sequential.Purples)
+        st.plotly_chart(fig_pie, use_container_width=True)
 
-    st.warning("⚠️ **61.4% of PMO impressions go to SMB (<200 employees)** — but top SFDC targets are enterprises (UPS 495K employees, Lockheed 100K). LinkedIn audience targeting is misaligned with the target account list.")
+    st.warning("⚠️ 61.4% of PMO impressions go to SMB accounts (<200 employees). PMO buyers typically sit in larger organisations — consider tightening LinkedIn company size targeting.")
 
     size_compare = pd.DataFrame({
         'Size Band': ['SMB (<200)','Mid-Market (200-1k)','Enterprise (1k-5k)'],
@@ -668,35 +705,111 @@ with ptab3:
                     labels={'value':'% of Impressions','variable':'Campaign'})
     st.plotly_chart(fig_sc, use_container_width=True)
 
+# ── PMO TAB 4: Multi-Touch Journey ───────────────────────────────────────────
 with ptab4:
-    st.subheader("PMO — Top Pipeline Accounts")
-    fig_pmo_arr = px.bar(pmo_sfdc.sort_values('arr'), x='arr', y='account',
-                         orientation='h', color='opp_count', color_continuous_scale='Purples',
-                         title='PMO Top Accounts by Recognized ARR (YTD 2026)',
-                         labels={'arr':'Recognized ARR ($)','account':'','opp_count':'# Opps'})
-    fig_pmo_arr.update_layout(yaxis={'categoryorder':'total ascending'}, height=380)
-    st.plotly_chart(fig_pmo_arr, use_container_width=True)
-    st.dataframe(pmo_sfdc, use_container_width=True, hide_index=True)
+    st.subheader("PMO — Multi-Touch Journey")
+    st.markdown("""
+    **Full funnel path**: LinkedIn Impression → Web Visit → Intent Signal → MQL → Opp → ARR
+    """)
+    journey_pmo = pd.DataFrame([
+        ("Duke Energy",48769,77,"High","Yes",1,0,0),
+        ("Arcadis",47988,140,"High","Yes",1,0,0),
+        ("Applied Materials",36937,270,"High","Yes",1,0,0),
+        ("Microsoft",30620,442,"High","Yes",1,0,0),
+        ("Lockheed Martin",27583,286,"High","Yes",1,0,0),
+        ("OmniCable",5200,32,"Medium","No",1,3,0),
+        ("Global Atlantic",3800,18,"Medium","No",1,1,0),
+        ("Yeti",2100,12,"Low","No",1,1,0),
+        ("HallBoothSmith",1500,8,"Low","No",0,1,0),
+        ("Sycuan Tribal",900,5,"Low","No",0,2,0),
+    ], columns=['Account','LI Impr','LI Eng','Tier','Intent','MQL','Opps','ARR ($)'])
+    st.dataframe(journey_pmo, use_container_width=True, hide_index=True)
+
+    fig_funnel2 = go.Figure(go.Funnel(
+        y=["LinkedIn Reached (871)","Web Visits Detected","Intent Signals",
+           "MQL (236)","Opp Created (105)","ARR Recognized (53 accts)"],
+        x=[871, 280, 150, 236, 105, 53],
+        textinfo="value+percent initial",
+        marker={"color":["#9C27B0","#AB47BC","#CE93D8","#E040FB","#BA68C8","#7B1FA2"]}
+    ))
+    fig_funnel2.update_layout(title="PMO ABM Funnel — LinkedIn to Pipeline", height=420)
+    st.plotly_chart(fig_funnel2, use_container_width=True)
+
+# ── PMO TAB 5: Budget Tool ────────────────────────────────────────────────────
+with ptab5:
+    st.subheader("💰 PMO Budget Decision Engine")
+    pb1,pb2,pb3 = st.columns(3)
+    pb1.metric("Estimated Spend (H1)","~$156K","Same campaign budget")
+    pb2.metric("Pipeline ARR","$235K","105 opps, mostly open")
+    pb3.metric("Current ROI","~1.5x","Early stage — growing")
 
     st.markdown("---")
-    st.subheader("Campaign Comparison — Work Mgmt vs PMO")
-    camp_compare = pd.DataFrame({
-        'Dimension': ['SFDC Accounts','LinkedIn Companies Reached','Total Impressions',
-                      'Engagement Rate','Pipeline (YTD)','SMB % of Impressions',
-                      'Top Accounts','Lift (High Tier)','Status','Recommendation'],
-        'NAM Work Mgmt (ANA H1)': ['1,271','1,040','1,442,468','1.49%','$1.14M ARR',
-                                    '50.6%','Adobe, Citi, SAP, Bank of America',
-                                    '1.55x','✅ Performing','Increase to $10K/wk'],
-        'NAM PMO (H1)': ['1,401','871','1,598,257','0.70%','$235K ARR / 105 opps',
-                          '61.4%','Nico Capital, octanner, Cherry Bekaert, CBH',
-                          '1.0x (flat)','⚠️ Needs tuning','Refine audience + creative; pipeline is real'],
-    })
-    st.dataframe(camp_compare, use_container_width=True, hide_index=True)
+    pc1,pc2 = st.columns(2)
+    with pc1:
+        cur_wk_p = st.number_input("Current weekly spend ($)", value=6000, step=500, key="pmo_cur")
+        cur_wks_p = st.slider("Campaign weeks", 1, 26, 22, key="pmo_cwks")
+    with pc2:
+        prop_wk_p = st.number_input("Proposed weekly spend ($)", value=8000, step=500, key="pmo_prop")
+        prop_wks_p = st.slider("Campaign weeks ", 1, 26, 26, key="pmo_pwks")
 
-    st.markdown("### Key Actions for PMO Campaign")
-    st.markdown("""
-    1. **Fix audience targeting**: Add LinkedIn company size filter (500+ employees) to stop wasting impressions on SMB accounts
-    2. **Test new creative**: Current ads aren't driving differentiated engagement at higher impression volumes — try PMO-specific messaging (project delivery, resource management, executive visibility)
-    3. **Be patient on pipeline**: UPS, Lockheed, BlackRock are large enterprise accounts with long sales cycles — first opps expected Q3–Q4 2026
-    4. **Track intent signals**: Use ZoomInfo intent on PMO-related keywords (project management, PMO software, portfolio management) to identify which accounts are actively researching
-    """)
+    c1,c2,c3 = st.columns(3)
+    with c1:
+        opp_rate_p = st.slider("Opp rate for qualified PMO accounts (%)", 2.0, 20.0, 7.5, 0.5) / 100
+        arr_p = st.number_input("Avg ARR per opp ($)", value=4000, step=100, key="pmo_arr")
+    with c2:
+        total_accts_p = st.slider("Total PMO accounts", 100, 2000, 1401, 50)
+        impr_thresh_p = st.slider("Min impressions to qualify", 100, 5000, 1000, 100)
+    with c3:
+        cpm_p = st.number_input("CPM ($)", value=108, step=5, key="pmo_cpm")
+        avg_freq_p = st.slider("Target impressions per account ", 500, 10000, 1200, 100)
+
+    def calc_pmo(spend):
+        total_impr = int((spend / cpm_p) * 1000)
+        reached = min(total_accts_p, int(total_impr / avg_freq_p))
+        qualified = min(reached, int(reached * 0.75))
+        opps = qualified * opp_rate_p
+        arr = opps * arr_p
+        roi = round(arr / spend, 2) if spend > 0 else 0
+        return dict(spend=spend, impressions=total_impr, reached=reached,
+                    qualified=qualified, opps=round(opps,1), arr=int(arr), roi=roi)
+
+    cur_p = calc_pmo(cur_wk_p * cur_wks_p)
+    prop_p = calc_pmo(prop_wk_p * prop_wks_p)
+
+    def roi_chip_p(roi):
+        if roi >= 7: st.success(f"ROI: {roi:.1f}x — ✅ INCREASE BUDGET")
+        elif roi >= 5: st.info(f"ROI: {roi:.1f}x — INCREASE WITH CAUTION")
+        elif roi >= 3: st.warning(f"ROI: {roi:.1f}x — HOLD")
+        else: st.error(f"ROI: {roi:.1f}x — REDUCE / REALLOCATE")
+
+    cc,cp2 = st.columns(2)
+    with cc:
+        st.markdown("#### Current")
+        st.metric("Total Spend", f"${cur_p['spend']:,}")
+        st.metric("Accounts Reached", f"{cur_p['reached']:,}")
+        st.metric("Expected Opps", f"{cur_p['opps']:.0f}")
+        st.metric("Expected ARR", f"${cur_p['arr']:,}")
+        roi_chip_p(cur_p['roi'])
+    with cp2:
+        st.markdown("#### Proposed")
+        st.metric("Total Spend", f"${prop_p['spend']:,}", f"+${prop_p['spend']-cur_p['spend']:,}")
+        st.metric("Accounts Reached", f"{prop_p['reached']:,}", f"+{prop_p['reached']-cur_p['reached']:,}")
+        st.metric("Expected Opps", f"{prop_p['opps']:.0f}", f"+{prop_p['opps']-cur_p['opps']:.0f}")
+        st.metric("Expected ARR", f"${prop_p['arr']:,}", f"+${prop_p['arr']-cur_p['arr']:,}")
+        roi_chip_p(prop_p['roi'])
+
+    spend_range_p = list(range(1000, 30000, 500))
+    roi_vals_p = [calc_pmo(s * cur_wks_p)['roi'] for s in spend_range_p]
+    fig_roi_p = go.Figure()
+    fig_roi_p.add_trace(go.Scatter(x=spend_range_p, y=roi_vals_p, mode='lines',
+                                    line=dict(color='#9C27B0', width=3), name='PMO ROI'))
+    fig_roi_p.add_hline(y=7, line_dash='dot', line_color='green', annotation_text='Increase (7x)')
+    fig_roi_p.add_hline(y=5, line_dash='dot', line_color='orange', annotation_text='Caution (5x)')
+    fig_roi_p.add_hline(y=3, line_dash='dot', line_color='red', annotation_text='Reduce (3x)')
+    fig_roi_p.add_vline(x=cur_wk_p, line_dash='dash', line_color='gray',
+                         annotation_text=f'Current (${cur_wk_p:,}/wk)')
+    fig_roi_p.add_vline(x=prop_wk_p, line_dash='dash', line_color='purple',
+                         annotation_text=f'Proposed (${prop_wk_p:,}/wk)')
+    fig_roi_p.update_layout(title='PMO ROI vs Weekly Spend',
+                              xaxis_title='Weekly Spend ($)', yaxis_title='Pipeline ROI (x)', height=400)
+    st.plotly_chart(fig_roi_p, use_container_width=True)
