@@ -184,20 +184,27 @@ if "PMO" not in page:
 
     # ── OPP TYPE FILTER ───────────────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("**Filter Pipeline by Opportunity Stage:**")
-    mf1, mf2, mf3 = st.columns(3)
-    mkt_won  = mf1.checkbox("✅ Closed Won",    value=True,  key="mkt_won")
-    mkt_open = mf2.checkbox("🔵 Open Pipeline", value=True,  key="mkt_open")
-    mkt_lost = mf3.checkbox("❌ Closed Lost",   value=False, key="mkt_lost")
 
-    sfdc['closed_lost_arr'] = sfdc['total_arr'] - sfdc['won_arr'] - sfdc['open_arr']
-    sfdc['filtered_arr'] = (
-        sfdc['won_arr']        * int(mkt_won)  +
-        sfdc['open_arr']       * int(mkt_open) +
-        sfdc['closed_lost_arr']* int(mkt_lost)
-    )
-    mkt_filtered_total = int(sfdc['filtered_arr'].sum())
-    mkt_filtered_accts = int((sfdc['filtered_arr'] > 0).sum())
+    # Opportunity Type V2 breakdown for Marketing campaign (from Snowflake)
+    mkt_type_data = pd.DataFrame({
+        'type':     ['New Business', 'Expansion'],
+        'opps':     [286, 236],
+        'total_arr':[4284251, 1325235],
+        'won_arr':  [544203,  958626],
+    })
+    mkt_type_data['open_arr'] = mkt_type_data['total_arr'] - mkt_type_data['won_arr']
+
+    st.markdown("**Filter Pipeline by Opportunity Type V2:**")
+    mf_cols = st.columns(len(mkt_type_data))
+    mkt_type_sel = {}
+    for i, row in mkt_type_data.iterrows():
+        mkt_type_sel[row['type']] = mf_cols[i].checkbox(
+            row['type'], value=True, key=f"mkt_type_{i}"
+        )
+
+    mkt_filtered_types = mkt_type_data[mkt_type_data['type'].map(mkt_type_sel)]
+    mkt_filtered_total = int(mkt_filtered_types['total_arr'].sum())
+    mkt_filtered_opps  = int(mkt_filtered_types['opps'].sum())
     mkt_spend = 156000
     mkt_roi   = round(mkt_filtered_total / mkt_spend, 1) if mkt_spend else 0
 
@@ -207,9 +214,9 @@ if "PMO" not in page:
     k2.metric("Accounts Targeted","1,271")
     k3.metric("Accounts Reached","1,040","82% reach rate")
     k4.metric("Total Impressions","1,442,468")
-    k5.metric("Opps Created","522","221 accounts, NAM")
-    k6.metric("Total Pipeline ARR", f"${mkt_filtered_total:,}", "account-level NAM")
-    k7.metric("Accounts w/ Pipeline", f"{mkt_filtered_accts}")
+    k5.metric("Opps (filtered)", f"{mkt_filtered_opps}", "by selected type(s)")
+    k6.metric("Total Pipeline ARR", f"${mkt_filtered_total:,}", "by selected type(s)")
+    k7.metric("Won ARR", f"${int(mkt_filtered_types['won_arr'].sum()):,}")
     k8.metric("Pipeline ROI", f"{mkt_roi:.1f}x", f"${mkt_filtered_total:,} / $156K")
     st.markdown("---")
 
@@ -470,33 +477,38 @@ if "PMO" not in page:
     with tab7:
         st.subheader("💰 Budget Decision Engine — Should I Invest More?")
 
-        st.success("**Actual SFDC Pipeline — account-level NAM (filtered by stage selection above)**")
+        st.success("**Actual SFDC Pipeline — account-level NAM, filtered by Opportunity Type V2**")
         b1,b2,b3,b4,b5 = st.columns(5)
         b1.metric("H1 Spend (est.)", "$156K")
         b2.metric("Filtered Pipeline ARR", f"${mkt_filtered_total:,}")
-        b3.metric("Closed Won", f"${int(sfdc['won_arr'].sum()):,}" if mkt_won else "excluded")
-        b4.metric("Open Pipeline", f"${int(sfdc['open_arr'].sum()):,}" if mkt_open else "excluded")
+        b3.metric("Filtered Opps", f"{mkt_filtered_opps}")
+        b4.metric("Won ARR (filtered)", f"${int(mkt_filtered_types['won_arr'].sum()):,}")
         b5.metric("Pipeline ROI", f"{mkt_roi:.1f}x")
 
-        st.info("Pipeline = ALL opps on campaign accounts (company_id join → dim_opportunities, NAM region). Use stage checkboxes above to include/exclude stages.")
+        st.info("Pipeline = ALL opps on campaign accounts (company_id join → dim_opportunities, NAM region). Use Opportunity Type V2 checkboxes above to filter.")
 
-        st.subheader("Pipeline by Account (filtered)")
-        fig_mkt_pipe = go.Figure()
-        if mkt_won:
-            fig_mkt_pipe.add_trace(go.Bar(name='Won ARR', x=sfdc['account'], y=sfdc['won_arr'], marker_color='#1a9850'))
-        if mkt_open:
-            fig_mkt_pipe.add_trace(go.Bar(name='Open ARR', x=sfdc['account'], y=sfdc['open_arr'], marker_color='#2196F3'))
-        if mkt_lost:
-            fig_mkt_pipe.add_trace(go.Bar(name='Closed Lost ARR', x=sfdc['account'], y=sfdc['closed_lost_arr'], marker_color='#e57373'))
-        if not any([mkt_won, mkt_open, mkt_lost]):
-            st.warning("No stages selected — select at least one stage to see pipeline.")
+        st.subheader("Pipeline by Opportunity Type V2")
+        if mkt_filtered_types.empty:
+            st.warning("No types selected — select at least one type above.")
         else:
-            fig_mkt_pipe.update_layout(barmode='stack', title='Marketing Pipeline by Account (NAM)',
-                                        xaxis_tickangle=-30, height=480, yaxis_title='ARR ($)')
-            st.plotly_chart(fig_mkt_pipe, use_container_width=True)
-        disp = sfdc[['account','opp_count','filtered_arr','won_arr','open_arr','closed_lost_arr']].sort_values('filtered_arr', ascending=False)
-        disp.columns = ['Account','Opps','Filtered ARR','Won ARR','Open ARR','Closed Lost ARR']
-        st.dataframe(disp, use_container_width=True, hide_index=True)
+            fig_mkt_type = go.Figure()
+            fig_mkt_type.add_trace(go.Bar(name='Won ARR', x=mkt_filtered_types['type'],
+                                           y=mkt_filtered_types['won_arr'], marker_color='#1a9850'))
+            fig_mkt_type.add_trace(go.Bar(name='Open ARR', x=mkt_filtered_types['type'],
+                                           y=mkt_filtered_types['open_arr'], marker_color='#2196F3'))
+            fig_mkt_type.update_layout(barmode='stack', title='Marketing Pipeline by Opp Type (NAM)',
+                                        height=380, yaxis_title='ARR ($)')
+            st.plotly_chart(fig_mkt_type, use_container_width=True)
+
+        st.subheader("Pipeline by Account (Top 20, all types)")
+        fig_mkt_pipe = go.Figure()
+        fig_mkt_pipe.add_trace(go.Bar(name='Won ARR', x=sfdc['account'], y=sfdc['won_arr'], marker_color='#1a9850'))
+        fig_mkt_pipe.add_trace(go.Bar(name='Open ARR', x=sfdc['account'], y=sfdc['open_arr'], marker_color='#2196F3'))
+        fig_mkt_pipe.update_layout(barmode='stack', title='Marketing Pipeline by Account (NAM)',
+                                    xaxis_tickangle=-30, height=480, yaxis_title='ARR ($)')
+        st.plotly_chart(fig_mkt_pipe, use_container_width=True)
+        st.dataframe(sfdc[['account','opp_count','total_arr','won_arr','open_arr']].sort_values('total_arr', ascending=False),
+                     use_container_width=True, hide_index=True)
 
         st.markdown("---")
         st.subheader("Forward-Looking Projection Model")
@@ -696,21 +708,26 @@ else:
         })
         st.dataframe(pmo_attr_df, use_container_width=True, hide_index=True)
 
-    # ── OPP TYPE FILTER ───────────────────────────────────────────────────────────
-    st.markdown("**Filter Pipeline by Opportunity Stage:**")
-    pf1, pf2, pf3 = st.columns(3)
-    pmo_won  = pf1.checkbox("✅ Closed Won",    value=True,  key="pmo_won")
-    pmo_open = pf2.checkbox("🔵 Open Pipeline", value=True,  key="pmo_open")
-    pmo_lost = pf3.checkbox("❌ Closed Lost",   value=False, key="pmo_lost")
+    # Opportunity Type V2 breakdown for PMO campaign (from Snowflake)
+    pmo_type_data = pd.DataFrame({
+        'type':     ['New Business', 'Expansion', 'Expansion on Renewal', 'Service'],
+        'opps':     [99, 201, 1, 2],
+        'total_arr':[1005548, 1206882, 7344, 0],
+        'won_arr':  [296258,  591111,  7344, 0],
+    })
+    pmo_type_data['open_arr'] = pmo_type_data['total_arr'] - pmo_type_data['won_arr']
 
-    pmo_pipeline['closed_lost_arr'] = pmo_pipeline['total_arr'] - pmo_pipeline['won_arr'] - pmo_pipeline['open_arr']
-    pmo_pipeline['filtered_arr'] = (
-        pmo_pipeline['won_arr']        * int(pmo_won)  +
-        pmo_pipeline['open_arr']       * int(pmo_open) +
-        pmo_pipeline['closed_lost_arr']* int(pmo_lost)
-    )
-    pmo_filtered_total = int(pmo_pipeline['filtered_arr'].sum())
-    pmo_filtered_accts = int((pmo_pipeline['filtered_arr'] > 0).sum())
+    st.markdown("**Filter Pipeline by Opportunity Type V2:**")
+    pf_cols = st.columns(len(pmo_type_data))
+    pmo_type_sel = {}
+    for i, row in pmo_type_data.iterrows():
+        pmo_type_sel[row['type']] = pf_cols[i].checkbox(
+            row['type'], value=True, key=f"pmo_type_{i}"
+        )
+
+    pmo_filtered_types = pmo_type_data[pmo_type_data['type'].map(pmo_type_sel)]
+    pmo_filtered_total = int(pmo_filtered_types['total_arr'].sum())
+    pmo_filtered_opps  = int(pmo_filtered_types['opps'].sum())
     pmo_spend = 156000
     pmo_roi_actual = round(pmo_filtered_total / pmo_spend, 1) if pmo_spend else 0
 
@@ -722,7 +739,7 @@ else:
     pk4.metric("Total Impressions","1,598,257")
     pk5.metric("MQLs (YTD)","236")
     pk6.metric("Web Visits (est.)","~310","from LinkedIn-touched accts")
-    pk7.metric("Filtered Pipeline ARR", f"${pmo_filtered_total:,}")
+    pk7.metric("Pipeline ARR (filtered)", f"${pmo_filtered_total:,}", "by selected type(s)")
     pk8.metric("Pipeline ROI", f"{pmo_roi_actual:.1f}x", f"${pmo_filtered_total:,} / $156K")
 
     st.markdown("---")
@@ -990,29 +1007,34 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
         pb1,pb2,pb3,pb4,pb5 = st.columns(5)
         pb1.metric("H1 Spend (est.)", "~$156K", "nam + work_mgmt-slg_ppm-abm")
         pb2.metric("Filtered Pipeline ARR", f"${pmo_filtered_total:,}")
-        pb3.metric("Closed Won", f"${int(pmo_pipeline['won_arr'].sum()):,}" if pmo_won else "excluded")
-        pb4.metric("Open Pipeline", f"${int(pmo_pipeline['open_arr'].sum()):,}" if pmo_open else "excluded")
+        pb3.metric("Filtered Opps", f"{pmo_filtered_opps}")
+        pb4.metric("Won ARR (filtered)", f"${int(pmo_filtered_types['won_arr'].sum()):,}")
         pb5.metric("Pipeline ROI", f"{pmo_roi_actual:.1f}x")
 
-        st.info("Pipeline = ALL opps on campaign accounts (company_id join → dim_opportunities, NAM region). Use stage checkboxes above to include/exclude stages.")
+        st.info("Pipeline = ALL opps on campaign accounts (company_id join → dim_opportunities, NAM region). Use Opportunity Type V2 checkboxes above to filter.")
 
-        fig_pipe = go.Figure()
-        if pmo_won:
-            fig_pipe.add_trace(go.Bar(name='Won ARR', x=pmo_pipeline['account'], y=pmo_pipeline['won_arr'], marker_color='#1a9850'))
-        if pmo_open:
-            fig_pipe.add_trace(go.Bar(name='Open ARR', x=pmo_pipeline['account'], y=pmo_pipeline['open_arr'], marker_color='#9C27B0'))
-        if pmo_lost:
-            fig_pipe.add_trace(go.Bar(name='Closed Lost ARR', x=pmo_pipeline['account'], y=pmo_pipeline['closed_lost_arr'], marker_color='#e57373'))
-        if not any([pmo_won, pmo_open, pmo_lost]):
-            st.warning("No stages selected — select at least one stage to see pipeline.")
+        st.subheader("Pipeline by Opportunity Type V2")
+        if pmo_filtered_types.empty:
+            st.warning("No types selected — select at least one type above.")
         else:
-            fig_pipe.update_layout(barmode='stack', title='PMO Pipeline by Account (NAM, filtered)',
-                                    xaxis_tickangle=-30, height=480, yaxis_title='ARR ($)')
-            st.plotly_chart(fig_pipe, use_container_width=True)
+            fig_pmo_type = go.Figure()
+            fig_pmo_type.add_trace(go.Bar(name='Won ARR', x=pmo_filtered_types['type'],
+                                           y=pmo_filtered_types['won_arr'], marker_color='#1a9850'))
+            fig_pmo_type.add_trace(go.Bar(name='Open ARR', x=pmo_filtered_types['type'],
+                                           y=pmo_filtered_types['open_arr'], marker_color='#9C27B0'))
+            fig_pmo_type.update_layout(barmode='stack', title='PMO Pipeline by Opp Type (NAM)',
+                                        height=380, yaxis_title='ARR ($)')
+            st.plotly_chart(fig_pmo_type, use_container_width=True)
 
-        pmo_disp = pmo_pipeline[['account','opp_count','filtered_arr','won_arr','open_arr','closed_lost_arr']].sort_values('filtered_arr', ascending=False)
-        pmo_disp.columns = ['Account','Opps','Filtered ARR','Won ARR','Open ARR','Closed Lost ARR']
-        st.dataframe(pmo_disp, use_container_width=True, hide_index=True)
+        st.subheader("Pipeline by Account (Top 20, all types)")
+        fig_pipe = go.Figure()
+        fig_pipe.add_trace(go.Bar(name='Won ARR', x=pmo_pipeline['account'], y=pmo_pipeline['won_arr'], marker_color='#1a9850'))
+        fig_pipe.add_trace(go.Bar(name='Open ARR', x=pmo_pipeline['account'], y=pmo_pipeline['open_arr'], marker_color='#9C27B0'))
+        fig_pipe.update_layout(barmode='stack', title='PMO Pipeline by Account (NAM)',
+                                xaxis_tickangle=-30, height=480, yaxis_title='ARR ($)')
+        st.plotly_chart(fig_pipe, use_container_width=True)
+        st.dataframe(pmo_pipeline[['account','opp_count','total_arr','won_arr','open_arr']].sort_values('total_arr', ascending=False),
+                     use_container_width=True, hide_index=True)
 
         st.markdown("---")
         st.subheader("Forward-Looking Projection Model")
