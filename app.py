@@ -548,28 +548,24 @@ pmo_size = pd.DataFrame({
 })
 
 pmo_sfdc = pd.DataFrame({
-    'account': ['UPS','Brookfield Properties','Lockheed Martin','3M Health',
-                'Emerson','Bell','Amtrak','Infor','BlackRock',
-                'Cineplex','Palo Alto Networks','Yelp'],
-    'employees': [495000,151000,100000,95000,88000,52100,18360,16340,13900,13000,12500,10370],
-    'industry': ['Air Freight & Logistics','Real Estate','Aerospace & Defense',
-                 'Industrial Manufacturing','Construction & Engineering','—',
-                 'Transportation','Internet Software','Capital Markets',
-                 'Hotels & Restaurants','—','Media'],
-    'opp_count': [0,0,0,0,0,0,0,0,0,0,0,0],
-    'arr': [0,0,0,0,0,0,0,0,0,0,0,0],
+    'account': ['Nico Capital','octanner','Cherry Bekaert SFS','CBH','NACo',
+                'MRK Partners','iwechicago','Proscalar','Flyover',
+                'Pursuit Collection Technology'],
+    'opp_count': [1,1,3,3,3,8,2,2,2,2],
+    'arr': [146400,146400,37287,37287,7020,6840,6672,6240,4623,4623],
 })
 
 # KPIs
 p1,p2,p3,p4,p5,p6 = st.columns(6)
 p1.metric("SFDC Accounts","1,401")
-p2.metric("LinkedIn Companies","1,220","871 reached")
+p2.metric("LinkedIn Companies Reached","871","of 1,220 in CSV")
 p3.metric("Total Impressions","1,598,257")
-p4.metric("Total Engagements","11,259")
-p5.metric("Pipeline (YTD 2026)","$0","Land campaign")
-p6.metric("Engagement Rate","0.70%","vs 1.49% Work Mgmt")
+p4.metric("Opps Created (YTD)","165","53 accounts")
+p5.metric("Pipeline ARR","$432,804")
+p6.metric("Pipeline ROI","2.8x","vs $156K spend")
 
-st.info("🚧 **Early-stage Land campaign targeting net-new enterprise accounts.** UPS, Lockheed Martin, BlackRock, Emerson are among the targets. No pipeline yet — LinkedIn is building awareness. Pipeline is a lagging indicator; expect first opps Q3–Q4 2026.")
+st.success("✅ **PMO campaign has $432K ARR from 165 opps across 53 accounts** — 3.7% opp rate vs 8.2% for Work Mgmt. Still building, but real pipeline is flowing.")
+st.info("ℹ️ Note: some top accounts (Nico Capital & octanner both show $146K, Cherry Bekaert & CBH both show $37K) may share a company_id in the data — worth validating in SFDC.")
 
 ptab1, ptab2, ptab3, ptab4 = st.tabs([
     "📊 PMO Impressions","🔗 PMO Correlation","🏢 PMO Company Size","📋 Campaign Comparison"
@@ -673,6 +669,16 @@ with ptab3:
     st.plotly_chart(fig_sc, use_container_width=True)
 
 with ptab4:
+    st.subheader("PMO — Top Pipeline Accounts")
+    fig_pmo_arr = px.bar(pmo_sfdc.sort_values('arr'), x='arr', y='account',
+                         orientation='h', color='opp_count', color_continuous_scale='Purples',
+                         title='PMO Top Accounts by Recognized ARR (YTD 2026)',
+                         labels={'arr':'Recognized ARR ($)','account':'','opp_count':'# Opps'})
+    fig_pmo_arr.update_layout(yaxis={'categoryorder':'total ascending'}, height=380)
+    st.plotly_chart(fig_pmo_arr, use_container_width=True)
+    st.dataframe(pmo_sfdc, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
     st.subheader("Campaign Comparison — Work Mgmt vs PMO")
     camp_compare = pd.DataFrame({
         'Dimension': ['SFDC Accounts','LinkedIn Companies Reached','Total Impressions',
@@ -681,9 +687,9 @@ with ptab4:
         'NAM Work Mgmt (ANA H1)': ['1,271','1,040','1,442,468','1.49%','$1.14M ARR',
                                     '50.6%','Adobe, Citi, SAP, Bank of America',
                                     '1.55x','✅ Performing','Increase to $10K/wk'],
-        'NAM PMO (H1)': ['1,401','871','1,598,257','0.70%','$0 (Land — early)',
-                          '61.4%','UPS, Lockheed Martin, BlackRock, Emerson',
-                          '1.0x (flat)','⚠️ Needs tuning','Refine audience targeting + creative'],
+        'NAM PMO (H1)': ['1,401','871','1,598,257','0.70%','$432K ARR / 165 opps',
+                          '61.4%','Nico Capital, octanner, Cherry Bekaert, CBH',
+                          '1.0x (flat)','⚠️ Needs tuning','Refine audience + creative; pipeline is real'],
     })
     st.dataframe(camp_compare, use_container_width=True, hide_index=True)
 
