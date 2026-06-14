@@ -512,13 +512,15 @@ with tab7:
     st.plotly_chart(fig_roi, use_container_width=True)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PMO CAMPAIGN TAB — EMEA/UKI Land PMO H1
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PMO CAMPAIGN TAB — NAM Land PMO H1 2026
 # ═══════════════════════════════════════════════════════════════════════════════
 st.markdown("---")
-st.header("🏗️ PMO Campaign — EMEA/UKI Land H1 2026")
-st.caption("Campaign: Other_Account_Based_Marketing_EMEA_Q12026_UKI_Land_PMO_H1")
+st.header("🏗️ PMO Campaign — NAM Land H1 2026")
+st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1  |  LinkedIn: NAM_Q12026_US_Land_PMO_H1")
 
-# PMO data (hardcoded from analysis)
+# PMO LinkedIn data (from CSV analysis)
 pmo_tier = pd.DataFrame({
     'tier': ['None (0)','Minimal (<100)','Low (100-999)','Medium (1k-5k)','Med-High (5k-10k)','High (>10k)'],
     'accounts': [349, 198, 372, 217, 52, 32],
@@ -545,35 +547,37 @@ pmo_size = pd.DataFrame({
     'pct_of_impressions': [0.2, 61.4, 30.4, 8.0],
 })
 
-pmo_sfdc_sample = pd.DataFrame({
-    'account': ['Deckers Brands - EMEA','Bloomberg - EMEA','Manchester City - EMEA',
-                'Haines Watts','Dext','Albert Goodman','England Rugby',
-                'Smithers','WSET - EMEA','Chichester District Council'],
-    'employees': [2520, None, 2235, 999, 495, 330, 1030, 786, 1501, 530],
-    'industry': ['Textiles/Apparel','—','Consumer','Financial Services','Financial Services',
-                 'Accounting','Consumer Goods','Professional Services','Beverages','Government'],
-    'opp_count': [0,0,0,0,0,0,0,0,0,0],
-    'arr': [0,0,0,0,0,0,0,0,0,0],
+pmo_sfdc = pd.DataFrame({
+    'account': ['UPS','Brookfield Properties','Lockheed Martin','3M Health',
+                'Emerson','Bell','Amtrak','Infor','BlackRock',
+                'Cineplex','Palo Alto Networks','Yelp'],
+    'employees': [495000,151000,100000,95000,88000,52100,18360,16340,13900,13000,12500,10370],
+    'industry': ['Air Freight & Logistics','Real Estate','Aerospace & Defense',
+                 'Industrial Manufacturing','Construction & Engineering','—',
+                 'Transportation','Internet Software','Capital Markets',
+                 'Hotels & Restaurants','—','Media'],
+    'opp_count': [0,0,0,0,0,0,0,0,0,0,0,0],
+    'arr': [0,0,0,0,0,0,0,0,0,0,0,0],
 })
 
 # KPIs
 p1,p2,p3,p4,p5,p6 = st.columns(6)
-p1.metric("Total Accounts (SFDC)","1,692")
-p2.metric("Companies Reached","871","of 1,220 in CSV")
+p1.metric("SFDC Accounts","1,401")
+p2.metric("LinkedIn Companies","1,220","871 reached")
 p3.metric("Total Impressions","1,598,257")
 p4.metric("Total Engagements","11,259")
-p5.metric("Pipeline (since Oct 2025)","$0","Early stage")
-p6.metric("Campaign Window","Oct 2025–Jun 2026","~34 weeks")
+p5.metric("Pipeline (YTD 2026)","$0","Land campaign")
+p6.metric("Engagement Rate","0.70%","vs 1.49% Work Mgmt")
 
-st.info("🚧 **This is an early-stage Land campaign.** No opportunities have been created yet — LinkedIn is in the awareness/nurture phase. The value today is reach, frequency, and engagement rate. Pipeline is the lagging indicator — expect opps to start appearing Q3 2026.")
+st.info("🚧 **Early-stage Land campaign targeting net-new enterprise accounts.** UPS, Lockheed Martin, BlackRock, Emerson are among the targets. No pipeline yet — LinkedIn is building awareness. Pipeline is a lagging indicator; expect first opps Q3–Q4 2026.")
 
 ptab1, ptab2, ptab3, ptab4 = st.tabs([
-    "📊 PMO Impressions", "🔗 PMO Correlation", "🏢 PMO Company Size", "📋 PMO Account List"
+    "📊 PMO Impressions","🔗 PMO Correlation","🏢 PMO Company Size","📋 Campaign Comparison"
 ])
 
 with ptab1:
     st.subheader("PMO Campaign — Impression Distribution")
-    pc1, pc2 = st.columns(2)
+    pc1,pc2 = st.columns(2)
     with pc1:
         fig_pt = px.bar(pmo_tier, x='tier', y='accounts', color='accounts',
                         color_continuous_scale='Purples',
@@ -584,103 +588,109 @@ with ptab1:
     with pc2:
         fig_pt2 = px.bar(pmo_top.sort_values('impressions'), x='impressions', y='company',
                          orientation='h', color='impressions', color_continuous_scale='Magma',
-                         title='Top 15 PMO Companies by Impressions',
+                         title='Top 15 Companies by Impressions (PMO)',
                          labels={'impressions':'Total Impressions','company':''})
-        fig_pt2.update_layout(coloraxis_showscale=False, yaxis={'categoryorder':'total ascending'}, height=520)
+        fig_pt2.update_layout(coloraxis_showscale=False,
+                               yaxis={'categoryorder':'total ascending'}, height=520)
         st.plotly_chart(fig_pt2, use_container_width=True)
 
-    st.subheader("PMO vs Work Mgmt — Side-by-Side Comparison")
-    compare = pd.DataFrame({
-        'Metric': ['Total Companies','Accounts Reached','Total Impressions','Total Engagements',
-                   'Engagement Rate','Pipeline ARR','Avg Impressions/Company'],
-        'NAM Work Mgmt (H1)': ['1,040','1,040','1,442,468','21,520','1.49%','$1,140,000','1,387'],
-        'EMEA PMO (Oct–Jun)': ['1,220','871','1,598,257','11,259','0.70%','$0 (early)','1,309'],
-        'Difference': ['+180 more','-169 fewer','+155K more','-10K fewer','-0.79pp','N/A — early','Similar'],
-    })
-    st.dataframe(compare, use_container_width=True, hide_index=True)
-    st.warning("⚠️ **Engagement rate is 0.70% vs 1.49%** for the Work Mgmt campaign. PMO audience may be less active on LinkedIn or the creative/targeting needs tuning.")
+    st.subheader("SFDC Account Profile — Top Targets by Size")
+    fig_sfdc = px.bar(pmo_sfdc.sort_values('employees'), x='employees', y='account',
+                      orientation='h', color='industry',
+                      title='Top SFDC Accounts by Employee Count (all net-new, 0 pipeline)',
+                      labels={'employees':'Employees','account':''})
+    fig_sfdc.update_layout(yaxis={'categoryorder':'total ascending'}, height=450)
+    st.plotly_chart(fig_sfdc, use_container_width=True)
 
 with ptab2:
-    st.subheader("PMO — Correlation & Lift")
+    st.subheader("PMO — Correlation & Lift Analysis")
     pc1,pc2,pc3 = st.columns(3)
-    pc1.metric("Engagement Rate (>1k impr)","0.7%","vs 1.49% for Work Mgmt")
-    pc2.metric("High-Tier Lift","1.0x","Flat — same rate across tiers")
-    pc3.metric("Implication","Targeting issue","All tiers perform similarly")
+    pc1.metric("Engagement Rate","0.70%","vs 1.49% Work Mgmt ⚠️")
+    pc2.metric("High-Tier Lift","1.0x","Flat across all tiers")
+    pc3.metric("Signal","Targeting needs work","No differentiation by tier")
 
-    colors_pmo = ['#d73027' if v<1 else '#1a9850' for v in pmo_tier['lift']]
+    colors_pmo = ['#d73027' if v < 1 else '#66BB6A' for v in pmo_tier['lift']]
     fig_plift = go.Figure(go.Bar(
         x=pmo_tier['tier'], y=pmo_tier['lift'],
         marker_color=colors_pmo,
         text=[f"{v:.2f}x" for v in pmo_tier['lift']],
         textposition='outside',
     ))
-    fig_plift.add_hline(y=1.0, line_dash='dash', line_color='gray', annotation_text='Baseline')
-    fig_plift.update_layout(title='PMO Engagement Lift by Impression Tier (flat = uniform response)',
+    fig_plift.add_hline(y=1.0, line_dash='dash', line_color='gray', annotation_text='Baseline (1.0x)')
+    fig_plift.update_layout(title='PMO Engagement Lift by Impression Tier',
                              yaxis_title='Lift Index', height=400)
     st.plotly_chart(fig_plift, use_container_width=True)
 
-    st.info("""
-    **Key insight**: Unlike the Work Mgmt campaign (which showed a clear 1.55x lift for high-impression accounts),
-    the PMO campaign shows a **flat lift curve** — engagement rate is the same regardless of how many impressions
-    an account received. This suggests:
-    - The audience targeting may need refinement (PMO buyers on LinkedIn are harder to reach)
-    - Creative may not be resonating with this persona
-    - Or the campaign needs more time to show differentiated effects
+    st.subheader("Work Mgmt vs PMO — Lift Comparison")
+    lift_compare = pd.DataFrame({
+        'Tier': ['None','Minimal','Low','Medium','Med-High','High'],
+        'Work Mgmt Lift': [0.00, 0.73, 0.82, 1.28, 1.46, 1.55],
+        'PMO Lift': [0.00, 0.43, 1.00, 1.00, 1.00, 1.00],
+    })
+    fig_lc = px.line(lift_compare, x='Tier', y=['Work Mgmt Lift','PMO Lift'],
+                     markers=True,
+                     title='Engagement Lift: Work Mgmt (clear gradient) vs PMO (flat)',
+                     color_discrete_sequence=['#2196F3','#9C27B0'])
+    fig_lc.add_hline(y=1.0, line_dash='dash', line_color='gray')
+    st.plotly_chart(fig_lc, use_container_width=True)
+
+    st.warning("""
+    **PMO lift is flat** — unlike Work Mgmt where high-impression accounts engaged 1.55x more,
+    PMO accounts engage at the same rate regardless of how many impressions they receive.
+    This suggests the **creative or audience targeting needs refinement** for the PMO persona.
+    More impressions aren't moving the needle — quality of targeting matters more here.
     """)
 
 with ptab3:
     st.subheader("PMO — Company Size Distribution")
-    st.warning("⚠️ 61.4% of impressions go to SMB accounts (<200 employees) — even higher than the Work Mgmt campaign (50.6%). PMO buyers are typically in larger enterprises — consider tightening LinkedIn size filters.")
-    pc1, pc2 = st.columns(2)
+    pc1,pc2 = st.columns(2)
     with pc1:
         fig_psz = px.bar(pmo_size, x='size_band', y='avg_impressions',
                          color='avg_impressions', color_continuous_scale='Purples',
-                         title='PMO: Avg Impressions by Company Size',
-                         text='avg_impressions')
+                         title='PMO: Avg Impressions by Size Band', text='avg_impressions')
         fig_psz.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
         fig_psz.update_layout(coloraxis_showscale=False)
         st.plotly_chart(fig_psz, use_container_width=True)
     with pc2:
         fig_ppie = px.pie(pmo_size[pmo_size['pct_of_impressions']>0],
                           values='pct_of_impressions', names='size_band',
-                          title='PMO: % of Impressions by Size',
+                          title='PMO: % of Impressions by Company Size',
                           color_discrete_sequence=px.colors.sequential.Purples)
         st.plotly_chart(fig_ppie, use_container_width=True)
 
-    st.markdown("#### PMO vs Work Mgmt — Size Distribution Comparison")
+    st.warning("⚠️ **61.4% of PMO impressions go to SMB (<200 employees)** — but top SFDC targets are enterprises (UPS 495K employees, Lockheed 100K). LinkedIn audience targeting is misaligned with the target account list.")
+
     size_compare = pd.DataFrame({
         'Size Band': ['SMB (<200)','Mid-Market (200-1k)','Enterprise (1k-5k)'],
-        'Work Mgmt % of Impressions': [50.6, 40.8, 8.5],
-        'PMO % of Impressions': [61.4, 30.4, 8.0],
+        'Work Mgmt %': [50.6, 40.8, 8.5],
+        'PMO %': [61.4, 30.4, 8.0],
     })
     fig_sc = px.bar(size_compare, x='Size Band',
-                    y=['Work Mgmt % of Impressions','PMO % of Impressions'],
-                    barmode='group', title='Impression Distribution by Size — Campaign Comparison',
-                    color_discrete_sequence=['#2196F3','#9C27B0'])
+                    y=['Work Mgmt %','PMO %'], barmode='group',
+                    title='Impression Distribution by Size — Work Mgmt vs PMO',
+                    color_discrete_sequence=['#2196F3','#9C27B0'],
+                    labels={'value':'% of Impressions','variable':'Campaign'})
     st.plotly_chart(fig_sc, use_container_width=True)
 
 with ptab4:
-    st.subheader("PMO — Sample SFDC Accounts (1,692 total)")
-    st.caption("All 1,692 accounts have 0 opps since Oct 2025 — early stage Land campaign")
-    st.dataframe(pmo_sfdc_sample, use_container_width=True, hide_index=True)
-    st.markdown("""
-    **Account profile**: Primarily EMEA/UKI mid-market companies across diverse industries
-    (financial services, professional services, engineering, retail, government).
-    Very different from the NAM Work Mgmt campaign which targeted large US enterprise accounts.
-    """)
-
-    st.subheader("Campaign Comparison Summary")
+    st.subheader("Campaign Comparison — Work Mgmt vs PMO")
     camp_compare = pd.DataFrame({
-        'Dimension': ['Region','Program','SFDC Accounts','LinkedIn Companies',
-                      'Total Impressions','Engagement Rate','Pipeline (to date)',
-                      'Avg Company Size','Top Industries','Recommendation'],
-        'NAM Work Mgmt': ['North America','Work Management','1,271','1,040',
-                          '1,442,468','1.49%','$1.14M ARR',
-                          'Large enterprise (avg 15k+ employees)','Media, Finance, Tech',
-                          'Increase budget to $10K/wk'],
-        'EMEA PMO': ['EMEA / UKI','PMO','1,692','871',
-                     '1,598,257','0.70%','$0 (early stage)',
-                     'Mid-market (avg 700 employees)','Financial Services, Professional Services',
-                     'Refine targeting — reduce SMB, improve creative'],
+        'Dimension': ['SFDC Accounts','LinkedIn Companies Reached','Total Impressions',
+                      'Engagement Rate','Pipeline (YTD)','SMB % of Impressions',
+                      'Top Accounts','Lift (High Tier)','Status','Recommendation'],
+        'NAM Work Mgmt (ANA H1)': ['1,271','1,040','1,442,468','1.49%','$1.14M ARR',
+                                    '50.6%','Adobe, Citi, SAP, Bank of America',
+                                    '1.55x','✅ Performing','Increase to $10K/wk'],
+        'NAM PMO (H1)': ['1,401','871','1,598,257','0.70%','$0 (Land — early)',
+                          '61.4%','UPS, Lockheed Martin, BlackRock, Emerson',
+                          '1.0x (flat)','⚠️ Needs tuning','Refine audience targeting + creative'],
     })
     st.dataframe(camp_compare, use_container_width=True, hide_index=True)
+
+    st.markdown("### Key Actions for PMO Campaign")
+    st.markdown("""
+    1. **Fix audience targeting**: Add LinkedIn company size filter (500+ employees) to stop wasting impressions on SMB accounts
+    2. **Test new creative**: Current ads aren't driving differentiated engagement at higher impression volumes — try PMO-specific messaging (project delivery, resource management, executive visibility)
+    3. **Be patient on pipeline**: UPS, Lockheed, BlackRock are large enterprise accounts with long sales cycles — first opps expected Q3–Q4 2026
+    4. **Track intent signals**: Use ZoomInfo intent on PMO-related keywords (project management, PMO software, portfolio management) to identify which accounts are actively researching
+    """)
