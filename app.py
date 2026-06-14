@@ -907,10 +907,15 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
     # ── PMO TAB 6: Budget Tool ────────────────────────────────────────────────────
     with ptab6:
         st.subheader("💰 PMO Budget Decision Engine")
-        pb1,pb2,pb3 = st.columns(3)
-        pb1.metric("Estimated Spend (H1)","~$156K","Same campaign budget")
-        pb2.metric("Pipeline ARR","$235K","105 opps, mostly open")
-        pb3.metric("Current ROI","~1.5x","Early stage — growing")
+
+        st.success("**Actual SFDC Pipeline (Snowflake, as of H1 2026)**")
+        pb1,pb2,pb3,pb4 = st.columns(4)
+        pb1.metric("H1 Spend (est.)", "~$156K", "nam + work_mgmt-slg_ppm-abm")
+        pb2.metric("Recognized ARR", "$235,722", "105 opps / 53 accounts")
+        pb3.metric("Actual Pipeline ROI", "~1.5x", "$235K / $156K spend")
+        pb4.metric("MQLs Generated", "236", "from 871 reached accounts")
+
+        st.error("⚠️ The projection model below is a **forward-looking what-if tool** — not actual pipeline. Actual SFDC pipeline = $235K above.")
 
         st.markdown("---")
         pc1,pc2 = st.columns(2)
@@ -924,7 +929,7 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
         c1,c2,c3 = st.columns(3)
         with c1:
             opp_rate_p = st.slider("Opp rate for qualified PMO accounts (%)", 2.0, 20.0, 7.5, 0.5) / 100
-            arr_p = st.number_input("Avg ARR per opp ($)", value=4000, step=100, key="pmo_arr")
+            arr_p = st.number_input("Avg ARR per opp ($) — actual avg: ~$2,245", value=2245, step=100, key="pmo_arr")
         with c2:
             total_accts_p = st.slider("Total PMO accounts", 100, 2000, 1401, 50)
             impr_thresh_p = st.slider("Min impressions to qualify", 100, 5000, 1000, 100)
