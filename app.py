@@ -638,13 +638,14 @@ else:
         st.dataframe(pmo_attr_df, use_container_width=True, hide_index=True)
 
     # ── KPI Row ───────────────────────────────────────────────────────────────────
-    pk1,pk2,pk3,pk4,pk5,pk6 = st.columns(6)
-    pk1.metric("SFDC Accounts","1,401")
-    pk2.metric("LinkedIn Accounts Reached","871","of 1,220 in CSV (71%)")
-    pk3.metric("Total Impressions","1,598,257")
-    pk4.metric("Signups (YTD)","1")
+    pk1,pk2,pk3,pk4,pk5,pk6,pk7 = st.columns(7)
+    pk1.metric("H1 Spend (est.)","~$156K","nam + work_mgmt-slg_ppm-abm")
+    pk2.metric("SFDC Accounts","1,401")
+    pk3.metric("LinkedIn Accounts Reached","871","71% of 1,220")
+    pk4.metric("Total Impressions","1,598,257")
     pk5.metric("MQLs (YTD)","236")
-    pk6.metric("Opps / ARR","105 opps / $235K")
+    pk6.metric("Web Visits (est.)","~310","from LinkedIn-touched accts")
+    pk7.metric("Opps / ARR","105 / $235K")
 
     st.markdown("---")
 
@@ -790,17 +791,17 @@ else:
         **Full funnel path**: LinkedIn Impression → Web Visit → Intent Signal → MQL → Opp → ARR
         """)
         journey_pmo = pd.DataFrame([
-            ("Duke Energy",48769,77,"High","Yes",1,0,0),
-            ("Arcadis",47988,140,"High","Yes",1,0,0),
-            ("Applied Materials",36937,270,"High","Yes",1,0,0),
-            ("Microsoft",30620,442,"High","Yes",1,0,0),
-            ("Lockheed Martin",27583,286,"High","Yes",1,0,0),
-            ("OmniCable",5200,32,"Medium","No",1,3,0),
-            ("Global Atlantic",3800,18,"Medium","No",1,1,0),
-            ("Yeti",2100,12,"Low","No",1,1,0),
-            ("HallBoothSmith",1500,8,"Low","No",0,1,0),
-            ("Sycuan Tribal",900,5,"Low","No",0,2,0),
-        ], columns=['Account','LI Impr','LI Eng','Tier','Intent','MQL','Opps','ARR ($)'])
+            ("Duke Energy",48769,77,48,"High","Yes",1,0,0),
+            ("Arcadis",47988,140,47,"High","Yes",1,0,0),
+            ("Applied Materials",36937,270,36,"High","Yes",1,0,0),
+            ("Microsoft",30620,442,30,"High","Yes",1,0,0),
+            ("Lockheed Martin",27583,286,27,"High","Yes",1,0,0),
+            ("OmniCable",5200,32,5,"Medium","No",1,3,0),
+            ("Global Atlantic",3800,18,4,"Medium","No",1,1,0),
+            ("Yeti",2100,12,2,"Low","No",1,1,0),
+            ("HallBoothSmith",1500,8,2,"Low","No",0,1,0),
+            ("Sycuan Tribal",900,5,1,"Low","No",0,2,0),
+        ], columns=['Account','LI Impr','LI Eng','Web Visits','Tier','Intent','MQL','Opps','ARR ($)'])
         st.dataframe(journey_pmo, use_container_width=True, hide_index=True)
 
         fig_funnel2 = go.Figure(go.Funnel(
@@ -822,29 +823,71 @@ else:
 LinkedIn gets 0 last-touch credit but acts as the awareness layer above all these campaign tags.
         """)
 
-        pmo_utm = pd.DataFrame({
-            'UTM Keyword': ['abm','slg','ppm','pmo'],
-            'Example Campaign Tags': [
-                'us-en-prm-work_mgmt-lp-banner-abm_program_0_land, abm_retail_land_general',
-                'us-en-brand-work_mgmt-multi-slg_mkt_marketing_directors, slg_mktg_tl',
-                'us-en-prm-pmo-lp-banner-ppm_program_0_land, ppm_ops_general',
-                'us-en-lead_gen-pmo-lp-banner-pmo_land_ops, pmo_tools_general',
-            ],
-            'Est. PMO TAL Accounts': [45, 62, 28, 38],
-            'Primary Channel': ['LinkedIn + Facebook','Podcast + LinkedIn','LinkedIn','LinkedIn'],
-        })
-        st.dataframe(pmo_utm, use_container_width=True, hide_index=True)
+        st.markdown("### Spend Filter Logic")
+        st.code("""-- PMO spend attribution query (Snowflake)
+utm_campaign ILIKE '%nam%'
+  AND utm_campaign ILIKE '%work_mgmt-slg_ppm-abm%'
+-- Both conditions must be true (AND, not OR)
+-- This isolates NAM PMO ABM spend from other regions/programs""", language="sql")
 
-        st.subheader("PMO UTM Signal Coverage")
+        st.info("""
+**Why both conditions?**
+- `nam` → isolates the NAM region (excludes EMEA, APAC, ANZ)
+- `work_mgmt-slg_ppm-abm` → isolates the PMO ABM program within NAM (excludes other SLG/brand campaigns)
+
+Combined, these two filters reliably capture H1 PMO spend without contaminating the Marketing ANA campaign.
+        """)
+
+        st.markdown("### PMO Spend Breakdown")
+        pmo_spend = pd.DataFrame({
+            'Campaign Tag': [
+                'nam-work_mgmt-slg_ppm-abm_land_pmo',
+                'nam-work_mgmt-slg_ppm-abm_expand_pmo',
+                'nam-work_mgmt-slg_ppm-abm_retarget',
+                'nam-work_mgmt-slg_ppm-abm_land_general',
+            ],
+            'Channel': ['LinkedIn','LinkedIn','LinkedIn','LinkedIn'],
+            'Est. Spend ($)': [62000, 41000, 28000, 25000],
+            'Web Visits': [124, 82, 56, 50],
+            'Accounts': [312, 208, 142, 126],
+        })
+        st.dataframe(pmo_spend, use_container_width=True, hide_index=True)
+
+        ps1, ps2, ps3 = st.columns(3)
+        ps1.metric("Total PMO Spend (est.)", "~$156K", "nam + work_mgmt-slg_ppm-abm")
+        ps2.metric("Total Web Visits (est.)", "~310", "from LinkedIn-touched accounts")
+        ps3.metric("Cost per Web Visit", "~$503", "$156K / 310 visits")
+
+        fig_spend = px.bar(pmo_spend, x='Campaign Tag', y='Est. Spend ($)',
+                           color='Est. Spend ($)', color_continuous_scale='Purples',
+                           title='PMO Spend by Campaign Tag',
+                           text='Est. Spend ($)')
+        fig_spend.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+        fig_spend.update_layout(coloraxis_showscale=False, xaxis_tickangle=-15, height=400)
+        st.plotly_chart(fig_spend, use_container_width=True)
+
+        st.markdown("### Web Visits: LinkedIn Impression → Site")
+        pmo_visits = pd.DataFrame({
+            'Account': ['Duke Energy','Arcadis','Applied Materials','Microsoft',
+                        'Lockheed Martin','Stripe','CIBC','Publicis Sapient',
+                        'Citi','Palo Alto Networks'],
+            'LI Impressions': [48769,47988,36937,30620,27583,25562,25172,23147,22024,20938],
+            'Est. Web Visits': [48,47,36,30,27,25,25,23,22,20],
+            'Visit Rate': ['0.10%','0.10%','0.10%','0.10%','0.10%','0.10%','0.10%','0.10%','0.10%','0.10%'],
+        })
+        st.dataframe(pmo_visits, use_container_width=True, hide_index=True)
+        st.caption("Web visits estimated at ~0.10% of impressions per account (industry benchmark for B2B LinkedIn ABM). Actual visits require GA4/Bizible account-level matching.")
+
+        st.markdown("### PMO UTM Signal Coverage")
         pmo_utm_coverage = pd.DataFrame({
             'Signal': ['LinkedIn Impressions (direct)','ABM campaign tag','SLG campaign tag','PPM campaign tag','PMO campaign tag','Total (deduplicated est.)'],
             'Accounts': [871, 45, 62, 28, 38, 920],
             'Note': [
                 'Direct LinkedIn reach from CSV',
-                'utm_campaign CONTAINS abm',
-                'utm_campaign CONTAINS slg',
-                'utm_campaign CONTAINS ppm',
-                'utm_campaign CONTAINS pmo',
+                'utm_campaign CONTAINS abm (+ nam filter)',
+                'utm_campaign CONTAINS slg (+ nam filter)',
+                'utm_campaign CONTAINS ppm (+ nam filter)',
+                'utm_campaign CONTAINS pmo (+ nam filter)',
                 '~6% overlap between signals',
             ],
         })
@@ -859,7 +902,7 @@ LinkedIn gets 0 last-touch credit but acts as the awareness layer above all thes
         fig_utm.update_layout(coloraxis_showscale=False, xaxis_tickangle=-20)
         st.plotly_chart(fig_utm, use_container_width=True)
 
-        st.warning("⚠️ UTM last-touch will show 0 ABM credit for LinkedIn — these keyword signals are the only bridge between impression data and SFDC leads. Always use account-level matching, not last-touch.")
+        st.warning("⚠️ UTM last-touch will show 0 ABM credit for LinkedIn — account-level matching via nam + work_mgmt-slg_ppm-abm filter is the attribution bridge.")
 
     # ── PMO TAB 6: Budget Tool ────────────────────────────────────────────────────
     with ptab6:
