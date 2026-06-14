@@ -548,11 +548,12 @@ pmo_size = pd.DataFrame({
 })
 
 pmo_sfdc = pd.DataFrame({
-    'account': ['Nico Capital','octanner','Cherry Bekaert SFS','CBH','NACo',
-                'MRK Partners','iwechicago','Proscalar','Flyover',
-                'Pursuit Collection Technology'],
-    'opp_count': [1,1,3,3,3,8,2,2,2,2],
-    'arr': [146400,146400,37287,37287,7020,6840,6672,6240,4623,4623],
+    'sfdc_account_id': ['0013X00002QLt2ZQAT','0011t00000W62GzAAJ','0013X00002S2fadQAB',
+                        '0013X00002iXfLdQAK','0017T00000l4boYQAQ','0017T00000MrVwwQAF',
+                        '0011t00000W62EJAAZ','0013X00002YSuqkQAD','0011t00000RKYvEAAX',
+                        '0017T00000n1U6fQAE'],
+    'opp_count': [1,3,3,8,2,2,2,2,3,5],
+    'arr': [146400,37287,7020,6840,6672,6240,4623,4212,3420,3120],
 })
 
 # KPIs
@@ -560,12 +561,11 @@ p1,p2,p3,p4,p5,p6 = st.columns(6)
 p1.metric("SFDC Accounts","1,401")
 p2.metric("LinkedIn Companies Reached","871","of 1,220 in CSV")
 p3.metric("Total Impressions","1,598,257")
-p4.metric("Opps Created (YTD)","165","53 accounts")
-p5.metric("Pipeline ARR","$432,804")
-p6.metric("Pipeline ROI","2.8x","vs $156K spend")
+p4.metric("Opps Created (YTD)","105","53 accounts")
+p5.metric("Pipeline ARR","$235,722")
+p6.metric("Pipeline ROI","1.5x","vs $156K spend")
 
-st.success("✅ **PMO campaign has $432K ARR from 165 opps across 53 accounts** — 3.7% opp rate vs 8.2% for Work Mgmt. Still building, but real pipeline is flowing.")
-st.info("ℹ️ Note: some top accounts (Nico Capital & octanner both show $146K, Cherry Bekaert & CBH both show $37K) may share a company_id in the data — worth validating in SFDC.")
+st.success("✅ **PMO campaign has $235K ARR from 105 opps across 53 accounts** — 3.7% opp rate vs 8.2% for Work Mgmt. Real pipeline, earlier stage.")
 
 ptab1, ptab2, ptab3, ptab4 = st.tabs([
     "📊 PMO Impressions","🔗 PMO Correlation","🏢 PMO Company Size","📋 Campaign Comparison"
@@ -687,7 +687,7 @@ with ptab4:
         'NAM Work Mgmt (ANA H1)': ['1,271','1,040','1,442,468','1.49%','$1.14M ARR',
                                     '50.6%','Adobe, Citi, SAP, Bank of America',
                                     '1.55x','✅ Performing','Increase to $10K/wk'],
-        'NAM PMO (H1)': ['1,401','871','1,598,257','0.70%','$432K ARR / 165 opps',
+        'NAM PMO (H1)': ['1,401','871','1,598,257','0.70%','$235K ARR / 105 opps',
                           '61.4%','Nico Capital, octanner, Cherry Bekaert, CBH',
                           '1.0x (flat)','⚠️ Needs tuning','Refine audience + creative; pipeline is real'],
     })
