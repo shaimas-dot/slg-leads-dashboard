@@ -9,7 +9,8 @@ st.set_page_config(page_title="LinkedIn ABM — Multi-Touch Dashboard", layout="
 
 with st.sidebar:
     st.title("LinkedIn ABM")
-    st.markdown("**NAM H1 2026**")
+    st.markdown("**NAM Jan–May 2026** 🔒")
+    st.caption("Data locked: Jan 1 – May 31, 2026")
     st.markdown("---")
     page = st.radio("Select Campaign", ["🔵 NAM Marketing (Work Mgmt)", "🟣 NAM PMO"], index=0)
     st.markdown("---")
@@ -21,7 +22,7 @@ with st.sidebar:
 
 if "PMO" not in page:
     st.title("🔵 NAM Marketing — Work Mgmt H1 2026")
-    st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1")
+    st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1 | 🔒 Data locked: Jan 1 – May 31, 2026")
 
     # ── ALL DATA HARDCODED (no file reads, no scipy) ───────────────────────────────
 
@@ -139,8 +140,8 @@ if "PMO" not in page:
         with h3:
             st.markdown("### Budget Signal")
             st.markdown("""
-- Current spend: **$156K** → Pipeline ROI: **36x**
-- Won ARR ROI: **9.6x** ($1.5M / $156K)
+- Current spend: **$361K** → Pipeline ROI: **15.5x**
+- Won ARR ROI: **4.2x** ($1.5M / $361K)
 - Optimal ceiling: **~$10–12K/week**
 - Recommendation: **Increase to $10K/wk for H2**
             """)
@@ -205,19 +206,19 @@ if "PMO" not in page:
     mkt_filtered_types = mkt_type_data[mkt_type_data['type'].map(mkt_type_sel)]
     mkt_filtered_total = int(mkt_filtered_types['total_arr'].sum())
     mkt_filtered_opps  = int(mkt_filtered_types['opps'].sum())
-    mkt_spend = 156000
+    mkt_spend = 361000
     mkt_roi   = round(mkt_filtered_total / mkt_spend, 1) if mkt_spend else 0
 
     # ── KPI ROW ───────────────────────────────────────────────────────────────────
     k1,k2,k3,k4,k5,k6,k7,k8 = st.columns(8)
-    k1.metric("Total Spend (H1)","$156K")
+    k1.metric("Total Spend (Jan–May)","$361K","slg_mktg campaigns")
     k2.metric("Accounts Targeted","1,271")
     k3.metric("Accounts Reached","1,040","82% reach rate")
     k4.metric("Total Impressions","1,442,468")
-    k5.metric("Opps (filtered)", f"{mkt_filtered_opps}", "by selected type(s)")
+    k5.metric("Soft Signups","129","from LinkedIn (Jan–May)")
     k6.metric("Total Pipeline ARR", f"${mkt_filtered_total:,}", "by selected type(s)")
     k7.metric("Won ARR", f"${int(mkt_filtered_types['won_arr'].sum()):,}")
-    k8.metric("Pipeline ROI", f"{mkt_roi:.1f}x", f"${mkt_filtered_total:,} / $156K")
+    k8.metric("Pipeline ROI", f"{mkt_roi:.1f}x", f"${mkt_filtered_total:,} / $361K")
     st.markdown("---")
 
     # ── TABS ──────────────────────────────────────────────────────────────────────
@@ -381,7 +382,7 @@ if "PMO" not in page:
             accounts_exp  = st.slider("Accounts with sufficient impressions (>1k)", 50, 800, 346)
         with c2:
             arr_per_opp   = st.number_input("Avg ARR per opp ($)", value=6200, step=100)
-            total_spend   = st.number_input("Total LinkedIn spend ($)", value=156000, step=1000)
+            total_spend   = st.number_input("Total LinkedIn spend ($)", value=361000, step=1000)
 
         base_opps  = int(accounts_exp * baseline_rate)
         exp_opps   = int(accounts_exp * exposed_rate)
@@ -479,7 +480,7 @@ if "PMO" not in page:
 
         st.success("**Actual SFDC Pipeline — account-level NAM, filtered by Opportunity Type V2**")
         b1,b2,b3,b4,b5 = st.columns(5)
-        b1.metric("H1 Spend (est.)", "$156K")
+        b1.metric("Spend (Jan–May)", "$361K")
         b2.metric("Filtered Pipeline ARR", f"${mkt_filtered_total:,}")
         b3.metric("Filtered Opps", f"{mkt_filtered_opps}")
         b4.metric("Won ARR (filtered)", f"${int(mkt_filtered_types['won_arr'].sum()):,}")
@@ -594,7 +595,7 @@ else:
     # PMO CAMPAIGN — NAM Land PMO H1 2026
     # ═══════════════════════════════════════════════════════════════════════════
     st.title("🟣 NAM PMO — Land H1 2026")
-    st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1")
+    st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1 | 🔒 Data locked: Jan 1 – May 31, 2026")
 
     # ── PMO data ──────────────────────────────────────────────────────────────────
 
@@ -667,9 +668,9 @@ else:
         with ph3:
             st.markdown("### Budget Signal")
             st.markdown("""
-- Estimated H1 spend: **~$156K**
-- Pipeline ROI: **~14.2x** ($2.2M / $156K)
-- Won ARR ROI: **~5.7x** ($895K / $156K)
+- Spend (Jan–May): **$252K** (slg_ppm + slg_pmo)
+- Pipeline ROI: **~8.7x** ($2.2M / $252K)
+- Won ARR ROI: **~3.6x** ($895K / $252K)
 - Engagement rate: **0.70%** vs 1.49% Marketing
 - Recommendation: **Increase budget — strong ROI signal**
             """)
@@ -728,19 +729,19 @@ else:
     pmo_filtered_types = pmo_type_data[pmo_type_data['type'].map(pmo_type_sel)]
     pmo_filtered_total = int(pmo_filtered_types['total_arr'].sum())
     pmo_filtered_opps  = int(pmo_filtered_types['opps'].sum())
-    pmo_spend = 156000
+    pmo_spend = 252000
     pmo_roi_actual = round(pmo_filtered_total / pmo_spend, 1) if pmo_spend else 0
 
     # ── KPI Row ───────────────────────────────────────────────────────────────────
     pk1,pk2,pk3,pk4,pk5,pk6,pk7,pk8 = st.columns(8)
-    pk1.metric("H1 Spend (est.)","~$156K","nam + work_mgmt-slg_ppm-abm")
+    pk1.metric("Spend (Jan–May)","$252K","slg_ppm + slg_pmo campaigns")
     pk2.metric("SFDC Accounts","1,401")
     pk3.metric("LinkedIn Accounts Reached","871","71% of 1,220")
     pk4.metric("Total Impressions","1,598,257")
-    pk5.metric("MQLs (YTD)","236")
+    pk5.metric("Soft Signups","270","from LinkedIn (Jan–May)")
     pk6.metric("Web Visits (est.)","~310","from LinkedIn-touched accts")
     pk7.metric("Pipeline ARR (filtered)", f"${pmo_filtered_total:,}", "by selected type(s)")
-    pk8.metric("Pipeline ROI", f"{pmo_roi_actual:.1f}x", f"${pmo_filtered_total:,} / $156K")
+    pk8.metric("Pipeline ROI", f"{pmo_roi_actual:.1f}x", f"${pmo_filtered_total:,} / $252K")
 
     st.markdown("---")
 
@@ -949,9 +950,9 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
         st.dataframe(pmo_spend, use_container_width=True, hide_index=True)
 
         ps1, ps2, ps3 = st.columns(3)
-        ps1.metric("Total PMO Spend (est.)", "~$156K", "nam + work_mgmt-slg_ppm-abm")
+        ps1.metric("Spend (Jan–May)", "$252K", "slg_ppm + slg_pmo campaigns")
         ps2.metric("Total Web Visits (est.)", "~310", "from LinkedIn-touched accounts")
-        ps3.metric("Cost per Web Visit", "~$503", "$156K / 310 visits")
+        ps3.metric("Cost per Web Visit", "~$813", "$252K / 310 visits")
 
         fig_spend = px.bar(pmo_spend, x='Campaign Tag', y='Est. Spend ($)',
                            color='Est. Spend ($)', color_continuous_scale='Purples',
@@ -1005,7 +1006,7 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
 
         st.success("**Actual SFDC Pipeline — account-level NAM, all opps on campaign accounts (Snowflake)**")
         pb1,pb2,pb3,pb4,pb5 = st.columns(5)
-        pb1.metric("H1 Spend (est.)", "~$156K", "nam + work_mgmt-slg_ppm-abm")
+        pb1.metric("Spend (Jan–May)", "$252K", "slg_ppm + slg_pmo campaigns")
         pb2.metric("Filtered Pipeline ARR", f"${pmo_filtered_total:,}")
         pb3.metric("Filtered Opps", f"{pmo_filtered_opps}")
         pb4.metric("Won ARR (filtered)", f"${int(pmo_filtered_types['won_arr'].sum()):,}")
