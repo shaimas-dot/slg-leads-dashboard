@@ -206,19 +206,19 @@ if "PMO" not in page:
     mkt_filtered_types = mkt_type_data[mkt_type_data['type'].map(mkt_type_sel)]
     mkt_filtered_total = int(mkt_filtered_types['total_arr'].sum())
     mkt_filtered_opps  = int(mkt_filtered_types['opps'].sum())
-    mkt_spend = 361000
+    mkt_spend = 254000
     mkt_roi   = round(mkt_filtered_total / mkt_spend, 1) if mkt_spend else 0
 
     # ── KPI ROW ───────────────────────────────────────────────────────────────────
     k1,k2,k3,k4,k5,k6,k7,k8 = st.columns(8)
-    k1.metric("Total Spend (Jan–May)","$361K","slg_mktg campaigns")
+    k1.metric("Total Spend (Jan–May)","$254K","CRQ cleanroom · slg_mktg")
     k2.metric("Accounts Targeted","1,271")
     k3.metric("Total Impressions","1,282,928","datorama · slg_mktg")
     k4.metric("Clicks","17,789","CTR 1.39%")
     k5.metric("Engagements","~8,590","$238K / $27.79 avg CPE")
-    k6.metric("Soft Signups","129","from LinkedIn (Jan–May)")
+    k6.metric("Soft Signups","102","CRQ cleanroom (Jan–May)")
     k7.metric("Total Pipeline ARR", f"${mkt_filtered_total:,}", "by selected type(s)")
-    k8.metric("Pipeline ROI", f"{mkt_roi:.1f}x", f"${mkt_filtered_total:,} / $361K")
+    k8.metric("Pipeline ROI", f"{mkt_roi:.1f}x", f"${mkt_filtered_total:,} / $254K")
     st.markdown("---")
 
     # ── TABS ──────────────────────────────────────────────────────────────────────
@@ -333,30 +333,34 @@ if "PMO" not in page:
 
     # ── TAB 4: Multi-Touch Journey ────────────────────────────────────────────────
     with tab4:
-        st.subheader("Account-Level Multi-Touch Journey")
-        journey = pd.DataFrame([
-            ("Adobe",30289,641,"11,000+","Yes",1,1,18000),
-            ("Citi",26272,596,"3,200+","Yes",1,1,15000),
-            ("SAP",17846,268,"800+","Yes",1,1,12000),
-            ("MediaSense",8200,142,"250+","No",1,4,331935),
-            ("Omnicom Group",5100,88,"620+","Yes",1,2,61680),
-            ("Hilton Grand Vacations",3200,54,"180+","No",1,4,90480),
-            ("Baker McKenzie",2800,41,"90+","Yes",1,1,37336),
-            ("Brownstein",1900,28,"40+","No",1,1,49920),
-            ("Land O'Lakes",1200,18,"220+","No",1,1,46800),
-            ("Wahl Clipper",600,9,"70+","No",1,2,68328),
-        ], columns=['Account','LI Impr','LI Eng','Web Visits','Intent','MQL','Opps','ARR ($)'])
-        st.dataframe(journey, use_container_width=True, hide_index=True)
+        st.subheader("ABM Funnel — Lifecycle Stage Progression")
+        st.caption("Source: marketing.l3.v_abm_companies_funnel + fact_abm_engagement_metrics | Campaign: 701av00000Q3zkmAAB")
 
+        mkt_funnel_stages = pd.DataFrame({
+            'Stage':     ['Targeted','Aware','Engage','MQA','Opportunity','Customer'],
+            'Companies': [1269,      670,    162,     133,  218,          71],
+        })
         fig_funnel = go.Figure(go.Funnel(
-            y=["LinkedIn Reached (1,040)","Web Visits Detected","Intent Signals",
-               "MQL","Opp Created","ARR Recognized"],
-            x=[1040,320,180,104,104,86],
+            y=mkt_funnel_stages['Stage'],
+            x=mkt_funnel_stages['Companies'],
             textinfo="value+percent initial",
-            marker={"color":["#2196F3","#42A5F5","#66BB6A","#FFA726","#EF5350","#AB47BC"]}
+            marker={"color":["#2196F3","#42A5F5","#29B6F6","#66BB6A","#FFA726","#AB47BC"]}
         ))
-        fig_funnel.update_layout(title="ABM Funnel — LinkedIn to Pipeline", height=420)
+        fig_funnel.update_layout(title="Marketing ANA — ABM Lifecycle Funnel (Jan–May 2026)", height=420)
         st.plotly_chart(fig_funnel, use_container_width=True)
+
+        st.subheader("Engagement & Intent Signals (Jan–May 2026)")
+        mkt_eng_cols = st.columns(4)
+        mkt_eng_cols[0].metric("Signups (ABM)", "574", "since campaign start")
+        mkt_eng_cols[1].metric("Website Contact Sales", "20", "ABM accounts")
+        mkt_eng_cols[2].metric("Events", "93", "MQL Events: 22")
+        mkt_eng_cols[3].metric("WM Keyword Signals", "4,625", "ZoomInfo intent")
+
+        mkt_intent_cols = st.columns(2)
+        mkt_intent_cols[0].metric("Website Traffic (ABM)", "133,262", "tracked visits since campaign start")
+        mkt_intent_cols[1].metric("SLG Contact Sales", "2", "direct SLG motion")
+
+        st.info("📌 Touch point data sourced from FACT_ABM_ENGAGEMENT_METRICS + FACT_ABM_INTENT_METRICS joined to campaign accounts. Signups/events/CS counted since campaign start date (Jan 26, 2026).")
 
     # ── TAB 5: Incremental Model ──────────────────────────────────────────────────
     with tab5:
@@ -729,19 +733,19 @@ else:
     pmo_filtered_types = pmo_type_data[pmo_type_data['type'].map(pmo_type_sel)]
     pmo_filtered_total = int(pmo_filtered_types['total_arr'].sum())
     pmo_filtered_opps  = int(pmo_filtered_types['opps'].sum())
-    pmo_spend = 252000
+    pmo_spend = 258000
     pmo_roi_actual = round(pmo_filtered_total / pmo_spend, 1) if pmo_spend else 0
 
     # ── KPI Row ───────────────────────────────────────────────────────────────────
     pk1,pk2,pk3,pk4,pk5,pk6,pk7,pk8 = st.columns(8)
-    pk1.metric("Spend (Jan–May)","$252K","slg_ppm + slg_pmo campaigns")
+    pk1.metric("Spend (Jan–May)","$258K","CRQ cleanroom · slg_ppm/pmo")
     pk2.metric("SFDC Accounts","1,401")
     pk3.metric("Total Impressions","1,035,807","datorama · slg_ppm/pmo")
     pk4.metric("Clicks","6,524","CTR 0.63%")
     pk5.metric("Engagements","~4,289","$161K / $37.58 avg CPE")
-    pk6.metric("Soft Signups","270","from LinkedIn (Jan–May)")
+    pk6.metric("Soft Signups","247","CRQ cleanroom (Jan–May)")
     pk7.metric("Pipeline ARR (filtered)", f"${pmo_filtered_total:,}", "by selected type(s)")
-    pk8.metric("Pipeline ROI", f"{pmo_roi_actual:.1f}x", f"${pmo_filtered_total:,} / $252K")
+    pk8.metric("Pipeline ROI", f"{pmo_roi_actual:.1f}x", f"${pmo_filtered_total:,} / $258K")
 
     st.markdown("---")
 
@@ -830,22 +834,34 @@ else:
         fig_lc.add_hline(y=1.0, line_dash='dash', line_color='gray')
         st.plotly_chart(fig_lc, use_container_width=True)
 
-        st.subheader("Funnel: LinkedIn → Pipeline")
-        pmo_funnel_data = pd.DataFrame({
-            'Stage': ['LinkedIn Reached','MQL','Opp Created','ARR (recognized)'],
-            'Count': [871, 236, 105, 53],
-            'Rate': ['71% of 1,220','27% of reached','44% of MQLs','50% of opps'],
-        })
-        st.dataframe(pmo_funnel_data, use_container_width=True, hide_index=True)
+        st.subheader("ABM Funnel — Lifecycle Stage Progression")
+        st.caption("Source: marketing.l3.v_abm_companies_funnel + fact_abm_engagement_metrics | Campaign: 701av00000Q4a2kAAB")
 
+        pmo_funnel_stages = pd.DataFrame({
+            'Stage':     ['Targeted','Aware','Engage','MQA','Opportunity','Customer'],
+            'Companies': [1404,      821,    304,     303,  476,          225],
+        })
         fig_f = go.Figure(go.Funnel(
-            y=['LinkedIn Reached (871)','MQL (236)','Opp Created (105)','ARR Recognized'],
-            x=[871, 236, 105, 53],
+            y=pmo_funnel_stages['Stage'],
+            x=pmo_funnel_stages['Companies'],
             textinfo='value+percent initial',
-            marker={"color":["#9C27B0","#BA68C8","#CE93D8","#E1BEE7"]},
+            marker={"color":["#9C27B0","#BA68C8","#AB47BC","#CE93D8","#7B1FA2","#E1BEE7"]},
         ))
-        fig_f.update_layout(title='PMO: LinkedIn to Pipeline Funnel', height=380)
+        fig_f.update_layout(title='PMO — ABM Lifecycle Funnel (Jan–May 2026)', height=420)
         st.plotly_chart(fig_f, use_container_width=True)
+
+        st.subheader("Engagement & Intent Signals (Jan–May 2026)")
+        pmo_eng_cols = st.columns(4)
+        pmo_eng_cols[0].metric("Signups (ABM)", "40", "since campaign start")
+        pmo_eng_cols[1].metric("Website Contact Sales", "2", "ABM accounts")
+        pmo_eng_cols[2].metric("Events", "1", "MQL Events: 1")
+        pmo_eng_cols[3].metric("WM Keyword Signals", "4,785", "ZoomInfo intent — edges Marketing")
+
+        pmo_intent_cols = st.columns(2)
+        pmo_intent_cols[0].metric("Website Traffic (ABM)", "109,522", "tracked visits since campaign start")
+        pmo_intent_cols[1].metric("Accounts at Opportunity+", "701", "476 Opp + 225 Customer")
+
+        st.info("📌 PMO shows strong funnel depth (701 accounts at Opportunity/Customer stage vs 289 for Marketing) and leads on keyword intent signals (4,785 vs 4,625), suggesting high-intent accounts even with lower direct engagement.")
 
     # ── PMO TAB 3: Company Size ───────────────────────────────────────────────────
     with ptab3:
