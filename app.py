@@ -1250,11 +1250,11 @@ else:
 <body>
 
 <div class="tabs">
-  <div class="tab active" onclick="showPage('overview',this)">📊 Campaign Overview</div>
-  <div class="tab" onclick="showPage('wahl',this)">🏆 Wahl Clipper</div>
-  <div class="tab" onclick="showPage('chase',this)">🏦 JPMorgan Chase</div>
-  <div class="tab" onclick="showPage('lol',this)">🌾 Land O'Lakes</div>
-  <div class="tab" onclick="showPage('hilton',this)">🏨 Hilton Grand Vacations</div>
+  <div class="tab active" data-page="overview">📊 Campaign Overview</div>
+  <div class="tab" data-page="wahl">🏆 Wahl Clipper</div>
+  <div class="tab" data-page="chase">🏦 JPMorgan Chase</div>
+  <div class="tab" data-page="lol">🌾 Land O'Lakes</div>
+  <div class="tab" data-page="hilton">🏨 Hilton Grand Vacations</div>
 </div>
 
 <!-- ── OVERVIEW ── -->
@@ -1294,9 +1294,9 @@ else:
   <div class="card" style="margin-bottom:20px">
     <div class="card-title" style="margin-bottom:10px">Pipeline Breakdown</div>
     <div class="pipe-tabs">
-      <div class="pipe-tab on" onclick="showPipe('all',this)">All (140)</div>
-      <div class="pipe-tab" onclick="showPipe('nb',this)">New Business (32)</div>
-      <div class="pipe-tab" onclick="showPipe('exp',this)">Expansion (108)</div>
+      <div class="pipe-tab on" data-pipe="all">All (140)</div>
+      <div class="pipe-tab" data-pipe="nb">New Business (32)</div>
+      <div class="pipe-tab" data-pipe="exp">Expansion (108)</div>
     </div>
     <div id="pipe-all">
       <table class="pipe-table">
@@ -1560,21 +1560,31 @@ function renderFunnel(stages, containerId) {
   el.innerHTML = html;
 }
 
-function showPage(id, tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  tab.classList.add('active');
-}
-
-function showPipe(type, btn) {
-  ['all','nb','exp'].forEach(t => {
-    const el = document.getElementById('pipe-'+t);
-    if (el) el.style.display = (t===type?'block':'none');
+document.addEventListener('DOMContentLoaded', function() {
+  // main tabs
+  document.querySelectorAll('.tab[data-page]').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var id = this.getAttribute('data-page');
+      document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+      var target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      this.classList.add('active');
+    });
   });
-  document.querySelectorAll('.pipe-tab').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-}
+  // pipeline sub-tabs
+  document.querySelectorAll('.pipe-tab[data-pipe]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var type = this.getAttribute('data-pipe');
+      ['all','nb','exp'].forEach(function(t) {
+        var el = document.getElementById('pipe-'+t);
+        if (el) el.style.display = (t===type ? 'block' : 'none');
+      });
+      document.querySelectorAll('.pipe-tab').forEach(function(b) { b.classList.remove('on'); });
+      this.classList.add('on');
+    });
+  });
+});
 
 // Wahl Clipper timeline
 renderTimeline([
