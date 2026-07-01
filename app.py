@@ -1136,496 +1136,277 @@ else:
     # ═══════════════════════════════════════════════════════════════════════════
     # ANA ABM ACCOUNT REPORT — NAM Marketing ANA H1 2026
     # ═══════════════════════════════════════════════════════════════════════════
-    ANA_ABM_HTML = """
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f9fb;color:#1a1d23;font-size:14px}
-  .tabs{display:flex;gap:4px;padding:16px 16px 0;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:100;flex-wrap:wrap}
-  .tab{padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;font-weight:500;color:#6b7280;border:1px solid transparent;border-bottom:none;background:#f3f4f6;transition:all .15s}
-  .tab.active{background:#fff;color:#1a1d23;border-color:#e5e7eb;margin-bottom:-1px}
-  .tab:hover:not(.active){background:#e9eaec;color:#374151}
-  .page{display:none;padding:20px;max-width:1100px;margin:0 auto}
-  .page.active{display:block}
+    st.title("🟢 NAM ANA ABM — Account Report H1 2026")
+    st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1 · Data locked Jan 1 – May 31, 2026")
 
-  /* KPI row */
-  .kpi-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-  .kpi{flex:1;min-width:130px;background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e5e7eb}
-  .kpi-label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
-  .kpi-value{font-size:22px;font-weight:700;color:#1a1d23}
-  .kpi-sub{font-size:11px;color:#9ca3af;margin-top:2px}
+    tab_ov, tab_wahl, tab_chase, tab_lol, tab_hilton = st.tabs([
+        "📊 Campaign Overview", "🏆 Wahl Clipper", "🏦 JPMorgan Chase",
+        "🌾 Land O'Lakes", "🏨 Hilton Grand Vacations"
+    ])
 
-  /* two-col layout */
-  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-  .card{background:#fff;border-radius:10px;padding:16px;border:1px solid #e5e7eb}
-  .card-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#6b7280;margin-bottom:12px}
+    # ── helpers ──────────────────────────────────────────────────────────────
+    STAGE_CFG = {
+        "Targeted":    ("🎯", "#2a78d6"),
+        "Aware":       ("👁️",  "#1baf7a"),
+        "Engage":      ("👆",  "#eda100"),
+        "MQA":         ("⭐",  "#4a3aa7"),
+        "Opportunity": ("💼",  "#e34948"),
+        "Customer":    ("🏆",  "#1baf7a"),
+        "In Progress": ("⏳",  "#eda100"),
+    }
 
-  /* ABM funnel */
-  .funnel-row{display:flex;align-items:center;margin-bottom:8px;gap:10px}
-  .funnel-bar-wrap{flex:1;background:#f3f4f6;border-radius:4px;height:20px;overflow:hidden}
-  .funnel-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;transition:width .4s}
-  .funnel-label{width:90px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px}
-  .funnel-count{width:46px;text-align:right;font-size:12px;font-weight:600;color:#374151}
-  .funnel-pct{width:38px;text-align:right;font-size:11px;color:#9ca3af}
+    def _tag(label, color, bg):
+        return (f'<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;'
+                f'color:{color};background:{bg};border:0.5px solid {color}40">{label}</span>')
 
-  /* LinkedIn tiers */
-  .tier-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .tier-name{width:120px;font-size:12px;font-weight:500}
-  .tier-bar-wrap{flex:1;background:#f3f4f6;border-radius:4px;height:16px;overflow:hidden}
-  .tier-bar{height:100%;border-radius:4px;background:#0077b5}
-  .tier-val{width:60px;text-align:right;font-size:12px;color:#374151;font-weight:500}
+    LI  = _tag("💼 LinkedIn", "#0077b5", "#0077b518")
+    BB  = _tag("⚡ BigBrain",  "#2a78d6", "#2a78d618")
+    EV  = _tag("📅 Event",    "#eda100", "#eda10018")
+    WEB = _tag("🌐 Web CS",   "#4a3aa7", "#4a3aa718")
+    WON = _tag("🏆 Won",      "#fff",    "#1baf7a")
 
-  /* Pipeline table */
-  .pipe-tabs{display:flex;gap:6px;margin-bottom:12px}
-  .pipe-tab{padding:4px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid #e5e7eb;background:#f3f4f6;color:#6b7280;font-weight:500}
-  .pipe-tab.on{background:#1a1d23;color:#fff;border-color:#1a1d23}
-  .pipe-table{width:100%;border-collapse:collapse}
-  .pipe-table th{font-size:11px;color:#9ca3af;font-weight:500;text-align:left;padding:4px 6px;border-bottom:1px solid #f3f4f6}
-  .pipe-table td{padding:6px 6px;font-size:13px;border-bottom:1px solid #f8f9fb;vertical-align:middle}
-  .mini-bar-wrap{display:inline-block;width:48px;height:6px;background:#f3f4f6;border-radius:3px;vertical-align:middle;margin-right:4px}
-  .mini-bar{height:6px;border-radius:3px}
-  .pct-badge{display:inline-block;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;vertical-align:middle}
+    def tl_step(date, stage, desc, tags, is_last=False):
+        emoji, color = STAGE_CFG.get(stage, ("•", "#6b7280"))
+        tags_html = " ".join(tags)
+        line = "" if is_last else f'<div style="width:2px;background:{color}30;flex:1;min-height:16px;margin-top:2px"></div>'
+        return (
+            f'<div style="display:flex;gap:14px">'
+            f'<div style="width:32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center">'
+            f'<div style="width:32px;height:32px;border-radius:50%;background:{color}18;color:{color};'
+            f'display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">{emoji}</div>'
+            f'{line}</div>'
+            f'<div style="flex:1;padding-bottom:16px">'
+            f'<div style="font-size:10px;color:#9ca3af;font-weight:500;margin-bottom:2px">{date}</div>'
+            f'<div style="font-size:12px;font-weight:700;color:{color};margin-bottom:4px">{stage}</div>'
+            f'<div style="font-size:13px;color:#374151;line-height:1.5">{desc}</div>'
+            f'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">{tags_html}</div>'
+            f'</div></div>'
+        )
 
-  /* Lead source grid */
-  .src-grid{display:flex;flex-wrap:wrap;gap:10px}
-  .src-card{background:#f8f9fb;border-radius:8px;padding:10px 14px;border:1px solid #e5e7eb;display:flex;align-items:center;gap:10px;min-width:130px}
-  .src-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-  .src-name{font-size:12px;font-weight:600;color:#374151}
-  .src-n{font-size:20px;font-weight:700}
+    def funnel_html(reached):
+        stages = [("🎯","Targeted","#2a78d6"),("👁️","Aware","#1baf7a"),
+                  ("👆","Engage","#eda100"),("⭐","MQA","#4a3aa7"),
+                  ("💼","Opportunity","#e34948"),("🏆","Customer","#1baf7a")]
+        out = ""
+        for em, name, col in stages:
+            active = name in reached
+            current = reached and reached[-1] == name
+            op = "1" if active else "0.25"
+            fw = "700" if current else "400"
+            dot = f'<span style="width:8px;height:8px;border-radius:50%;background:{col};display:inline-block;margin-left:auto"></span>' if current else ""
+            out += (f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;opacity:{op}">'
+                    f'<div style="width:26px;height:26px;border-radius:50%;background:{col}18;color:{col};'
+                    f'display:flex;align-items:center;justify-content:center;font-size:13px">{em}</div>'
+                    f'<div style="font-size:12px;font-weight:{fw};flex:1">{name}</div>{dot}</div>')
+        return out
 
-  /* Account spotlight */
-  .acct-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;background:#fff;border-radius:10px;padding:16px;border:1px solid #e5e7eb}
-  .acct-logo{width:44px;height:44px;border-radius:10px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#374151}
-  .acct-name{font-size:20px;font-weight:700;color:#1a1d23}
-  .acct-sub{font-size:12px;color:#6b7280;margin-top:2px}
-  .acct-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-  .pill{font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;border:1px solid}
-  .pill-blue{color:#2a78d6;background:#2a78d610;border-color:#2a78d630}
-  .pill-green{color:#1baf7a;background:#1baf7a10;border-color:#1baf7a30}
-  .pill-purple{color:#4a3aa7;background:#4a3aa710;border-color:#4a3aa730}
-  .pill-orange{color:#eda100;background:#eda10010;border-color:#eda10030}
-  .pill-red{color:#e34948;background:#e3494810;border-color:#e3494830}
+    def acct_header(em, name, sub, pills):
+        pills_html = " ".join(
+            f'<span style="font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;'
+            f'border:1px solid {c}40;color:{c};background:{c}15">{lbl}</span>'
+            for c, lbl in pills
+        )
+        return (f'<div style="background:#fff;border-radius:10px;padding:16px;border:1px solid #e5e7eb;'
+                f'margin-bottom:16px;display:flex;align-items:center;gap:14px">'
+                f'<div style="width:44px;height:44px;border-radius:10px;background:#f3f4f6;'
+                f'display:flex;align-items:center;justify-content:center;font-size:24px">{em}</div>'
+                f'<div><div style="font-size:20px;font-weight:700">{name}</div>'
+                f'<div style="font-size:12px;color:#6b7280;margin-top:2px">{sub}</div>'
+                f'<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">{pills_html}</div>'
+                f'</div></div>')
 
-  .acct-body{display:grid;grid-template-columns:1fr 340px;gap:16px}
-  @media(max-width:780px){.acct-body{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}}
+    def contact_row(initials, name, title, tag_html="", border=True):
+        rand_colors = {"AT":"#2a78d6","LB":"#4a3aa7","MP":"#0077b5","RK":"#2a78d6",
+                       "JT":"#4a3aa7","SR":"#2a78d6","MF":"#eda100","AO":"#4a3aa7",
+                       "CM":"#2a78d6","JL":"#0077b5"}
+        c = rand_colors.get(initials, "#6b7280")
+        border_style = "border-bottom:1px solid #f3f4f6;" if border else ""
+        return (f'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;{border_style}">'
+                f'<div style="width:34px;height:34px;border-radius:50%;background:{c}18;color:{c};'
+                f'display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">{initials}</div>'
+                f'<div style="flex:1"><div style="font-size:13px;font-weight:600">{name}</div>'
+                f'<div style="font-size:11px;color:#6b7280">{title}</div></div>{tag_html}</div>')
 
-  /* Timeline */
-  .story-step{display:flex;gap:14px;position:relative}
-  .story-spine{width:32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
-  .spine-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;z-index:1}
-  .spine-line{width:2px;flex:1;min-height:14px}
-  .story-body{flex:1;padding-bottom:16px;min-width:0}
-  .story-date{font-size:10px;color:#9ca3af;font-weight:500;margin-bottom:2px}
-  .story-stage{font-size:12px;font-weight:700;margin-bottom:4px}
-  .story-desc{font-size:13px;color:#374151;line-height:1.5}
-  .story-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-  .src-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;border:0.5px solid}
-  .src-li{color:#0077b5;background:#0077b518;border-color:#0077b540}
-  .src-bb{color:#2a78d6;background:#2a78d618;border-color:#2a78d640}
-  .src-event{color:#eda100;background:#eda10018;border-color:#eda10040}
-  .src-web{color:#4a3aa7;background:#4a3aa718;border-color:#4a3aa740}
-  .src-won{color:#fff;background:#1baf7a;border-color:#1baf7a}
+    # ── OVERVIEW TAB ──────────────────────────────────────────────────────────
+    with tab_ov:
+        c1,c2,c3,c4,c5,c6 = st.columns(6)
+        c1.metric("Target Accounts", "1,271", "NAM ICP list")
+        c2.metric("Accounts Reached", "1,043", "82% reach rate")
+        c3.metric("Total Impressions", "1.44M", "Jan–May 2026")
+        c4.metric("Total Spend", "$254K", "CRQ cleanroom")
+        c5.metric("Pipeline", "$2.48M", "140 opps")
+        c6.metric("Pipeline ROI", "9.8×", "$262K won")
 
-  /* Right panel */
-  .right-panel{display:flex;flex-direction:column;gap:12px}
-  .funnel-mini{display:flex;flex-direction:column;gap:6px}
-  .fstage{display:flex;align-items:center;gap:8px}
-  .fstage-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-  .fstage-name{font-size:12px;font-weight:500;flex:1}
-  .fstage-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-  .contact-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6}
-  .contact-row:last-child{border-bottom:none}
-  .contact-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
-  .contact-name{font-size:13px;font-weight:600;color:#1a1d23}
-  .contact-title{font-size:11px;color:#6b7280;margin-top:1px}
-  .takeaway{background:linear-gradient(135deg,#1a1d2308,#2a78d608);border-radius:10px;padding:14px;border:1px solid #2a78d620}
-  .takeaway-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#2a78d6;margin-bottom:6px}
-  .takeaway-text{font-size:13px;color:#374151;line-height:1.55}
-</style>
-</head>
-<body>
+        st.markdown("---")
+        col_a, col_b = st.columns(2)
+        with col_a:
+            st.markdown("**ABM Funnel — Jan–May 2026**")
+            fig_f = go.Figure(go.Funnel(
+                y=["Targeted","Aware","Engage","MQA","Opportunity","Customer"],
+                x=[1269, 670, 162, 133, 218, 71],
+                textinfo="value+percent initial",
+                marker=dict(color=["#2a78d6","#1baf7a","#eda100","#4a3aa7","#e34948","#1baf7a"]),
+            ))
+            fig_f.update_layout(height=300, margin=dict(l=0,r=0,t=10,b=0))
+            st.plotly_chart(fig_f, use_container_width=True)
+        with col_b:
+            st.markdown("**LinkedIn Reach by Tier**")
+            tier_df = pd.DataFrame({
+                "Tier": ["Tier 1 (1–500)","Tier 2 (501–2K)","Tier 3 (2K–5K)","Tier 4 (5K–10K)","Tier 5 (10K+)"],
+                "Impressions (K)": [438, 359, 241, 149, 256]
+            })
+            fig_t = px.bar(tier_df, x="Impressions (K)", y="Tier", orientation="h",
+                           color_discrete_sequence=["#0077b5"], height=300)
+            fig_t.update_layout(margin=dict(l=0,r=0,t=10,b=0), yaxis=dict(autorange="reversed"))
+            st.plotly_chart(fig_t, use_container_width=True)
 
-<div class="tabs">
-  <div class="tab active" data-page="overview">📊 Campaign Overview</div>
-  <div class="tab" data-page="wahl">🏆 Wahl Clipper</div>
-  <div class="tab" data-page="chase">🏦 JPMorgan Chase</div>
-  <div class="tab" data-page="lol">🌾 Land O'Lakes</div>
-  <div class="tab" data-page="hilton">🏨 Hilton Grand Vacations</div>
-</div>
+        st.markdown("---")
+        st.markdown("**Pipeline Breakdown**")
+        pipe_view = st.radio("Filter", ["All (140)", "New Business (32)", "Expansion (108)"],
+                             horizontal=True, label_visibility="collapsed")
+        if "New Business" in pipe_view:
+            pipe_df = pd.DataFrame({
+                "Stage": ["→ Closed Won","→ Closed Lost","→ Open Pipeline","Total NB"],
+                "Opps": [4,2,26,32], "Amount": ["$262K","$38K","$670K","$970K"], "% of NB": ["13%","6%","81%","100%"]
+            })
+        elif "Expansion" in pipe_view:
+            pipe_df = pd.DataFrame({
+                "Stage": ["Expansion","Total Exp"],
+                "Opps": [108,108], "Amount": ["$1.51M","$1.51M"], "% of Exp": ["100%","100%"]
+            })
+        else:
+            pipe_df = pd.DataFrame({
+                "Stage": ["New Business","→ Closed Won","→ Closed Lost","→ Open Pipeline","Expansion","Total"],
+                "Opps": [32,4,2,26,108,140],
+                "Amount": ["$970K","$262K","$38K","$670K","$1.51M","$2.48M"],
+                "% of Total": ["23%","3%","1%","19%","77%","100%"]
+            })
+        st.dataframe(pipe_df, use_container_width=True, hide_index=True)
 
-<!-- ── OVERVIEW ── -->
-<div id="overview" class="page active">
-  <div class="kpi-row">
-    <div class="kpi"><div class="kpi-label">Target Accounts</div><div class="kpi-value">1,271</div><div class="kpi-sub">NAM ICP list</div></div>
-    <div class="kpi"><div class="kpi-label">Accounts Reached</div><div class="kpi-value">1,043</div><div class="kpi-sub">82% reach rate</div></div>
-    <div class="kpi"><div class="kpi-label">Total Impressions</div><div class="kpi-value">1.44M</div><div class="kpi-sub">Jan–May 2026</div></div>
-    <div class="kpi"><div class="kpi-label">Total Spend</div><div class="kpi-value">$254K</div><div class="kpi-sub">CRQ cleanroom, ANA only</div></div>
-    <div class="kpi"><div class="kpi-label">Pipeline Generated</div><div class="kpi-value">$2.48M</div><div class="kpi-sub">140 opps total</div></div>
-    <div class="kpi"><div class="kpi-label">Pipeline ROI</div><div class="kpi-value">9.8×</div><div class="kpi-sub">$262K closed won</div></div>
-  </div>
+        st.markdown("---")
+        st.markdown("**Lead Source Breakdown**")
+        src_cols = st.columns(5)
+        for i,(name,n,col) in enumerate([
+            ("⚡ BigBrain","11","#2a78d6"),("🌐 Website / CS","11","#4a3aa7"),
+            ("🔧 Tools","6","#eda100"),("📅 Event","2","#eda100"),("🤝 Partner","2","#1baf7a")
+        ]):
+            src_cols[i].markdown(
+                f'<div style="background:#f8f9fb;border-radius:8px;padding:12px;border:1px solid #e5e7eb;text-align:center">'
+                f'<div style="font-size:12px;font-weight:600;color:#374151">{name}</div>'
+                f'<div style="font-size:24px;font-weight:700;color:{col}">{n}</div></div>',
+                unsafe_allow_html=True)
 
-  <div class="two-col">
-    <div class="card">
-      <div class="card-title">ABM Funnel — Jan–May 2026</div>
-      <div class="funnel-mini" style="gap:10px">
-        <div class="funnel-row"><div class="funnel-label"><span style="color:#2a78d6;font-size:14px" class="ti ti-crosshair"></span> Targeted</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%;background:#2a78d6"></div></div><div class="funnel-count">1,269</div><div class="funnel-pct">100%</div></div>
-        <div class="funnel-row"><div class="funnel-label"><span style="color:#1baf7a;font-size:14px" class="ti ti-eye"></span> Aware</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:53%;background:#1baf7a"></div></div><div class="funnel-count">670</div><div class="funnel-pct">53%</div></div>
-        <div class="funnel-row"><div class="funnel-label"><span style="color:#eda100;font-size:14px" class="ti ti-hand-finger"></span> Engage</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:13%;background:#eda100"></div></div><div class="funnel-count">162</div><div class="funnel-pct">13%</div></div>
-        <div class="funnel-row"><div class="funnel-label"><span style="color:#4a3aa7;font-size:14px" class="ti ti-star"></span> MQA</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:10%;background:#4a3aa7"></div></div><div class="funnel-count">133</div><div class="funnel-pct">10%</div></div>
-        <div class="funnel-row"><div class="funnel-label"><span style="color:#e34948;font-size:14px" class="ti ti-briefcase"></span> Opportunity</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:17%;background:#e34948"></div></div><div class="funnel-count">218</div><div class="funnel-pct">17%</div></div>
-        <div class="funnel-row"><div class="funnel-label"><span style="color:#1baf7a;font-size:14px" class="ti ti-trophy"></span> Customer</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:6%;background:#1baf7a"></div></div><div class="funnel-count">71</div><div class="funnel-pct">6%</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">LinkedIn Reach by Tier</div>
-      <div class="tier-row"><div class="tier-name">Tier 1 (1–500)</div><div class="tier-bar-wrap"><div class="tier-bar" style="width:100%"></div></div><div class="tier-val">438K impr</div></div>
-      <div class="tier-row"><div class="tier-name">Tier 2 (501–2K)</div><div class="tier-bar-wrap"><div class="tier-bar" style="width:82%"></div></div><div class="tier-val">359K impr</div></div>
-      <div class="tier-row"><div class="tier-name">Tier 3 (2K–5K)</div><div class="tier-bar-wrap"><div class="tier-bar" style="width:55%"></div></div><div class="tier-val">241K impr</div></div>
-      <div class="tier-row"><div class="tier-name">Tier 4 (5K–10K)</div><div class="tier-bar-wrap"><div class="tier-bar" style="width:34%"></div></div><div class="tier-val">149K impr</div></div>
-      <div class="tier-row"><div class="tier-name">Tier 5 (10K+)</div><div class="tier-bar-wrap"><div class="tier-bar" style="width:59%"></div></div><div class="tier-val">256K impr</div></div>
-      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f3f4f6;font-size:11px;color:#6b7280">Impression share correlates with account size. Enterprise (10K+) = high frequency per account.</div>
-    </div>
-  </div>
+    # ── WAHL CLIPPER ─────────────────────────────────────────────────────────
+    with tab_wahl:
+        st.markdown(acct_header("✂️","Wahl Clipper Corporation",
+            "Manufacturing · Sterling, IL · 3,500 employees",
+            [("#1baf7a","Closed Won $68K"),("#2a78d6","LinkedIn Sourced"),("#4a3aa7","ANA H1 2026")]),
+            unsafe_allow_html=True)
+        cl, cr = st.columns([3,2])
+        with cl:
+            st.markdown("**Account High Level Story**")
+            st.markdown(
+                tl_step("Jan 2026","Targeted","Wahl Clipper added to ANA ICP list. LinkedIn campaign goes live.",[LI]) +
+                tl_step("Jan 15, 2026","Aware","Wahl Clipper employees engaging with monday.com ads. Aristo Tapias (HR Manager) clicks ad.",[LI]) +
+                tl_step("Jan 22, 2026","Engage","Aristo Tapias submits a LinkedIn Lead Gen form — first known lead from this account.",[LI]) +
+                tl_step("Jan 28, 2026","MQA","Lead routed to AE. Qualification call confirms HR use case. Account marked MQA.",[LI]) +
+                tl_step("Feb 6, 2026","Opportunity","Opportunity created: $68K Work Mgmt for HR & Operations. AE engaged Linda Barnes (Ops Director).",[LI]) +
+                tl_step("Mar 12, 2026","Customer","Deal closed. $68K Closed Won — fastest close in the ANA H1 cohort.",[WON],is_last=True),
+                unsafe_allow_html=True)
+        with cr:
+            st.markdown("**ABM Funnel — Wahl Clipper**")
+            st.markdown(funnel_html(["Targeted","Aware","Engage","MQA","Opportunity","Customer"]), unsafe_allow_html=True)
+            st.markdown("---")
+            st.markdown("**Key Contacts**")
+            st.markdown(
+                contact_row("AT","Aristo Tapias","HR Manager · LinkedIn Lead (Jan 2026)",LI) +
+                contact_row("LB","Linda Barnes","Operations Director · Deal Champion","",border=False),
+                unsafe_allow_html=True)
+            st.markdown("---")
+            st.info("**Key Takeaway** — Single LinkedIn lead from a targeted HR Manager directly opened the Wahl account. Closed Won $68K in under 5 weeks from first MQA — fastest close in the ANA cohort.")
 
-  <div class="card" style="margin-bottom:20px">
-    <div class="card-title" style="margin-bottom:10px">Pipeline Breakdown</div>
-    <div class="pipe-tabs">
-      <div class="pipe-tab on" data-pipe="all">All (140)</div>
-      <div class="pipe-tab" data-pipe="nb">New Business (32)</div>
-      <div class="pipe-tab" data-pipe="exp">Expansion (108)</div>
-    </div>
-    <div id="pipe-all">
-      <table class="pipe-table">
-        <thead><tr><th>Stage</th><th>Opps</th><th>% of Total</th><th>Amount</th></tr></thead>
-        <tbody>
-          <tr><td style="color:#2a78d6;font-weight:600">New Business</td><td>32</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:23%;background:#2a78d6"></div></div><span class="pct-badge" style="color:#2a78d6;background:#2a78d615">23%</span></td><td style="font-weight:600">$970K</td></tr>
-          <tr><td style="color:#1baf7a;padding-left:16px">→ Closed Won</td><td>4</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:3%;background:#1baf7a"></div></div><span class="pct-badge" style="color:#1baf7a;background:#1baf7a15">3%</span></td><td>$262K</td></tr>
-          <tr><td style="color:#e34948;padding-left:16px">→ Closed Lost</td><td>2</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:1%;background:#e34948"></div></div><span class="pct-badge" style="color:#e34948;background:#e3494815">1%</span></td><td>$38K</td></tr>
-          <tr><td style="color:#eda100;padding-left:16px">→ Open Pipeline</td><td>26</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:19%;background:#eda100"></div></div><span class="pct-badge" style="color:#eda100;background:#eda10015">19%</span></td><td>$670K</td></tr>
-          <tr><td style="color:#4a3aa7;font-weight:600">Expansion</td><td>108</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:77%;background:#4a3aa7"></div></div><span class="pct-badge" style="color:#4a3aa7;background:#4a3aa715">77%</span></td><td style="font-weight:600">$1.51M</td></tr>
-          <tr style="border-top:2px solid #e5e7eb"><td style="font-weight:700">Total</td><td style="font-weight:700">140</td><td></td><td style="font-weight:700">$2.48M</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div id="pipe-nb" style="display:none">
-      <table class="pipe-table">
-        <thead><tr><th>Stage</th><th>Opps</th><th>% of NB</th><th>Amount</th></tr></thead>
-        <tbody>
-          <tr><td style="color:#1baf7a;font-weight:600">→ Closed Won</td><td>4</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:13%;background:#1baf7a"></div></div><span class="pct-badge" style="color:#1baf7a;background:#1baf7a15">13%</span></td><td>$262K</td></tr>
-          <tr><td style="color:#e34948">→ Closed Lost</td><td>2</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:6%;background:#e34948"></div></div><span class="pct-badge" style="color:#e34948;background:#e3494815">6%</span></td><td>$38K</td></tr>
-          <tr><td style="color:#eda100">→ Open Pipeline</td><td>26</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:81%;background:#eda100"></div></div><span class="pct-badge" style="color:#eda100;background:#eda10015">81%</span></td><td>$670K</td></tr>
-          <tr style="border-top:2px solid #e5e7eb"><td style="font-weight:700">Total NB</td><td style="font-weight:700">32</td><td></td><td style="font-weight:700">$970K</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div id="pipe-exp" style="display:none">
-      <table class="pipe-table">
-        <thead><tr><th>Stage</th><th>Opps</th><th>% of Exp</th><th>Amount</th></tr></thead>
-        <tbody>
-          <tr><td style="color:#4a3aa7;font-weight:600">Expansion</td><td>108</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:100%;background:#4a3aa7"></div></div><span class="pct-badge" style="color:#4a3aa7;background:#4a3aa715">100%</span></td><td style="font-weight:600">$1.51M</td></tr>
-          <tr style="border-top:2px solid #e5e7eb"><td style="font-weight:700">Total Exp</td><td style="font-weight:700">108</td><td></td><td style="font-weight:700">$1.51M</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    # ── JPMORGAN CHASE ───────────────────────────────────────────────────────
+    with tab_chase:
+        st.markdown(acct_header("🏦","JPMorgan Chase",
+            "Financial Services · New York, NY · 290,000 employees",
+            [("#eda100","MQA Stage"),("#2a78d6","7 Leads H1 2026"),("#4a3aa7","14.2K Impressions")]),
+            unsafe_allow_html=True)
+        cl, cr = st.columns([3,2])
+        with cl:
+            st.markdown("**Account High Level Story**")
+            st.markdown(
+                tl_step("Jan 2026","Targeted","JPMorgan Chase added to ANA enterprise tier. LinkedIn campaign coverage begins (14.2K total impressions).",[LI]) +
+                tl_step("Feb 2026","Aware","Multiple employees engaging. 3 BigBrain signups and 2 Web CS visits recorded.",[BB,WEB]) +
+                tl_step("Mar 2026","Engage","Megan Pajarillo (VP Marketing Strategy) submits LinkedIn Lead Gen form. Rachel Kim signs up via BigBrain.",[LI,BB]) +
+                tl_step("Apr 2026","MQA","3 qualified contacts confirmed across 3 channels. Account upgraded to MQA. Enterprise AE assigned.",[LI,BB,WEB]) +
+                tl_step("In Progress","In Progress","Active evaluation underway. James Thompson (Director Ops) added as stakeholder. Largest open enterprise opp in ANA pipeline.",[],is_last=True),
+                unsafe_allow_html=True)
+        with cr:
+            st.markdown("**ABM Funnel — JPMorgan Chase**")
+            st.markdown(funnel_html(["Targeted","Aware","Engage","MQA"]), unsafe_allow_html=True)
+            st.markdown("---")
+            st.markdown("**Key Contacts**")
+            st.markdown(
+                contact_row("MP","Megan Pajarillo","VP Marketing Strategy · LinkedIn Lead",LI) +
+                contact_row("RK","Rachel Kim","Senior Project Manager · BigBrain",BB) +
+                contact_row("JT","James Thompson","Director Operations · Web CS",WEB,border=False),
+                unsafe_allow_html=True)
+            st.markdown("---")
+            st.info("**Key Takeaway** — Enterprise penetration through multi-persona engagement: 7 leads across 3 channels with VP-level champion. 14.2K impressions built brand recall — now the largest open enterprise opportunity in the ANA pipeline.")
 
-  <div class="card">
-    <div class="card-title">Lead Source Breakdown (H1 2026 ANA Leads)</div>
-    <div class="src-grid">
-      <div class="src-card"><div class="src-icon" style="background:#2a78d618;color:#2a78d6"><i class="ti ti-bolt"></i></div><div><div class="src-name">BigBrain</div><div class="src-n" style="color:#2a78d6">11</div></div></div>
-      <div class="src-card"><div class="src-icon" style="background:#4a3aa718;color:#4a3aa7"><i class="ti ti-world"></i></div><div><div class="src-name">Website / CS</div><div class="src-n" style="color:#4a3aa7">11</div></div></div>
-      <div class="src-card"><div class="src-icon" style="background:#eda10018;color:#eda100"><i class="ti ti-tool"></i></div><div><div class="src-name">Tools</div><div class="src-n" style="color:#eda100">6</div></div></div>
-      <div class="src-card"><div class="src-icon" style="background:#eda10018;color:#eda100"><i class="ti ti-calendar-event"></i></div><div><div class="src-name">Event</div><div class="src-n" style="color:#eda100">2</div></div></div>
-      <div class="src-card"><div class="src-icon" style="background:#1baf7a18;color:#1baf7a"><i class="ti ti-users"></i></div><div><div class="src-name">Partner</div><div class="src-n" style="color:#1baf7a">2</div></div></div>
-    </div>
-  </div>
-</div>
+    # ── LAND O'LAKES ─────────────────────────────────────────────────────────
+    with tab_lol:
+        st.markdown(acct_header("🌾","Land O'Lakes",
+            "Agriculture / Food · Arden Hills, MN · 9,000 employees",
+            [("#e34948","Opportunity $46.8K"),("#2a78d6","3 Channels"),("#4a3aa7","23 Leads")]),
+            unsafe_allow_html=True)
+        cl, cr = st.columns([3,2])
+        with cl:
+            st.markdown("**Account High Level Story**")
+            st.markdown(
+                tl_step("Jan 2026","Targeted","Land O'Lakes added to ANA ICP list. BigBrain identifies 8 contacts in digital transformation roles.",[BB]) +
+                tl_step("Jan–Feb 2026","Aware","Sara Ramos signs up via BigBrain. Additional contacts engage with Web CS resources.",[BB,WEB]) +
+                tl_step("Feb 18, 2026","Engage","Mike Fitzpatrick (VP Operations) attends monday.com summit event. Highest-ranking contact to date.",[EV,BB]) +
+                tl_step("Mar 1, 2026","MQA","Post-event follow-up confirms multi-stakeholder interest. Account upgraded to MQA within 2 weeks of event.",[EV]) +
+                tl_step("Mar 5, 2026","Opportunity","Opportunity created: $46.8K Work Mgmt across Operations and IT. 23 total leads across 3 channels.",[BB,EV,WEB],is_last=True),
+                unsafe_allow_html=True)
+        with cr:
+            st.markdown("**ABM Funnel — Land O'Lakes**")
+            st.markdown(funnel_html(["Targeted","Aware","Engage","MQA","Opportunity"]), unsafe_allow_html=True)
+            st.markdown("---")
+            st.markdown("**Key Contacts**")
+            st.markdown(
+                contact_row("SR","Sara Ramos","Digital Transformation Lead · BigBrain",BB) +
+                contact_row("MF","Mike Fitzpatrick","VP Operations · Event Lead (Summit)",EV) +
+                contact_row("AO","Amy Ortega","IT Director · Web CS",WEB,border=False),
+                unsafe_allow_html=True)
+            st.markdown("---")
+            st.info("**Key Takeaway** — Strongest multi-channel account in the cohort: BigBrain + Event + Web CS all contributed leads. The summit event (Mike Fitzpatrick) was the tipping point that moved the account from Engage to MQA in under 2 weeks.")
 
-<!-- ── WAHL CLIPPER ── -->
-<div id="wahl" class="page">
-  <div class="acct-header">
-    <div class="acct-logo">WC</div>
-    <div>
-      <div class="acct-name">Wahl Clipper Corporation</div>
-      <div class="acct-sub">Manufacturing · Sterling, IL · 3,500 employees</div>
-      <div class="acct-pills">
-        <span class="pill pill-green">Closed Won $68K</span>
-        <span class="pill pill-blue">LinkedIn Sourced</span>
-        <span class="pill pill-purple">ANA H1 2026</span>
-      </div>
-    </div>
-  </div>
-  <div class="acct-body">
-    <div class="card">
-      <div class="card-title">Account High Level Story</div>
-      <div id="wahl-timeline"></div>
-    </div>
-    <div class="right-panel">
-      <div class="card">
-        <div class="card-title">ABM Funnel — Wahl Clipper</div>
-        <div id="wahl-funnel"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Key Contacts</div>
-        <div class="contact-row"><div class="contact-av" style="background:#2a78d618;color:#2a78d6">AT</div><div><div class="contact-name">Aristo Tapias</div><div class="contact-title">HR Manager · LinkedIn Lead (Jan 2026)</div></div><span class="src-tag src-li">LinkedIn</span></div>
-        <div class="contact-row"><div class="contact-av" style="background:#4a3aa718;color:#4a3aa7">LB</div><div><div class="contact-name">Linda Barnes</div><div class="contact-title">Operations Director · Deal Champion</div></div></div>
-      </div>
-      <div class="takeaway">
-        <div class="takeaway-label">Key Takeaway</div>
-        <div class="takeaway-text">Single LinkedIn lead from a targeted HR Manager directly opened the Wahl account. Closed Won $68K in under 5 weeks from first MQA — fastest close in the ANA cohort. Proof that precision targeting at the right persona level converts.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── JPMORGAN ── -->
-<div id="chase" class="page">
-  <div class="acct-header">
-    <div class="acct-logo">JP</div>
-    <div>
-      <div class="acct-name">JPMorgan Chase</div>
-      <div class="acct-sub">Financial Services · New York, NY · 290,000 employees</div>
-      <div class="acct-pills">
-        <span class="pill pill-orange">MQA Stage</span>
-        <span class="pill pill-blue">7 Leads H1 2026</span>
-        <span class="pill pill-purple">14.2K Impressions</span>
-      </div>
-    </div>
-  </div>
-  <div class="acct-body">
-    <div class="card">
-      <div class="card-title">Account High Level Story</div>
-      <div id="chase-timeline"></div>
-    </div>
-    <div class="right-panel">
-      <div class="card">
-        <div class="card-title">ABM Funnel — JPMorgan Chase</div>
-        <div id="chase-funnel"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Key Contacts</div>
-        <div class="contact-row"><div class="contact-av" style="background:#0077b518;color:#0077b5">MP</div><div><div class="contact-name">Megan Pajarillo</div><div class="contact-title">VP Marketing Strategy · LinkedIn Lead</div></div><span class="src-tag src-li">LinkedIn</span></div>
-        <div class="contact-row"><div class="contact-av" style="background:#2a78d618;color:#2a78d6">RK</div><div><div class="contact-name">Rachel Kim</div><div class="contact-title">Senior Project Manager · BigBrain</div></div><span class="src-tag src-bb">BigBrain</span></div>
-        <div class="contact-row"><div class="contact-av" style="background:#4a3aa718;color:#4a3aa7">JT</div><div><div class="contact-name">James Thompson</div><div class="contact-title">Director Operations · Web CS</div></div><span class="src-tag src-web">Web CS</span></div>
-      </div>
-      <div class="takeaway">
-        <div class="takeaway-label">Key Takeaway</div>
-        <div class="takeaway-text">Enterprise penetration through multi-persona engagement: 7 leads across 3 channels with a VP-level champion (Megan Pajarillo). 14.2K impressions over 5 months built brand recall before MQA — now the largest open enterprise opportunity in the ANA pipeline.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── LAND O'LAKES ── -->
-<div id="lol" class="page">
-  <div class="acct-header">
-    <div class="acct-logo">LL</div>
-    <div>
-      <div class="acct-name">Land O'Lakes</div>
-      <div class="acct-sub">Agriculture / Food · Arden Hills, MN · 9,000 employees</div>
-      <div class="acct-pills">
-        <span class="pill pill-red">Opportunity $46.8K</span>
-        <span class="pill pill-blue">3 Channels</span>
-        <span class="pill pill-purple">23 Leads</span>
-      </div>
-    </div>
-  </div>
-  <div class="acct-body">
-    <div class="card">
-      <div class="card-title">Account High Level Story</div>
-      <div id="lol-timeline"></div>
-    </div>
-    <div class="right-panel">
-      <div class="card">
-        <div class="card-title">ABM Funnel — Land O'Lakes</div>
-        <div id="lol-funnel"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Key Contacts</div>
-        <div class="contact-row"><div class="contact-av" style="background:#2a78d618;color:#2a78d6">SR</div><div><div class="contact-name">Sara Ramos</div><div class="contact-title">Digital Transformation Lead · BigBrain</div></div><span class="src-tag src-bb">BigBrain</span></div>
-        <div class="contact-row"><div class="contact-av" style="background:#eda10018;color:#eda100">MF</div><div><div class="contact-name">Mike Fitzpatrick</div><div class="contact-title">VP Operations · Event Lead (Summit)</div></div><span class="src-tag src-event">Event</span></div>
-        <div class="contact-row"><div class="contact-av" style="background:#4a3aa718;color:#4a3aa7">AO</div><div><div class="contact-name">Amy Ortega</div><div class="contact-title">IT Director · Web CS</div></div><span class="src-tag src-web">Web CS</span></div>
-      </div>
-      <div class="takeaway">
-        <div class="takeaway-label">Key Takeaway</div>
-        <div class="takeaway-text">Strongest multi-channel account in the cohort: BigBrain + Event + Web CS all contributed leads before opp creation. The event touchpoint (Mike Fitzpatrick at summit) was the tipping point that moved the account from Engage to MQA in under 2 weeks.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── HILTON GRAND VACATIONS ── -->
-<div id="hilton" class="page">
-  <div class="acct-header">
-    <div class="acct-logo">HG</div>
-    <div>
-      <div class="acct-name">Hilton Grand Vacations</div>
-      <div class="acct-sub">Hospitality · Orlando, FL · 7,000 employees</div>
-      <div class="acct-pills">
-        <span class="pill pill-red">Opportunity $40.6K</span>
-        <span class="pill pill-blue">10 Pre-Campaign Signups</span>
-        <span class="pill pill-green">Director-Level Champion</span>
-      </div>
-    </div>
-  </div>
-  <div class="acct-body">
-    <div class="card">
-      <div class="card-title">Account High Level Story</div>
-      <div id="hilton-timeline"></div>
-    </div>
-    <div class="right-panel">
-      <div class="card">
-        <div class="card-title">ABM Funnel — Hilton Grand Vacations</div>
-        <div id="hilton-funnel"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Key Contacts</div>
-        <div class="contact-row"><div class="contact-av" style="background:#2a78d618;color:#2a78d6">CM</div><div><div class="contact-name">Carlos Medina</div><div class="contact-title">Director Sales & Marketing · BigBrain</div></div><span class="src-tag src-bb">BigBrain</span></div>
-        <div class="contact-row"><div class="contact-av" style="background:#0077b518;color:#0077b5">JL</div><div><div class="contact-name">Jennifer Lee</div><div class="contact-title">VP Revenue Operations · LinkedIn</div></div><span class="src-tag src-li">LinkedIn</span></div>
-      </div>
-      <div class="takeaway">
-        <div class="takeaway-label">Key Takeaway</div>
-        <div class="takeaway-text">10 BigBrain signups pre-campaign created latent intent that LinkedIn impressions activated. Carlos Medina (Director) was already evaluating monday.com before the campaign launched — ABM coverage accelerated the cycle and brought in a VP-level second stakeholder within 6 weeks.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-const stageConfig = {
-  'Targeted':    {icon:'ti-crosshair', bg:'#2a78d618', c:'#2a78d6', line:'#2a78d625'},
-  'Aware':       {icon:'ti-eye',       bg:'#1baf7a18', c:'#1baf7a', line:'#1baf7a25'},
-  'Engage':      {icon:'ti-hand-finger',bg:'#eda10018',c:'#eda100', line:'#eda10025'},
-  'MQA':         {icon:'ti-star',      bg:'#4a3aa718', c:'#4a3aa7', line:'#4a3aa725'},
-  'Opportunity': {icon:'ti-briefcase', bg:'#e3494818', c:'#e34948', line:'#e3494825'},
-  'Customer':    {icon:'ti-trophy',    bg:'#1baf7a28', c:'#1baf7a', line:'none'},
-  'In Progress': {icon:'ti-clock',     bg:'#eda10018', c:'#eda100', line:'none'},
-};
-
-function srcTag(type) {
-  const map = {
-    'LinkedIn': ['src-li','ti-brand-linkedin','LinkedIn'],
-    'BigBrain': ['src-bb','ti-bolt','BigBrain'],
-    'Event':    ['src-event','ti-calendar-event','Event'],
-    'Web CS':   ['src-web','ti-world','Web CS'],
-    'Won':      ['src-won','ti-trophy','Closed Won'],
-  };
-  const [cls,ico,label] = map[type] || ['src-bb','ti-bolt',type];
-  return `<span class="src-tag ${cls}"><i class="ti ${ico}"></i> ${label}</span>`;
-}
-
-function renderTimeline(steps, containerId) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  let html = '';
-  steps.forEach((s, i) => {
-    const sc = stageConfig[s.stage] || stageConfig['Targeted'];
-    const isLast = i === steps.length - 1;
-    html += `<div class="story-step">
-      <div class="story-spine">
-        <div class="spine-icon" style="background:${sc.bg};color:${sc.c}"><i class="ti ${sc.icon}"></i></div>
-        ${!isLast ? `<div class="spine-line" style="background:${sc.line === 'none' ? '#e5e7eb' : sc.line}"></div>` : ''}
-      </div>
-      <div class="story-body">
-        <div class="story-date">${s.date}</div>
-        <div class="story-stage" style="color:${sc.c}">${s.stage}</div>
-        <div class="story-desc">${s.desc}</div>
-        <div class="story-tags">${(s.tags||[]).map(srcTag).join('')}</div>
-      </div>
-    </div>`;
-  });
-  el.innerHTML = html;
-}
-
-function renderFunnel(stages, containerId) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  const allStages = ['Targeted','Aware','Engage','MQA','Opportunity','Customer'];
-  let html = '<div class="funnel-mini">';
-  allStages.forEach(name => {
-    const sc = stageConfig[name];
-    const active = stages.includes(name);
-    const isCurrent = stages[stages.length-1] === name;
-    html += `<div class="fstage" style="opacity:${active?1:0.3}">
-      <div class="fstage-icon" style="background:${sc.bg};color:${sc.c}"><i class="ti ${sc.icon}"></i></div>
-      <div class="fstage-name" style="font-weight:${isCurrent?700:400}">${name}</div>
-      ${isCurrent ? `<div class="fstage-dot" style="background:${sc.c}"></div>` : ''}
-    </div>`;
-  });
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-// main tabs
-document.querySelectorAll('.tab[data-page]').forEach(function(tab) {
-  tab.addEventListener('click', function() {
-    var id = this.getAttribute('data-page');
-    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-    var target = document.getElementById(id);
-    if (target) target.classList.add('active');
-    this.classList.add('active');
-  });
-});
-// pipeline sub-tabs
-document.querySelectorAll('.pipe-tab[data-pipe]').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    var type = this.getAttribute('data-pipe');
-    ['all','nb','exp'].forEach(function(t) {
-      var el = document.getElementById('pipe-'+t);
-      if (el) el.style.display = (t===type ? 'block' : 'none');
-    });
-    document.querySelectorAll('.pipe-tab').forEach(function(b) { b.classList.remove('on'); });
-    this.classList.add('on');
-  });
-});
-
-// Wahl Clipper timeline
-renderTimeline([
-  {date:'Jan 2026', stage:'Targeted', desc:'Wahl Clipper added to ANA ICP list. LinkedIn campaign goes live.', tags:['LinkedIn']},
-  {date:'Jan 15, 2026', stage:'Aware', desc:'Wahl Clipper employees begin engaging with monday.com LinkedIn ads. Aristo Tapias (HR Manager) clicks ad.', tags:['LinkedIn']},
-  {date:'Jan 22, 2026', stage:'Engage', desc:'Aristo Tapias submits a LinkedIn Lead Gen form — first known lead from this account.', tags:['LinkedIn']},
-  {date:'Jan 28, 2026', stage:'MQA', desc:'Lead routed to AE. Qualification call confirms HR use case. Account marked MQA.', tags:['LinkedIn']},
-  {date:'Feb 6, 2026', stage:'Opportunity', desc:'Opportunity created: $68K Work Mgmt for HR & Operations. AE engaged Linda Barnes (Ops Director).', tags:['LinkedIn']},
-  {date:'Mar 12, 2026', stage:'Customer', desc:'Deal closed. $68K Closed Won — fastest close in the ANA H1 cohort.', tags:['Won']},
-], 'wahl-timeline');
-renderFunnel(['Targeted','Aware','Engage','MQA','Opportunity','Customer'], 'wahl-funnel');
-
-// JPMorgan Chase timeline
-renderTimeline([
-  {date:'Jan 2026', stage:'Targeted', desc:'JPMorgan Chase added to ANA enterprise tier. LinkedIn campaign impression coverage begins (14.2K total).', tags:['LinkedIn']},
-  {date:'Feb 2026', stage:'Aware', desc:'Multiple JPMorgan employees engaging with content. 3 BigBrain signups and 2 Web CS visits recorded.', tags:['BigBrain','Web CS']},
-  {date:'Mar 2026', stage:'Engage', desc:'Megan Pajarillo (VP Marketing Strategy) submits LinkedIn Lead Gen form. Rachel Kim signs up via BigBrain.', tags:['LinkedIn','BigBrain']},
-  {date:'Apr 2026', stage:'MQA', desc:'3 qualified contacts confirmed across 3 channels. Account upgraded to MQA. Enterprise AE assigned.', tags:['LinkedIn','BigBrain','Web CS']},
-  {date:'In Progress', stage:'In Progress', desc:'Active evaluation underway. James Thompson (Director Ops) added as stakeholder. Largest open enterprise opp in ANA pipeline.', tags:[]},
-], 'chase-timeline');
-renderFunnel(['Targeted','Aware','Engage','MQA'], 'chase-funnel');
-
-// Land O'Lakes timeline
-renderTimeline([
-  {date:'Jan 2026', stage:'Targeted', desc:'Land O\'Lakes added to ANA ICP list. BigBrain identifies 8 contacts in digital transformation roles.', tags:['BigBrain']},
-  {date:'Jan–Feb 2026', stage:'Aware', desc:'Sara Ramos signs up via BigBrain. Additional contacts engage with Web CS resources.', tags:['BigBrain','Web CS']},
-  {date:'Feb 18, 2026', stage:'Engage', desc:'Mike Fitzpatrick (VP Operations) attends monday.com summit event. Highest-ranking contact to date.', tags:['Event','BigBrain']},
-  {date:'Mar 1, 2026', stage:'MQA', desc:'Post-event follow-up confirms multi-stakeholder interest. Account upgraded to MQA within 2 weeks of event.', tags:['Event']},
-  {date:'Mar 5, 2026', stage:'Opportunity', desc:'Opportunity created: $46.8K Work Mgmt across Operations and IT. 23 total leads across 3 channels.', tags:['BigBrain','Event','Web CS']},
-], 'lol-timeline');
-renderFunnel(['Targeted','Aware','Engage','MQA','Opportunity'], 'lol-funnel');
-
-// Hilton Grand Vacations timeline
-renderTimeline([
-  {date:'Pre-Jan 2026', stage:'Targeted', desc:'10 Hilton Grand Vacations employees already signed up via BigBrain before campaign launch — latent intent signal.', tags:['BigBrain']},
-  {date:'Jan 2026', stage:'Aware', desc:'LinkedIn campaign launches. Existing BigBrain users begin seeing monday.com ads. Carlos Medina (Director S&M) engaged.', tags:['LinkedIn','BigBrain']},
-  {date:'Feb 2026', stage:'Engage', desc:'Jennifer Lee (VP Revenue Ops) submits LinkedIn Lead Gen form. Second VP-level contact now in funnel.', tags:['LinkedIn']},
-  {date:'Mar 10, 2026', stage:'MQA', desc:'Two stakeholders (Director + VP) qualified. AE confirms active evaluation. MQA upgrade.', tags:['BigBrain','LinkedIn']},
-  {date:'Mar 17, 2026', stage:'Opportunity', desc:'Opportunity created: $40.6K. ABM coverage accelerated a deal that BigBrain had been warming for months.', tags:['BigBrain','LinkedIn']},
-], 'hilton-timeline');
-renderFunnel(['Targeted','Aware','Engage','MQA','Opportunity'], 'hilton-funnel');
-</script>
-</body>
-</html>
-"""
-    components.html(ANA_ABM_HTML, height=1800, scrolling=True)
+    # ── HILTON GRAND VACATIONS ───────────────────────────────────────────────
+    with tab_hilton:
+        st.markdown(acct_header("🏨","Hilton Grand Vacations",
+            "Hospitality · Orlando, FL · 7,000 employees",
+            [("#e34948","Opportunity $40.6K"),("#2a78d6","10 Pre-Campaign Signups"),("#1baf7a","Director-Level Champion")]),
+            unsafe_allow_html=True)
+        cl, cr = st.columns([3,2])
+        with cl:
+            st.markdown("**Account High Level Story**")
+            st.markdown(
+                tl_step("Pre-Jan 2026","Targeted","10 Hilton Grand Vacations employees already signed up via BigBrain before campaign launch — latent intent signal.",[BB]) +
+                tl_step("Jan 2026","Aware","LinkedIn campaign launches. Existing BigBrain users begin seeing monday.com ads. Carlos Medina (Director S&M) engaged.",[LI,BB]) +
+                tl_step("Feb 2026","Engage","Jennifer Lee (VP Revenue Ops) submits LinkedIn Lead Gen form. Second VP-level contact now in funnel.",[LI]) +
+                tl_step("Mar 10, 2026","MQA","Two stakeholders (Director + VP) qualified. AE confirms active evaluation. MQA upgrade.",[BB,LI]) +
+                tl_step("Mar 17, 2026","Opportunity","Opportunity created: $40.6K. ABM coverage accelerated a deal that BigBrain had been warming for months.",[BB,LI],is_last=True),
+                unsafe_allow_html=True)
+        with cr:
+            st.markdown("**ABM Funnel — Hilton Grand Vacations**")
+            st.markdown(funnel_html(["Targeted","Aware","Engage","MQA","Opportunity"]), unsafe_allow_html=True)
+            st.markdown("---")
+            st.markdown("**Key Contacts**")
+            st.markdown(
+                contact_row("CM","Carlos Medina","Director Sales & Marketing · BigBrain",BB) +
+                contact_row("JL","Jennifer Lee","VP Revenue Operations · LinkedIn",LI,border=False),
+                unsafe_allow_html=True)
+            st.markdown("---")
+            st.info("**Key Takeaway** — 10 BigBrain signups pre-campaign created latent intent that LinkedIn impressions activated. Carlos Medina was already evaluating monday.com before campaign launch — ABM coverage accelerated the cycle and brought in a VP-level second stakeholder within 6 weeks.")
