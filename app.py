@@ -1560,29 +1560,27 @@ function renderFunnel(stages, containerId) {
   el.innerHTML = html;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  // main tabs
-  document.querySelectorAll('.tab[data-page]').forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      var id = this.getAttribute('data-page');
-      document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-      document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-      var target = document.getElementById(id);
-      if (target) target.classList.add('active');
-      this.classList.add('active');
-    });
+// main tabs
+document.querySelectorAll('.tab[data-page]').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    var id = this.getAttribute('data-page');
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    var target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    this.classList.add('active');
   });
-  // pipeline sub-tabs
-  document.querySelectorAll('.pipe-tab[data-pipe]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var type = this.getAttribute('data-pipe');
-      ['all','nb','exp'].forEach(function(t) {
-        var el = document.getElementById('pipe-'+t);
-        if (el) el.style.display = (t===type ? 'block' : 'none');
-      });
-      document.querySelectorAll('.pipe-tab').forEach(function(b) { b.classList.remove('on'); });
-      this.classList.add('on');
+});
+// pipeline sub-tabs
+document.querySelectorAll('.pipe-tab[data-pipe]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var type = this.getAttribute('data-pipe');
+    ['all','nb','exp'].forEach(function(t) {
+      var el = document.getElementById('pipe-'+t);
+      if (el) el.style.display = (t===type ? 'block' : 'none');
     });
+    document.querySelectorAll('.pipe-tab').forEach(function(b) { b.classList.remove('on'); });
+    this.classList.add('on');
   });
 });
 
