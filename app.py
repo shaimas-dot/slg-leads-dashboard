@@ -17,6 +17,7 @@ with st.sidebar:
         "🔵 NAM Marketing (Work Mgmt)",
         "🟣 NAM PMO",
         "🟢 ANA ABM — Account Report",
+        "🛡️ HUB International — 1:1 ABM",
     ], index=0)
     st.markdown("---")
     st.caption("Campaign identifiers:")
@@ -24,10 +25,12 @@ with st.sidebar:
         st.code("Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1", language=None)
     elif "ANA ABM" in page:
         st.code("Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1", language=None)
+    elif "HUB International" in page:
+        st.code("701av00000RXVWxAAP  (SFDC)\n691779024  (LinkedIn)", language=None)
     else:
         st.code("Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1", language=None)
 
-if "PMO" not in page and "ANA ABM" not in page:
+if "PMO" not in page and "ANA ABM" not in page and "HUB International" not in page:
     st.title("🔵 NAM Marketing — Work Mgmt H1 2026")
     st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1 | 🔒 Data locked: Jan 1 – May 31, 2026")
 
@@ -601,7 +604,7 @@ if "PMO" not in page and "ANA ABM" not in page:
 
     # ═══════════════════════════════════════════════════════════════════════════════
 
-elif "ANA ABM" not in page:
+elif "ANA ABM" not in page and "HUB International" not in page:
     # ═══════════════════════════════════════════════════════════════════════════
     # PMO CAMPAIGN — NAM Land PMO H1 2026
     # ═══════════════════════════════════════════════════════════════════════════
@@ -1132,7 +1135,7 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
                                   xaxis_title='Weekly Spend ($)', yaxis_title='Pipeline ROI (x)', height=400)
         st.plotly_chart(fig_roi_p, use_container_width=True)
 
-else:
+elif "HUB International" not in page:
     # ═══════════════════════════════════════════════════════════════════════════
     # ANA ABM ACCOUNT REPORT — NAM Marketing ANA H1 2026
     # ═══════════════════════════════════════════════════════════════════════════
@@ -1410,3 +1413,138 @@ else:
                 unsafe_allow_html=True)
             st.markdown("---")
             st.info("**Key Takeaway** — 10 BigBrain signups pre-campaign created latent intent that LinkedIn impressions activated. Carlos Medina was already evaluating monday.com before campaign launch — ABM coverage accelerated the cycle and brought in a VP-level second stakeholder within 6 weeks.")
+
+else:
+    # ═══════════════════════════════════════════════════════════════════════════
+    # HUB INTERNATIONAL — 1:1 ABM ACCOUNT REPORT
+    # ═══════════════════════════════════════════════════════════════════════════
+    st.title("🛡️ HUB International — 1:1 ABM Account Report")
+    st.caption("Insurance Brokerage · Enterprise · Account 19755708 · hub-international10.monday.com | Window: Mar 2 – Jul 9, 2026")
+
+    HUB_BLUE = "#2a78d6"
+    HUB_GREEN = "#1baf7a"
+    HUB_AMBER = "#eda100"
+    HUB_PURPLE = "#4a3aa7"
+    HUB_RED = "#e34948"
+    LI_BLUE = "#0077b5"
+
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("LinkedIn Spend", "$7,018", "6 weeks · 517 clicks")
+    c2.metric("Seats", "1,345", "+140 in window · +320 YTD")
+    c3.metric("ARR", "$788,436", "+$163,123 YTD (+26%)")
+    c4.metric("Monthly Active (MAPP)", "1,044", "+28% since March")
+    c5.metric("Closed-Won, ABM-tagged", "$70,603", "Opp 006av0…Bv1aY · Jun 29")
+
+    st.markdown("---")
+
+    def _hub_tag(label, color):
+        return (f'<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;'
+                f'color:{color};background:{color}18;border:0.5px solid {color}40">{label}</span>')
+
+    HUB_STAGE_COLOR = {
+        "Baseline": HUB_BLUE, "Kickoff": HUB_PURPLE, "Nurture": HUB_AMBER,
+        "Paid Social": LI_BLUE, "Expansion": HUB_GREEN,
+    }
+
+    def hub_tl_step(date, stage, desc, tag_html="", is_last=False):
+        color = HUB_STAGE_COLOR.get(stage, "#6b7280")
+        line = "" if is_last else f'<div style="width:2px;background:{color}30;flex:1;min-height:16px;margin-top:2px"></div>'
+        return (
+            f'<div style="display:flex;gap:14px">'
+            f'<div style="width:32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center">'
+            f'<div style="width:32px;height:32px;border-radius:50%;background:{color}18;color:{color};'
+            f'display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">●</div>'
+            f'{line}</div>'
+            f'<div style="flex:1;padding-bottom:16px">'
+            f'<div style="font-size:10px;color:#9ca3af;font-weight:500;margin-bottom:2px">{date}</div>'
+            f'<div style="font-size:12px;font-weight:700;color:{color};margin-bottom:4px">{stage}</div>'
+            f'<div style="font-size:13px;color:#374151;line-height:1.5">{desc}</div>'
+            f'<div style="margin-top:5px">{tag_html}</div>'
+            f'</div></div>'
+        )
+
+    ABM_TAG = _hub_tag("🎯 1:1 ABM", HUB_PURPLE)
+    LI_TAG = _hub_tag("💼 LinkedIn", LI_BLUE)
+    EV_TAG = _hub_tag("📅 Event", HUB_AMBER)
+    WON_TAG = _hub_tag("🏆 Won", HUB_GREEN)
+
+    col_l, col_r = st.columns([3, 2])
+    with col_l:
+        st.markdown("**Account High-Level Story**")
+        st.markdown(
+            hub_tl_step("Mar 27, 2026", "Baseline", "Seat expansion closes: +180 seats / +$92.3K ARR — before any ABM activity begins.", "") +
+            hub_tl_step("Apr 15–16, 2026", "Kickoff", "1:1 ABM program launches: executive dinner (Evolve Supper Club) and roundtable/mobilizer breakfast.", ABM_TAG + " " + EV_TAG) +
+            hub_tl_step("May 20, 2026", "Nurture", "Executive webinar touch delivered to HUB stakeholders.", ABM_TAG) +
+            hub_tl_step("May 28 – Jun 4, 2026", "Paid Social", "5 static banner ads launch on LinkedIn. Weak CTR (0.7–1.6%) — paused after one week.", LI_TAG) +
+            hub_tl_step("Jun 2 – Jul 9, 2026", "Paid Social", "Employee-testimonial ad takes over: 88% of spend, 11.3% CTR — but clicks decay 115→37/week as the single-account audience saturates.", LI_TAG) +
+            hub_tl_step("Jun 29, 2026", "Expansion", "Opportunity closes won: +140 seats / +$70,603 ARR — CRM-confirmed stage & pipeline influence from the ABM program.", ABM_TAG + " " + WON_TAG, is_last=True),
+            unsafe_allow_html=True)
+
+    with col_r:
+        st.markdown("**Pipeline Attribution**")
+        attr_df = pd.DataFrame({
+            "Opportunity": ["Enterprise 1345 Yearly (006av0…Bv1aY)", "Enterprise 25 Yearly (006av0…Cmgu7)",
+                             "Enterprise 1255 Yearly (006av0…J5kQg)", "Enterprise 1205 Yearly (Mar expansion)"],
+            "Stage": ["Closed Won · Jun 29", "Validation", "Evaluation", "Closed Won · Mar 27"],
+            "Value": ["+$70,603 ARR", "$19,500 pipe", "$31,050 pipe", "+$92,340 ARR"],
+            "Confidence": ["Confirmed", "Confirmed", "Post-event, indirect", "Not attributable"],
+        })
+        st.dataframe(attr_df, use_container_width=True, hide_index=True)
+        st.markdown("---")
+        st.info("**Key Takeaway** — The 1:1 ABM program (exec dinner + roundtable + webinar) has CRM-confirmed influence on the $70,603 expansion closed Jun 29. LinkedIn campaign ID 691779024 doesn't map to a Salesforce campaign, so paid social is a plausible supporting touch, not a proven one. Usage growth started in March, before the program existed — mostly a downstream effect of the two seat expansions, not evidence the ads drove engagement.")
+
+    st.markdown("---")
+    col_u, col_d = st.columns(2)
+
+    with col_u:
+        st.markdown("**Usage Trend — indexed to Mar 2 = 100**")
+        weeks = ["03-02", "03-09", "03-16", "03-23", "03-30", "04-06", "04-13", "04-20", "04-27",
+                 "05-04", "05-11", "05-18", "05-25", "06-01", "06-08", "06-15", "06-22", "06-29", "07-06"]
+        wapp = [633, 621, 652, 633, 711, 751, 793, 735, 754, 757, 767, 767, 776, 800, 804, 777, 784, 792, 745]
+        mapp = [816, 828, 855, 860, 927, 956, 979, 990, 996, 1011, 983, 1003, 1036, 1032, 1036, 1028, 1030, 1042, 1044]
+        dau = [450, 428, 469, 491, 515, 474, 574, 527, 569, 560, 554, 538, None, 563, 599, 693, 587, 626, 607]
+
+        def _idx(arr):
+            base = arr[0]
+            return [None if v is None else round(v / base * 100, 1) for v in arr]
+
+        usage_df = pd.DataFrame({"Week": weeks, "WAPP": _idx(wapp), "MAPP": _idx(mapp), "DAU": _idx(dau)})
+        fig_u = go.Figure()
+        fig_u.add_vrect(x0="05-25", x1="07-06", fillcolor=LI_BLUE, opacity=0.08, line_width=0,
+                         annotation_text="LinkedIn campaign window", annotation_position="top left")
+        fig_u.add_trace(go.Scatter(x=usage_df["Week"], y=usage_df["WAPP"], name="WAPP", line=dict(color=HUB_BLUE, width=2)))
+        fig_u.add_trace(go.Scatter(x=usage_df["Week"], y=usage_df["MAPP"], name="MAPP", line=dict(color=HUB_AMBER, width=2)))
+        fig_u.add_trace(go.Scatter(x=usage_df["Week"], y=usage_df["DAU"], name="DAU", line=dict(color="#6b7280", width=2), connectgaps=True))
+        fig_u.update_layout(height=320, margin=dict(l=0, r=0, t=30, b=0), legend=dict(orientation="h", y=1.15))
+        st.plotly_chart(fig_u, use_container_width=True)
+
+    with col_d:
+        st.markdown("**LinkedIn Weekly Delivery**")
+        dweeks = ["05-25", "06-01", "06-08", "06-15", "06-22", "06-29", "07-06"]
+        spend = [344.88, 1017.33, 1094.47, 1097.48, 1146.80, 1447.84, 868.87]
+        clicks = [15, 115, 136, 83, 69, 62, 37]
+        fig_d = make_subplots(specs=[[{"secondary_y": True}]])
+        fig_d.add_trace(go.Bar(x=dweeks, y=spend, name="Spend ($)", marker_color=LI_BLUE, opacity=0.55), secondary_y=False)
+        fig_d.add_trace(go.Scatter(x=dweeks, y=clicks, name="Clicks", line=dict(color=HUB_RED, width=2)), secondary_y=True)
+        fig_d.update_layout(height=320, margin=dict(l=0, r=0, t=30, b=0), legend=dict(orientation="h", y=1.15))
+        fig_d.update_yaxes(title_text="Spend ($)", secondary_y=False)
+        fig_d.update_yaxes(title_text="Clicks", secondary_y=True)
+        st.plotly_chart(fig_d, use_container_width=True)
+
+    st.markdown("---")
+    st.markdown("**Creative Breakdown**")
+    creative_df = pd.DataFrame({
+        "Creative": ["Ad1_wg_hub_nam", "Ad2_wg_hub_nam", "Ad3_wg_hub_nam", "Ad4_wg_hub_nam", "Ad5_wg_hub_nam",
+                     "Employee testimonial (ID 1443240954)"],
+        "Phase": ["Static banner", "Static banner", "Static banner", "Static banner", "Static banner", "Employee testimonial"],
+        "Ran": ["5/28–6/4 (8d)", "5/28–6/4 (8d)", "5/29–6/4 (7d)", "5/28–6/4 (8d)", "5/28–6/4 (8d)", "6/2–7/9 (38d)"],
+        "Spend": ["$162.74", "$179.80", "$147.62", "$220.48", "$154.93", "$6,152.10"],
+        "Impressions": [455, 533, 405, 577, 451, 4287],
+        "Clicks": [7, 6, 6, 9, 3, 486],
+        "CTR": ["1.5%", "1.1%", "1.5%", "1.6%", "0.7%", "11.3%"],
+    })
+    st.dataframe(creative_df, use_container_width=True, hide_index=True)
+
+    st.caption("Sources: fact_accounts_mapp_daily · fact_accounts_active_users_daily · fact_accounts_arr_daily · "
+               "raw_salesforce_opportunities · events_attribution · LinkedIn campaign 691779024 creative performance "
+               "export (Apr 11 – Jul 9, 2026).")
