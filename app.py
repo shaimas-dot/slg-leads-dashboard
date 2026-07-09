@@ -1498,8 +1498,11 @@ else:
 
     with col_u:
         st.markdown("**Usage Trend — indexed to Mar 2 = 100**")
-        weeks = ["03-02", "03-09", "03-16", "03-23", "03-30", "04-06", "04-13", "04-20", "04-27",
-                 "05-04", "05-11", "05-18", "05-25", "06-01", "06-08", "06-15", "06-22", "06-29", "07-06"]
+        weeks = pd.to_datetime(["2026-03-02", "2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30",
+                                 "2026-04-06", "2026-04-13", "2026-04-20", "2026-04-27",
+                                 "2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25",
+                                 "2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22", "2026-06-29",
+                                 "2026-07-06"])
         wapp = [633, 621, 652, 633, 711, 751, 793, 735, 754, 757, 767, 767, 776, 800, 804, 777, 784, 792, 745]
         mapp = [816, 828, 855, 860, 927, 956, 979, 990, 996, 1011, 983, 1003, 1036, 1032, 1036, 1028, 1030, 1042, 1044]
         dau = [450, 428, 469, 491, 515, 474, 574, 527, 569, 560, 554, 538, None, 563, 599, 693, 587, 626, 607]
@@ -1510,17 +1513,19 @@ else:
 
         usage_df = pd.DataFrame({"Week": weeks, "WAPP": _idx(wapp), "MAPP": _idx(mapp), "DAU": _idx(dau)})
         fig_u = go.Figure()
-        fig_u.add_vrect(x0="05-25", x1="07-06", fillcolor=LI_BLUE, opacity=0.08, line_width=0,
+        fig_u.add_vrect(x0="2026-05-28", x1="2026-07-09", fillcolor=LI_BLUE, opacity=0.08, line_width=0,
                          annotation_text="LinkedIn campaign window", annotation_position="top left")
         fig_u.add_trace(go.Scatter(x=usage_df["Week"], y=usage_df["WAPP"], name="WAPP", line=dict(color=HUB_BLUE, width=2)))
         fig_u.add_trace(go.Scatter(x=usage_df["Week"], y=usage_df["MAPP"], name="MAPP", line=dict(color=HUB_AMBER, width=2)))
         fig_u.add_trace(go.Scatter(x=usage_df["Week"], y=usage_df["DAU"], name="DAU", line=dict(color="#6b7280", width=2), connectgaps=True))
         fig_u.update_layout(height=320, margin=dict(l=0, r=0, t=30, b=0), legend=dict(orientation="h", y=1.15))
+        fig_u.update_xaxes(tickformat="%b %-d", dtick=7 * 24 * 60 * 60 * 1000)
         st.plotly_chart(fig_u, use_container_width=True)
 
     with col_d:
         st.markdown("**LinkedIn Weekly Delivery**")
-        dweeks = ["05-25", "06-01", "06-08", "06-15", "06-22", "06-29", "07-06"]
+        dweeks = pd.to_datetime(["2026-05-25", "2026-06-01", "2026-06-08", "2026-06-15",
+                                  "2026-06-22", "2026-06-29", "2026-07-06"])
         spend = [344.88, 1017.33, 1094.47, 1097.48, 1146.80, 1447.84, 868.87]
         clicks = [15, 115, 136, 83, 69, 62, 37]
         fig_d = make_subplots(specs=[[{"secondary_y": True}]])
@@ -1529,6 +1534,7 @@ else:
         fig_d.update_layout(height=320, margin=dict(l=0, r=0, t=30, b=0), legend=dict(orientation="h", y=1.15))
         fig_d.update_yaxes(title_text="Spend ($)", secondary_y=False)
         fig_d.update_yaxes(title_text="Clicks", secondary_y=True)
+        fig_d.update_xaxes(tickformat="%b %-d", dtick=7 * 24 * 60 * 60 * 1000)
         st.plotly_chart(fig_d, use_container_width=True)
 
     st.markdown("---")
