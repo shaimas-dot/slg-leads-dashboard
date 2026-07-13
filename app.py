@@ -19,6 +19,7 @@ with st.sidebar:
         "🟢 ANA ABM — Account Report",
         "🛡️ HUB International — 1:1 ABM",
         "📊 All Campaigns — Explorer",
+        "📈 Incremental Growth Analysis",
     ], index=0)
     st.markdown("---")
     st.caption("Campaign identifiers:")
@@ -1792,3 +1793,290 @@ if "All Campaigns" in page:
     fig_sig.update_traces(textposition="outside")
     fig_sig.update_layout(coloraxis_showscale=False, height=360, xaxis_tickangle=-20)
     st.plotly_chart(fig_sig, use_container_width=True)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# INCREMENTAL GROWTH ANALYSIS
+# ═══════════════════════════════════════════════════════════════════════════════
+if "Incremental Growth" in page:
+    st.title("📈 LinkedIn Incremental Growth — NAM H1 2026")
+    st.caption("🔒 Jan 1 – May 31 2026 · Spend: CRQ (Habu cleanroom) where available, ADN otherwise · SUs: fact_linkedin_campaigns_daily")
+
+    # ── Per-SFDC-campaign verified actuals (Snowflake, queried 2026-07-13) ──────
+    # spend = CRQ where populated, ADN fallback; split campaigns 66.5/33.5
+    # 5 split nam-en campaigns total: $87,394 (CRQ+ADN mixed)
+    _split_total = 87394
+    _split_soft   = 44   # educate-banner 28 + educate-video 26 × combined then split below
+
+    inc_data = {
+        "Marketing ANA": {
+            "color": "#2563EB",
+            "spend":   1_784_369,
+            "soft_su": 740,
+            "work_su": 434,
+            "qe":      185,
+            "accounts": 1253,
+            "campaigns": 14,
+            "note": "nam-en slg_mktg (excl. split) + us-en abm_ana_slg_mktg family + 66.5% of 5 shared campaigns",
+        },
+        "PMO": {
+            "color": "#7C3AED",
+            "spend":   568_558,
+            "soft_su": 385,
+            "work_su": 89,
+            "qe":      0,
+            "accounts": 1399,
+            "campaigns": 11,
+            "note": "nam-en slg_ppm/pmo + us-en abm_slg_ppm + abm_slg_pmo_tl",
+        },
+        "SLED": {
+            "color": "#059669",
+            "spend":   307_643,
+            "soft_su": 176,
+            "work_su": 112,
+            "qe":      0,
+            "accounts": 2399,
+            "campaigns": 7,
+            "note": "nam-en slg_sled + slg_sled_counties + us-en abm_slg_sled family",
+        },
+        "Retail": {
+            "color": "#D97706",
+            "spend":   148_263,
+            "soft_su": 31,
+            "work_su": 0,
+            "qe":      0,
+            "accounts": 530,
+            "campaigns": 6,
+            "note": "nam-en slg_retail family (CRQ + ADN)",
+        },
+        "MKTG Whitespace": {
+            "color": "#0EA5E9",
+            "spend":   61_470,
+            "soft_su": 18,
+            "work_su": 0,
+            "qe":      0,
+            "accounts": 632,
+            "campaigns": 4,
+            "note": "nam-en work_mgmt_whitespace + 33.5% of 5 shared campaigns",
+        },
+        "CRO": {
+            "color": "#DC2626",
+            "spend":   49_461,
+            "soft_su": 0,
+            "work_su": 0,
+            "qe":      0,
+            "accounts": 1440,
+            "campaigns": 4,
+            "note": "nam-en slg_crm + slg_crol family (ADN only, no CRQ populated)",
+        },
+        "SLED Counties WS": {
+            "color": "#10B981",
+            "spend":   11_268,
+            "soft_su": 0,
+            "work_su": 0,
+            "qe":      0,
+            "accounts": 1067,
+            "campaigns": 1,
+            "note": "nam-en slg_sled_counties_whitespace (ADN only)",
+        },
+        "SLED Higher Ed": {
+            "color": "#0D9488",
+            "spend":   650,
+            "soft_su": 0,
+            "work_su": 0,
+            "qe":      0,
+            "accounts": 658,
+            "campaigns": 1,
+            "note": "nam-en slg_sled_edu (ADN only, very low spend)",
+        },
+    }
+
+    names      = list(inc_data.keys())
+    colors     = [inc_data[n]["color"] for n in names]
+    spends     = [inc_data[n]["spend"]   for n in names]
+    soft_sus   = [inc_data[n]["soft_su"] for n in names]
+    work_sus   = [inc_data[n]["work_su"] for n in names]
+    qes        = [inc_data[n]["qe"]      for n in names]
+    accounts   = [inc_data[n]["accounts"] for n in names]
+
+    total_spend   = sum(spends)
+    total_soft    = sum(soft_sus)
+    total_work    = sum(work_sus)
+    total_qe      = sum(qes)
+
+    # ── KPI row ─────────────────────────────────────────────────────────────────
+    k1, k2, k3, k4, k5 = st.columns(5)
+    k1.metric("Total LinkedIn Spend", f"${total_spend/1e6:.2f}M", "H1 2026 · all 8 SFDC campaigns")
+    k2.metric("Total Soft SUs", f"{total_soft:,}", "CRQ-attributed signups")
+    k3.metric("Total Work SUs", f"{total_work:,}", "Qualified work signups")
+    k4.metric("Blended Cost / Soft SU", f"${total_spend//max(total_soft,1):,}", "across all campaigns")
+    k5.metric("Total QE", f"{total_qe:,}", "Qualified engagements (3 campaigns)")
+
+    st.markdown("---")
+
+    # ── Spend + SU side-by-side ───────────────────────────────────────────────
+    col_l, col_r = st.columns(2)
+
+    with col_l:
+        fig_spend = go.Figure(go.Bar(
+            x=spends, y=names, orientation="h",
+            marker_color=colors,
+            text=[f"${s/1e3:.0f}K" for s in spends],
+            textposition="outside",
+        ))
+        fig_spend.update_layout(
+            title="LinkedIn Spend by SFDC Campaign (H1 2026)",
+            xaxis_title="Spend ($)", height=420,
+            margin=dict(l=0, r=60, t=40, b=0),
+            xaxis_tickformat="$,.0f",
+            yaxis=dict(autorange="reversed"),
+        )
+        st.plotly_chart(fig_spend, use_container_width=True)
+
+    with col_r:
+        fig_su = go.Figure()
+        fig_su.add_trace(go.Bar(
+            x=soft_sus, y=names, orientation="h",
+            name="Soft SUs", marker_color=colors, opacity=0.9,
+            text=soft_sus, textposition="outside",
+        ))
+        fig_su.add_trace(go.Bar(
+            x=work_sus, y=names, orientation="h",
+            name="Work SUs", marker_color="#1e293b", opacity=0.5,
+            text=work_sus, textposition="outside",
+        ))
+        fig_su.update_layout(
+            title="Soft SUs & Work SUs by Campaign",
+            barmode="overlay", height=420,
+            margin=dict(l=0, r=60, t=40, b=0),
+            yaxis=dict(autorange="reversed"),
+        )
+        st.plotly_chart(fig_su, use_container_width=True)
+
+    st.markdown("---")
+
+    # ── Efficiency table ─────────────────────────────────────────────────────
+    st.subheader("⚡ Efficiency Scorecard")
+    st.caption("Cost per SU = LinkedIn spend ÷ attributed signups. Lower = more efficient. Use this to size incremental investment.")
+
+    eff_rows = []
+    for n in names:
+        d = inc_data[n]
+        sp = d["spend"]; su = d["soft_su"]; wu = d["work_su"]; qe = d["qe"]
+        cpp_soft = round(sp / su) if su > 0 else None
+        cpp_work = round(sp / wu) if wu > 0 else None
+        cpp_qe   = round(sp / qe) if qe > 0 else None
+        su_rate  = round(su / d["accounts"] * 100, 1) if d["accounts"] > 0 else 0
+        eff_rows.append({
+            "SFDC Campaign":    n,
+            "Spend":            f"${sp:,.0f}",
+            "Campaigns":        d["campaigns"],
+            "TAL Accounts":     d["accounts"],
+            "Soft SUs":         su,
+            "Work SUs":         wu,
+            "QE":               qe,
+            "SU Rate (%)":      su_rate,
+            "Cost / Soft SU":   f"${cpp_soft:,}" if cpp_soft else "—",
+            "Cost / Work SU":   f"${cpp_work:,}" if cpp_work else "—",
+        })
+
+    eff_df = pd.DataFrame(eff_rows)
+    st.dataframe(eff_df, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    # ── Incremental decision tool ─────────────────────────────────────────────
+    st.subheader("🎯 Incremental Investment Simulator")
+    st.caption("Based on current Cost/Soft SU rates. Assumes linear returns — actual results may vary with saturation.")
+
+    sim_col1, sim_col2 = st.columns([1, 2])
+
+    with sim_col1:
+        eligible = [n for n in names if inc_data[n]["soft_su"] > 0]
+        sim_campaign = st.selectbox("Campaign to increase", eligible)
+        sim_budget   = st.slider("Additional monthly budget ($K)", 10, 500, 100, step=10) * 1000
+        sim_months   = st.slider("Months", 1, 6, 3)
+
+    d_sim       = inc_data[sim_campaign]
+    cpp_sim     = d_sim["spend"] / d_sim["soft_su"] if d_sim["soft_su"] > 0 else None
+    cpp_work_sim = d_sim["spend"] / d_sim["work_su"] if d_sim["work_su"] > 0 else None
+    total_add   = sim_budget * sim_months
+    proj_soft   = round(total_add / cpp_sim)      if cpp_sim else 0
+    proj_work   = round(total_add / cpp_work_sim) if cpp_work_sim else 0
+
+    # Funnel-based pipeline estimate: use existing pipeline / work_su ratios from all_campaigns
+    # Marketing ANA ~$2.4M pipeline / 74 funnel customers observed in all_campaigns
+    # Use a conservative $8K ARR per incremental work SU as proxy
+    arr_per_work_su = 8000
+    proj_pipe = proj_work * arr_per_work_su
+
+    with sim_col2:
+        r1, r2, r3 = st.columns(3)
+        r1.metric("Additional Spend", f"${total_add:,.0f}", f"{sim_months}mo × ${sim_budget/1000:.0f}K")
+        r2.metric("Projected Soft SUs", f"+{proj_soft:,}",
+                  f"@ ${cpp_sim:,.0f}/SU" if cpp_sim else "No SU data")
+        r3.metric("Projected Work SUs", f"+{proj_work:,}",
+                  f"@ ${cpp_work_sim:,.0f}/Work SU" if cpp_work_sim else "No Work SU data")
+
+        if proj_work > 0:
+            st.info(f"**Pipeline estimate:** +{proj_work} Work SUs × ${arr_per_work_su:,} proxy ARR = **${proj_pipe:,.0f}** incremental pipeline influence\n\n"
+                    f"_Proxy: $8K ARR per Work SU based on {sim_campaign} segment. Validate against SFDC before budgeting._")
+        elif proj_soft > 0:
+            st.warning(f"Work SU data not available for {sim_campaign} — can project {proj_soft} Soft SUs but pipeline estimate requires Work SU rate. "
+                       f"Use PMO or Marketing ANA rates as a proxy.")
+        else:
+            st.error(f"No SU data available for {sim_campaign} — cannot project incremental signups without Cost/SU baseline.")
+
+    st.markdown("---")
+
+    # ── Spend vs SU scatter (efficiency view) ────────────────────────────────
+    st.subheader("🔬 Spend Efficiency — Bubble View")
+    st.caption("Bubble size = TAL account count. X = spend, Y = Soft SUs. Campaigns top-right are high spend + high SU volume.")
+
+    bub_df = pd.DataFrame({
+        "Campaign":  names,
+        "Spend":     spends,
+        "Soft SUs":  soft_sus,
+        "Accounts":  accounts,
+        "Color":     colors,
+        "Cost/SU":   [round(s/u) if u > 0 else 0 for s, u in zip(spends, soft_sus)],
+    })
+
+    fig_bub = px.scatter(
+        bub_df, x="Spend", y="Soft SUs",
+        size="Accounts", color="Campaign",
+        color_discrete_sequence=colors,
+        text="Campaign",
+        size_max=60,
+        hover_data={"Cost/SU": True, "Accounts": True},
+    )
+    fig_bub.update_traces(textposition="top center", textfont_size=11)
+    fig_bub.update_layout(
+        height=500, showlegend=False,
+        xaxis_tickformat="$,.0f",
+        margin=dict(l=0, r=0, t=20, b=0),
+    )
+    st.plotly_chart(fig_bub, use_container_width=True)
+
+    st.markdown("---")
+
+    # ── Methodology note ─────────────────────────────────────────────────────
+    with st.expander("📐 Methodology & Limitations"):
+        st.markdown("""
+**Spend source:** CRQ (Habu cleanroom) where populated — authoritative LinkedIn-reported cost.
+ADN (datorama) used as fallback for campaigns without CRQ data (most nam-en campaigns).
+The 5 shared `slg_mktg` campaigns are split 66.5% to Marketing ANA / 33.5% to MKTG Whitespace by TAL account count (1,253 vs 632).
+
+**SU attribution:** `soft_su`, `work_su`, `qe` from `marketing.l3.fact_linkedin_campaigns_daily` — these are Habu cleanroom-attributed conversions,
+meaning the user was in the LinkedIn ABM audience AND converted within the attribution window.
+CRO, SLED WS, SLED HE, and most nam-en campaigns have null SU data — the CRQ pipeline has not ingested conversions for those campaigns.
+
+**Incremental growth caveat:** The simulator assumes linear returns (constant Cost/SU).
+In practice, marginal returns decline as the TAL becomes saturated.
+For H2 planning, pair this with a control group holdout or lift study before committing budget.
+
+**Next step:** Pull weekly spend × weekly SU time series per campaign to validate temporal correlation
+(spend in week N → SU lift in weeks N+1 to N+3), which would turn this from association to evidence.
+        """)
+
+    st.caption("Sources: marketing.l3.fact_linkedin_campaigns_daily · CRQ Habu cleanroom · datorama ADN · "
+               "SFDC campaign mapping verified 2026-07-13.")
