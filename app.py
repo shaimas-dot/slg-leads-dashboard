@@ -1810,7 +1810,7 @@ if "Incremental Growth" in page:
 
     ig_campaigns = {
         # Lead source breakdown from FIRST_LEAD_SOURCE in RAW_SALESFORCE_LEADS (all-time, no date filter)
-        # ls_tools = "Tools" (product-led / template signups)
+        # ls_tools = "Tools" (outbound)
         # ls_signup = "Big Brain - Signup" (organic self-serve signup)
         # ls_cs = Website/Landing Page/Mobile - Contact Sales (high-intent, direct sales request)
         # ls_event = "Event" + "Online Event" (event-sourced leads)
@@ -1972,7 +1972,7 @@ if "Incremental Growth" in page:
         "Campaign":        n,
         "TAL Accounts":    d["targeted"],
         "Total Leads":     d["total_leads"],
-        "Tools (PLG)":     d["ls_tools"],
+        "Tools (Outbound)":     d["ls_tools"],
         "Signup":          d["ls_signup"],
         "Contact Sales":   d["ls_cs"],
         "Event":           d["ls_event"],
@@ -1984,11 +1984,11 @@ if "Incremental Growth" in page:
 
     # Stacked bar by FIRST_LEAD_SOURCE category
     src_colors = {
-        "Tools (PLG)":   "#3B82F6",
-        "Signup":        "#8B5CF6",
-        "Contact Sales": "#EF4444",
-        "Event":         "#F59E0B",
-        "Other":         "#94A3B8",
+        "Tools (Outbound)": "#3B82F6",
+        "Signup":           "#8B5CF6",
+        "Contact Sales":    "#EF4444",
+        "Event":            "#F59E0B",
+        "Other":            "#94A3B8",
     }
     fig_leads = go.Figure()
     for src, color in src_colors.items():
@@ -2048,12 +2048,12 @@ if "Incremental Growth" in page:
         )
         st.plotly_chart(fig_cs, use_container_width=True)
 
-    leads_display = leads_df[["Campaign","TAL Accounts","Total Leads","Tools (PLG)","Signup","Contact Sales","Event","Other","Leads / Account","CS Lead %"]].copy()
+    leads_display = leads_df[["Campaign","TAL Accounts","Total Leads","Tools (Outbound)","Signup","Contact Sales","Event","Other","Leads / Account","CS Lead %"]].copy()
     leads_display["CS Lead %"] = leads_display["CS Lead %"].apply(lambda x: f"{x:.1f}%")
     st.dataframe(leads_display, use_container_width=True, hide_index=True)
 
     st.info(
-        "**Lead source types:** Tools (PLG) = product-led template/tool signups · "
+        "**Lead source types:** Tools (Outbound) = outbound tool-sourced leads · "
         "Signup = organic self-serve signup · Contact Sales = direct sales request (highest buying intent) · "
         "Event = in-person + online events · Other = Content, Platform, Partner, Vendors, Webinar, etc. "
         "Source: `FIRST_LEAD_SOURCE` in `bigbrain.l2.raw_salesforce_leads` (all-time, no date filter)."
@@ -2062,7 +2062,7 @@ if "Incremental Growth" in page:
         "**Lead status caveat:** As of Jul 2026, leads across these campaigns are primarily Unqualified (~77%) "
         "and Nurturing (~15%) — 0 MQL/SQL yet. This reflects the long enterprise B2B cycle (6–18 months). "
         "SLED campaigns are signup-dominated (85–97% Big Brain Signup) while Commercial campaigns "
-        "(ANA, PMO, Retail, CRO) are Tools/PLG-heavy (52–65%)."
+        "(ANA, PMO, Retail, CRO) are Tools/Outbound-heavy (52–65%)."
     )
 
     st.markdown("---")
@@ -2182,7 +2182,7 @@ if "Incremental Growth" in page:
         st.markdown("""
 **Funnel data:** `marketing.l3.v_abm_companies_funnel` — per-company ABM lifecycle stage (Targeted → Aware → Engage → MQA → Opportunity → Customer). All touchpoints counted (LinkedIn, web, outbound, events). Not LinkedIn-only attribution.
 
-**Person-level leads:** `bigbrain.l2.raw_salesforce_leads.abm_campaign_lead` — all-time leads associated with each campaign. Classified by `FIRST_LEAD_SOURCE` into 5 groups: **Tools** (PLG/template signups), **Signup** (Big Brain organic), **Contact Sales** (Website/Landing Page/Mobile CS — highest intent), **Event** (in-person + online events), **Other** (Content, Platform, Partner, Vendors, Webinar, etc.). Total: ~31,173 leads across 9 campaigns. SLED campaigns are signup-dominated; Commercial campaigns are Tools/PLG-heavy.
+**Person-level leads:** `bigbrain.l2.raw_salesforce_leads.abm_campaign_lead` — all-time leads associated with each campaign. Classified by `FIRST_LEAD_SOURCE` into 5 groups: **Tools** (outbound), **Signup** (Big Brain organic), **Contact Sales** (Website/Landing Page/Mobile CS — highest intent), **Event** (in-person + online events), **Other** (Content, Platform, Partner, Vendors, Webinar, etc.). Total: ~31,173 leads across 9 campaigns. SLED campaigns are signup-dominated; Commercial campaigns are Tools/Outbound-heavy.
 
 **LinkedIn impression data:** LinkedIn Company Journey Tool CSV export — NAM Land Ad Sets, Jan 26–May 31 2026. 9,382 companies, 3.4M impressions. Aggregated per company, bucketed by impression tier. NOT ingested into Snowflake — CSV-only today.
 
