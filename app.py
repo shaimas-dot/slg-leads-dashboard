@@ -1677,6 +1677,53 @@ if "Incremental Growth" in page:
     st.markdown("---")
 
     # ════════════════════════════════════════════════════════════════════════════
+    # INCREMENTALITY FRAMEWORK
+    # ════════════════════════════════════════════════════════════════════════════
+    st.subheader("🔬 How to Read LinkedIn's Incremental Impact")
+    st.caption("We don't have a holdout control group — so we use three proxies to approximate LinkedIn's causal contribution.")
+
+    fw1, fw2, fw3 = st.columns(3)
+    with fw1:
+        st.markdown("##### 📶 Proxy 1: Impression Frequency Lift")
+        st.markdown(
+            "Accounts with **more LinkedIn impressions engage at a higher rate**. "
+            "Minimal-exposure accounts: 0.98% engagement. High-exposure (>10K imps): 1.59%. "
+            "That's a **+62% lift** driven purely by LinkedIn frequency. "
+            "If LinkedIn weren't running, all accounts would sit near the baseline."
+        )
+        st.metric("Engagement lift (High vs Minimal tier)", "+62%", "0.98% → 1.59%")
+
+    with fw2:
+        st.markdown("##### 🙋 Proxy 2: Contact Sales Signal")
+        st.markdown(
+            "**530 people from TAL accounts requested a demo** via Contact Sales form — "
+            "the highest-intent action available. These are people who saw LinkedIn ads "
+            "and self-identified buying intent. PMO leads this with 168 CS leads. "
+            "This is the closest signal we have to LinkedIn-driven pipeline."
+        )
+        total_cs = sum(d["ls_cs"] for d in campaigns.values())
+        st.metric("Contact Sales leads from TAL accounts", f"{total_cs:,}", "direct intent signal")
+
+    with fw3:
+        st.markdown("##### 🎟️ Proxy 3: Event Qualification Rate")
+        st.markdown(
+            "Event-sourced leads qualify at **4.0%** vs **0%** for all other lead sources. "
+            "Events are the only touchpoint producing Qualified leads in this pipeline. "
+            "Since events are part of the ABM campaign mix alongside LinkedIn, "
+            "this shows the combined ABM motion is creating measurable pipeline quality."
+        )
+        st.metric("Event lead qualification rate", "4.0%", "vs 0% for all other sources")
+
+    st.warning(
+        "⚠️ **What we cannot prove without a holdout:** True incrementality requires assigning ~20% of TAL accounts "
+        "to a LinkedIn-off control group and comparing their funnel progression after 6 months. "
+        "**H2 recommendation:** Run a holdout test — exclude one campaign's TAL from LinkedIn for Q3, "
+        "compare Aware/Opp rates at Q4 against LinkedIn-on accounts. That data becomes your 2027 budget case."
+    )
+
+    st.markdown("---")
+
+    # ════════════════════════════════════════════════════════════════════════════
     # ACT 1 — REACH: LinkedIn impression coverage & tier distribution
     # ════════════════════════════════════════════════════════════════════════════
     st.subheader("📡 Act 1 — Reach: How LinkedIn Covered the TAL")
@@ -1873,6 +1920,69 @@ if "Incremental Growth" in page:
                "This outperforms the overall lead pool where 0 out of 31,173 total leads are Qualified. "
                "Events are the highest-converting lead source for enterprise ABM.")
 
+    # Event vs non-event lead quality comparison
+    st.markdown("#### Event vs Non-Event Lead Quality")
+    st.caption("Comparing qualification rate between event-sourced leads and all other lead sources")
+
+    eq1, eq2, eq3 = st.columns(3)
+    with eq1:
+        fig_compare = go.Figure()
+        fig_compare.add_trace(go.Bar(
+            x=["Event Leads", "All Other Leads"],
+            y=[4.0, 0.0],
+            marker_color=["#16A34A", "#94A3B8"],
+            text=["4.0%", "0%"],
+            textposition="outside",
+            width=0.4,
+        ))
+        fig_compare.update_layout(
+            title="Qualification Rate: Events vs Everything Else",
+            yaxis_title="% Qualified", height=300,
+            margin=dict(l=0,r=0,t=40,b=0),
+            yaxis=dict(range=[0, 6]),
+        )
+        st.plotly_chart(fig_compare, use_container_width=True)
+
+    with eq2:
+        fig_vol = go.Figure()
+        fig_vol.add_trace(go.Bar(
+            x=["Event Leads", "All Other Leads"],
+            y=[251, 30922],
+            marker_color=["#F59E0B", "#94A3B8"],
+            text=["251", "30,922"],
+            textposition="outside",
+            width=0.4,
+        ))
+        fig_vol.update_layout(
+            title="Lead Volume by Source Type",
+            yaxis_title="Total Leads", height=300,
+            margin=dict(l=0,r=0,t=40,b=0),
+        )
+        st.plotly_chart(fig_vol, use_container_width=True)
+
+    with eq3:
+        st.markdown("##### Event ROI Signal")
+        st.markdown(
+            "| | Event Leads | All Other |\n"
+            "|---|---|---|\n"
+            "| **Volume** | 251 (0.8%) | 30,922 (99.2%) |\n"
+            "| **Qualified** | 10 | 0 |\n"
+            "| **Qual Rate** | **4.0%** | **0%** |\n"
+            "| **Campaigns** | PMO · SLED Ex · Retail | All 9 |\n"
+        )
+        st.markdown(
+            "Events represent less than 1% of total lead volume "
+            "but generate **100% of all Qualified leads**. "
+            "This is the clearest evidence of event-driven pipeline influence in H1."
+        )
+
+    # Per-campaign event lead status breakdown toggle
+    with st.expander("🔍 Per-campaign event lead status detail"):
+        ev_pivot = ev_df[["Campaign","Total","Qualified","Nurturing","Attempting","Received","Drop-Off","Unqualified","Qual Rate %"]].copy()
+        ev_pivot = ev_pivot[ev_pivot["Total"] > 0]
+        ev_pivot["Qual Rate %"] = ev_pivot["Qual Rate %"].apply(lambda x: f"{x:.1f}%")
+        st.dataframe(ev_pivot, use_container_width=True, hide_index=True)
+
     st.markdown("---")
 
     # ════════════════════════════════════════════════════════════════════════════
@@ -1963,8 +2073,33 @@ if "Incremental Growth" in page:
     # ════════════════════════════════════════════════════════════════════════════
     # ACT 6 — H2 BUDGET SIMULATOR
     # ════════════════════════════════════════════════════════════════════════════
-    st.subheader("🎯 Act 6 — H2 Budget Decision Simulator")
-    st.caption("Based on H1 cost-per-opp rates. Directional only — not a forecast.")
+    st.subheader("🎯 Act 6 — H2 Recommendation & Budget Simulator")
+    st.caption("Based on H1 opp rate, cost-per-opp, lead quality, and event qualification signals.")
+
+    st.markdown("#### H2 Investment Recommendation by Campaign")
+    rec_data = [
+        {"Campaign": "PMO",           "Opp Rate": "35.2%", "Cost/Opp": "$1,151",  "Event Qual Leads": 6,  "Recommendation": "🟢 Scale",    "Rationale": "Most efficient. Highest event lead qualification. Strong Outbound + CS lead mix."},
+        {"Campaign": "SLED Existing", "Opp Rate": "30.6%", "Cost/Opp": "$367",    "Event Qual Leads": 2,  "Recommendation": "🟢 Scale",    "Rationale": "Lowest cost/opp. High signup density. Event leads converting. Underinvested at $37K."},
+        {"Campaign": "CRO",           "Opp Rate": "19.4%", "Cost/Opp": "$177",    "Event Qual Leads": 0,  "Recommendation": "🟢 Scale",    "Rationale": "Very low spend, very low cost/opp. Strong outbound lead volume."},
+        {"Campaign": "Retail",        "Opp Rate": "27.9%", "Cost/Opp": "$1,002",  "Event Qual Leads": 2,  "Recommendation": "🟡 Maintain", "Rationale": "Good opp rate. Event leads qualifying. Reasonable spend level."},
+        {"Campaign": "SLED Higher Ed","Opp Rate": "12.3%", "Cost/Opp": "$28",     "Event Qual Leads": 0,  "Recommendation": "🟡 Maintain", "Rationale": "Near-zero spend. Decent funnel depth. Monitor before scaling."},
+        {"Campaign": "Marketing ANA", "Opp Rate": "17.5%", "Cost/Opp": "$8,037",  "Event Qual Leads": 0,  "Recommendation": "🟡 Optimize", "Rationale": "Highest spend, highest cost/opp. Strong awareness but no event Qualified leads. Rebalance toward events."},
+        {"Campaign": "MKTG Whitespace","Opp Rate": "6.0%", "Cost/Opp": "$1,618",  "Event Qual Leads": 0,  "Recommendation": "🔴 Reassess", "Rationale": "Low opp rate, no event qualified leads, low lead density. Question TAL quality before H2."},
+        {"Campaign": "SLED Counties", "Opp Rate": "3.2%",  "Cost/Opp": "$3,514",  "Event Qual Leads": 0,  "Recommendation": "🔴 Reassess", "Rationale": "Lowest opp rate across all campaigns. Large TAL (2,402) not converting. LinkedIn alone not enough here."},
+        {"Campaign": "SLED Counties WS","Opp Rate":"0.8%", "Cost/Opp": "$1,252",  "Event Qual Leads": 0,  "Recommendation": "🔴 Pause",   "Rationale": "Near-zero pipeline activity. 0 event leads. No signal of LinkedIn influence. Pause and requalify TAL."},
+    ]
+    rec_df = pd.DataFrame(rec_data)
+    st.dataframe(rec_df, use_container_width=True, hide_index=True)
+
+    st.info(
+        "**Event strategy for H2:** Given events are the only source of Qualified leads (4.0% qual rate vs 0% all other sources), "
+        "consider increasing event investment specifically for PMO and SLED Existing — "
+        "these two campaigns have both strong opp rates AND event-to-Qualified conversion. "
+        "Marketing ANA has the most event leads (127) but 0 Qualified — review event targeting and follow-up cadence."
+    )
+
+    st.markdown("---")
+    st.subheader("📊 Budget Simulator")
 
     sim_options = [n for n in cnames if campaigns[n]["cost_per_opp"] is not None]
     sim1, sim2 = st.columns([1,2])
