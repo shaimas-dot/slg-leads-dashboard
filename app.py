@@ -225,7 +225,7 @@ if "PMO" not in page and "ANA ABM" not in page and "HUB International" not in pa
     k2.metric("Accounts Targeted","1,271")
     k3.metric("Total Impressions","1,282,928","datorama · slg_mktg")
     k4.metric("Clicks","17,789","CTR 1.39%")
-    k5.metric("Engagements","~8,590","$238K / $27.79 avg CPE")
+    k5.metric("Accounts Visited Website","837","66% of TAL · ZoomInfo IP match")
     k6.metric("Soft Signups","102","CRQ cleanroom (Jan–May)")
     k7.metric("Total Pipeline ARR", f"${mkt_filtered_total:,}", "by selected type(s)")
     k8.metric("Pipeline ROI", f"{mkt_roi:.1f}x", f"${mkt_filtered_total:,} / $254K")
@@ -371,6 +371,22 @@ if "PMO" not in page and "ANA ABM" not in page and "HUB International" not in pa
         mkt_intent_cols[1].metric("SLG Contact Sales", "2", "direct SLG motion")
 
         st.info("📌 Touch point data sourced from FACT_ABM_ENGAGEMENT_METRICS + FACT_ABM_INTENT_METRICS joined to campaign accounts. Signups/events/CS counted since campaign start date (Jan 26, 2026).")
+
+        st.subheader("Top Accounts by Website Visits (Jan–May 2026)")
+        st.caption("Source: fact_abm_intent_metrics · ZoomInfo IP-to-company matching · 837 of 1,271 accounts visited")
+        mkt_visits = pd.DataFrame({
+            'Account': ['Chase','Charles Schwab','Wells Fargo','Honeywell','State Farm',
+                        'Adobe','General Motors','ADP','Procter & Gamble','Capital One',
+                        'USPS','SAP','Edward Jones','General Electric','U.S. Bank',
+                        'Liberty Mutual','Aflac','Elevance Health','Farmers Insurance','United Airlines'],
+            'Domain':  ['chase.com','schwab.com','wellsfargo.com','honeywell.com','statefarm.com',
+                        'adobe.com','gm.com','adp.com','us.pg.com','capitalone.com',
+                        'usps.com','sap.com','edwardjones.com','ge.com','usbank.com',
+                        'libertymutual.com','aflac.com','elevancehealth.com','farmers.com','united.com'],
+            'Visits':  [6986,6724,3438,2111,2047,1999,1979,1947,1761,1659,
+                        1509,1464,1208,1149,1144,1140,1139,1094,1067,1053],
+        })
+        st.dataframe(mkt_visits, use_container_width=True, hide_index=True)
 
     # ── TAB 5: Incremental Model ──────────────────────────────────────────────────
     with tab5:
@@ -752,7 +768,7 @@ elif "ANA ABM" not in page and "HUB International" not in page:
     pk2.metric("SFDC Accounts","1,401")
     pk3.metric("Total Impressions","1,035,807","datorama · slg_ppm/pmo")
     pk4.metric("Clicks","6,524","CTR 0.63%")
-    pk5.metric("Engagements","~4,289","$161K / $37.58 avg CPE")
+    pk5.metric("Accounts Visited Website","1,010","72% of TAL · ZoomInfo IP match")
     pk6.metric("Soft Signups","247","CRQ cleanroom (Jan–May)")
     pk7.metric("Pipeline ARR (filtered)", f"${pmo_filtered_total:,}", "by selected type(s)")
     pk8.metric("Pipeline ROI", f"{pmo_roi_actual:.1f}x", f"${pmo_filtered_total:,} / $258K")
@@ -873,6 +889,22 @@ elif "ANA ABM" not in page and "HUB International" not in page:
 
         st.info("📌 PMO shows strong funnel depth (701 accounts at Opportunity/Customer stage vs 289 for Marketing) and leads on keyword intent signals (4,785 vs 4,625), suggesting high-intent accounts even with lower direct engagement.")
 
+        st.subheader("Top Accounts by Website Visits (Jan–May 2026)")
+        st.caption("Source: fact_abm_intent_metrics · ZoomInfo IP-to-company matching · 1,010 of 1,401 accounts visited")
+        pmo_visits = pd.DataFrame({
+            'Account': ['Alliant Insurance','MaineHealth','UPS','Conservice','Yelp',
+                        'HCA Healthcare','Spectrum','RE/MAX','Raytheon Technologies','Wayfair',
+                        'United Airlines','Sun Life Financial','Aramark','Emerson','NASA',
+                        'Raymond James','DaVita','PNC','Primerica','DaVita Kidney Care'],
+            'Domain':  ['alliant.com','mainehealth.org','ups.com','conservice.com','yelp.com',
+                        'hcahealthcare.com','spectrum.com','remax.com','rtx.com','wayfair.com',
+                        'united.com','sunlife.com','aramark.com','emerson.com','nasa.gov',
+                        'raymondjames.com','davita.com','pnc.com','primerica.com','davita.com'],
+            'Visits':  [3550,3204,2095,1980,1907,1884,1583,1573,1142,1106,
+                        1053,985,951,929,830,770,769,762,713,769],
+        })
+        st.dataframe(pmo_visits, use_container_width=True, hide_index=True)
+
     # ── PMO TAB 3: Company Size ───────────────────────────────────────────────────
     with ptab3:
         st.subheader("PMO — Company Size vs Impression Coverage")
@@ -976,9 +1008,9 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
         st.dataframe(pmo_spend, use_container_width=True, hide_index=True)
 
         ps1, ps2, ps3 = st.columns(3)
-        ps1.metric("Spend (Jan–May)", "$252K", "slg_ppm + slg_pmo campaigns")
-        ps2.metric("Total Web Visits (est.)", "~310", "from LinkedIn-touched accounts")
-        ps3.metric("Cost per Web Visit", "~$813", "$252K / 310 visits")
+        ps1.metric("Spend (Jan–May)", "$258K", "CRQ cleanroom · slg_ppm/pmo")
+        ps2.metric("Accounts Visited Website", "1,010", "72% of TAL · ZoomInfo IP match")
+        ps3.metric("Cost per Visiting Account", "~$255", "$258K / 1,010 accounts")
 
         fig_spend = px.bar(pmo_spend, x='Campaign Tag', y='Est. Spend ($)',
                            color='Est. Spend ($)', color_continuous_scale='Purples',
