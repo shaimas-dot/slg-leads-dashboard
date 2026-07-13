@@ -18,6 +18,7 @@ with st.sidebar:
         "🟣 NAM PMO",
         "🟢 ANA ABM — Account Report",
         "🛡️ HUB International — 1:1 ABM",
+        "📊 All Campaigns — Explorer",
     ], index=0)
     st.markdown("---")
     st.caption("Campaign identifiers:")
@@ -1586,3 +1587,208 @@ else:
     st.caption("Sources: fact_accounts_mapp_daily · fact_accounts_active_users_daily · fact_accounts_arr_daily · "
                "raw_salesforce_opportunities · events_attribution · LinkedIn campaign 691779024 creative performance "
                "export (Apr 11 – Jul 9, 2026).")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ALL CAMPAIGNS EXPLORER
+# ═══════════════════════════════════════════════════════════════════════════════
+if "All Campaigns" in page:
+    st.title("📊 NAM ABM — All Campaigns Explorer")
+    st.caption("🔒 Data locked: Jan 1 – May 31, 2026 | Sources: stg_abm_targets · v_abm_companies_funnel · fact_abm_engagement_metrics · fact_abm_intent_metrics")
+
+    # ── Master campaign data ──────────────────────────────────────────────────
+    all_campaigns = {
+        "Marketing ANA": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1",
+            "id": "701av00000Q3zkmAAB", "type": "land", "start": "2026-01-26",
+            "accounts": 1253,
+            "funnel": {"Targeted":1269,"Aware":674,"Engage":170,"MQA":137,"Opportunity":222,"Customer":74},
+            "signups":574,"web_cs":20,"events":93,"mql_events":22,
+            "accounts_visited":837,"total_visits":132051,
+        },
+        "PMO": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1",
+            "id": "701av00000Q4a2kAAB", "type": "land", "start": "2026-01-26",
+            "accounts": 1399,
+            "funnel": {"Targeted":1404,"Aware":833,"Engage":324,"MQA":323,"Opportunity":494,"Customer":239},
+            "signups":40,"web_cs":2,"events":1,"mql_events":1,
+            "accounts_visited":1010,"total_visits":109522,
+        },
+        "CRO": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_CRO_H1",
+            "id": "701av00000RIHCbAAP", "type": "land", "start": "2026-02-23",
+            "accounts": 1440,
+            "funnel": {"Targeted":1440,"Aware":720,"Engage":188,"MQA":179,"Opportunity":279,"Customer":134},
+            "signups":469,"web_cs":25,"events":25,"mql_events":6,
+            "accounts_visited":1081,"total_visits":13938,
+        },
+        "MKTG Whitespace": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_MKTG_Whitespace_H1",
+            "id": "701av00000RBivCAAT", "type": "land", "start": "2026-02-20",
+            "accounts": 632,
+            "funnel": {"Targeted":636,"Aware":383,"Engage":24,"MQA":21,"Opportunity":38,"Customer":4},
+            "signups":22,"web_cs":3,"events":5,"mql_events":0,
+            "accounts_visited":434,"total_visits":33546,
+        },
+        "Retail": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_Retail_H1",
+            "id": "701av00000Q455NAAR", "type": "land", "start": "2026-01-26",
+            "accounts": 530,
+            "funnel": {"Targeted":530,"Aware":317,"Engage":111,"MQA":108,"Opportunity":148,"Customer":81},
+            "signups":114,"web_cs":0,"events":3,"mql_events":2,
+            "accounts_visited":392,"total_visits":16583,
+        },
+        "SLED Counties": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Counties_H1",
+            "id": "701av00000Q3o1QAAR", "type": "land", "start": "2026-01-26",
+            "accounts": 2399,
+            "funnel": {"Targeted":2402,"Aware":525,"Engage":75,"MQA":66,"Opportunity":77,"Customer":36},
+            "signups":279,"web_cs":11,"events":7,"mql_events":5,
+            "accounts_visited":874,"total_visits":19435,
+        },
+        "SLED Higher Ed": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Higher_Ed_H1",
+            "id": "701av00000Q3pyKAAR", "type": "land", "start": "2026-01-26",
+            "accounts": 658,
+            "funnel": {"Targeted":658,"Aware":467,"Engage":84,"MQA":66,"Opportunity":81,"Customer":23},
+            "signups":418,"web_cs":21,"events":6,"mql_events":2,
+            "accounts_visited":549,"total_visits":65757,
+        },
+        "SLED Existing": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Existing_H1",
+            "id": "701av00000QGEhbAAH", "type": "land", "start": "2026-01-26",
+            "accounts": 329,
+            "funnel": {"Targeted":330,"Aware":234,"Engage":84,"MQA":81,"Opportunity":101,"Customer":44},
+            "signups":144,"web_cs":6,"events":5,"mql_events":0,
+            "accounts_visited":271,"total_visits":42375,
+        },
+        "SLED Counties Whitespace": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Counties_Whitespace_H1",
+            "id": "701av00000RFgc8AAD", "type": "land", "start": "2026-02-23",
+            "accounts": 1067,
+            "funnel": {"Targeted":1068,"Aware":97,"Engage":7,"MQA":7,"Opportunity":9,"Customer":1},
+            "signups":44,"web_cs":1,"events":0,"mql_events":0,
+            "accounts_visited":206,"total_visits":2518,
+        },
+        "Expand 1:Few": {
+            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Expand_1:Few_H1",
+            "id": "701av00000Q9iFqAAJ", "type": "expansion", "start": "2026-01-26",
+            "accounts": 767,
+            "funnel": {"Expansion Targeted":784,"Expansion Engaged":102,"Expansion Opportunity":102,"Expansion Won":101},
+            "signups":190,"web_cs":1,"events":13,"mql_events":2,
+            "accounts_visited":652,"total_visits":160690,
+        },
+    }
+
+    # ── Campaign selector ─────────────────────────────────────────────────────
+    selected = st.selectbox(
+        "Select a campaign to explore:",
+        options=list(all_campaigns.keys()),
+        index=0,
+    )
+    c = all_campaigns[selected]
+
+    st.markdown(f"**SFDC:** `{c['sfdc']}`")
+    col_meta = st.columns(4)
+    col_meta[0].metric("Type", c["type"].capitalize())
+    col_meta[1].metric("Start Date", c["start"])
+    col_meta[2].metric("Accounts in TAL", f"{c['accounts']:,}")
+    col_meta[3].metric("Accounts Visited Website", f"{c['accounts_visited']:,}", f"{round(c['accounts_visited']/c['accounts']*100)}% of TAL")
+    st.markdown("---")
+
+    # ── Tabs ──────────────────────────────────────────────────────────────────
+    xt1, xt2, xt3 = st.tabs(["🏗️ ABM Funnel", "📬 Engagement Signals", "🌐 Website Traffic"])
+
+    with xt1:
+        st.subheader(f"{selected} — ABM Lifecycle Funnel")
+        funnel_df = pd.DataFrame({
+            "Stage": list(c["funnel"].keys()),
+            "Companies": list(c["funnel"].values()),
+        })
+        is_expansion = c["type"] == "expansion"
+        funnel_colors = (
+            ["#7B1FA2","#BA68C8","#9C27B0","#E1BEE7"] if is_expansion
+            else ["#1565C0","#1976D2","#42A5F5","#90CAF9","#FFA726","#AB47BC"]
+        )
+        fig_xf = go.Figure(go.Funnel(
+            y=funnel_df["Stage"],
+            x=funnel_df["Companies"],
+            textinfo="value+percent initial",
+            marker={"color": funnel_colors[:len(funnel_df)]},
+        ))
+        fig_xf.update_layout(height=420, title=f"{selected} — Lifecycle Funnel (Jan–May 2026)")
+        st.plotly_chart(fig_xf, use_container_width=True)
+
+        opp_key = "Expansion Opportunity" if is_expansion else "Opportunity"
+        cust_key = "Expansion Won" if is_expansion else "Customer"
+        opp_count = c["funnel"].get(opp_key, 0)
+        cust_count = c["funnel"].get(cust_key, 0)
+        targeted = list(c["funnel"].values())[0]
+
+        fc1, fc2, fc3 = st.columns(3)
+        fc1.metric("Targeted", f"{targeted:,}")
+        fc2.metric("Opportunity / Won", f"{opp_count:,}", f"{round(opp_count/targeted*100,1)}% of targeted")
+        fc3.metric("Customer / Expansion Won", f"{cust_count:,}", f"{round(cust_count/targeted*100,1)}% of targeted")
+
+    with xt2:
+        st.subheader(f"{selected} — Engagement Signals (Jan–May 2026)")
+        ec1, ec2, ec3, ec4 = st.columns(4)
+        ec1.metric("Signups (ABM)", f"{c['signups']:,}")
+        ec2.metric("Website Contact Sales", f"{c['web_cs']:,}")
+        ec3.metric("Events", f"{c['events']:,}")
+        ec4.metric("MQL Events", f"{c['mql_events']:,}")
+
+        eng_df = pd.DataFrame({
+            "Metric": ["Signups", "Web Contact Sales", "Events", "MQL Events"],
+            "Count":  [c["signups"], c["web_cs"], c["events"], c["mql_events"]],
+        })
+        fig_eng = px.bar(eng_df, x="Metric", y="Count", color="Count",
+                         color_continuous_scale="Blues",
+                         title=f"{selected} — Engagement Breakdown",
+                         text="Count")
+        fig_eng.update_traces(textposition="outside")
+        fig_eng.update_layout(coloraxis_showscale=False, height=360)
+        st.plotly_chart(fig_eng, use_container_width=True)
+
+        st.caption("Source: marketing.l3.fact_abm_engagement_metrics joined via stg_abm_targets. Counts since campaign start date.")
+
+    with xt3:
+        st.subheader(f"{selected} — Website Traffic (Jan–May 2026)")
+        wc1, wc2, wc3 = st.columns(3)
+        wc1.metric("Accounts Visited", f"{c['accounts_visited']:,}", f"{round(c['accounts_visited']/c['accounts']*100)}% of TAL")
+        wc2.metric("Total Visit Events", f"{c['total_visits']:,}")
+        wc3.metric("Avg Visits per Account", f"{round(c['total_visits']/c['accounts_visited'],1) if c['accounts_visited'] else 0:,}")
+        st.caption("Source: marketing.l3.fact_abm_intent_metrics · ZoomInfo IP-to-company matching · accounts with website_traffic_abm > 0")
+
+    st.markdown("---")
+    st.subheader("All Campaigns — Side-by-Side Comparison")
+
+    compare_df = pd.DataFrame([
+        {
+            "Campaign": name,
+            "Type": d["type"].capitalize(),
+            "TAL Accounts": d["accounts"],
+            "Aware": d["funnel"].get("Aware", d["funnel"].get("Expansion Engaged", 0)),
+            "Opportunity": d["funnel"].get("Opportunity", d["funnel"].get("Expansion Opportunity", 0)),
+            "Customer/Won": d["funnel"].get("Customer", d["funnel"].get("Expansion Won", 0)),
+            "Signups": d["signups"],
+            "Events": d["events"],
+            "Accounts Visited": d["accounts_visited"],
+            "Total Visits": d["total_visits"],
+        }
+        for name, d in all_campaigns.items()
+    ])
+
+    st.dataframe(compare_df, use_container_width=True, hide_index=True)
+
+    fig_cmp = px.bar(compare_df, x="Campaign", y=["Aware","Opportunity","Customer/Won"],
+                     barmode="group", title="Funnel Depth by Campaign",
+                     color_discrete_map={"Aware":"#42A5F5","Opportunity":"#FFA726","Customer/Won":"#AB47BC"})
+    fig_cmp.update_layout(height=400, xaxis_tickangle=-20, legend_title="Stage")
+    st.plotly_chart(fig_cmp, use_container_width=True)
+
+    fig_sig = px.bar(compare_df, x="Campaign", y="Signups",
+                     title="Signups (ABM) by Campaign", color="Signups",
+                     color_continuous_scale="Blues", text="Signups")
+    fig_sig.update_traces(textposition="outside")
+    fig_sig.update_layout(coloraxis_showscale=False, height=360, xaxis_tickangle=-20)
+    st.plotly_chart(fig_sig, use_container_width=True)
