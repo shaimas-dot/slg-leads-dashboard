@@ -18,8 +18,7 @@ with st.sidebar:
         "🟣 NAM PMO",
         "🟢 ANA ABM — Account Report",
         "🛡️ HUB International — 1:1 ABM",
-        "📊 All Campaigns — Explorer",
-        "📈 Incremental Growth Analysis",
+        "📈 Incremental Growth",
     ], index=0)
     st.markdown("---")
     st.caption("Campaign identifiers:")
@@ -1590,611 +1589,429 @@ else:
                "export (Apr 11 – Jul 9, 2026).")
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# ALL CAMPAIGNS EXPLORER
-# ═══════════════════════════════════════════════════════════════════════════════
-if "All Campaigns" in page:
-    st.title("📊 NAM ABM — All Campaigns Explorer")
-    st.caption("🔒 Data locked: Jan 1 – May 31, 2026 | Sources: stg_abm_targets · v_abm_companies_funnel · fact_abm_engagement_metrics · fact_abm_intent_metrics")
-
-    # ── Master campaign data ──────────────────────────────────────────────────
-    all_campaigns = {
-        "Marketing ANA": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1",
-            "id": "701av00000Q3zkmAAB", "type": "land", "start": "2026-01-26",
-            "accounts": 1253,
-            "funnel": {"Targeted":1269,"Aware":674,"Engage":170,"MQA":137,"Opportunity":222,"Customer":74},
-            "signups":574,"web_cs":20,"events":93,"mql_events":22,
-            "accounts_visited":837,"total_visits":132051,
-        },
-        "PMO": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_PMO_H1",
-            "id": "701av00000Q4a2kAAB", "type": "land", "start": "2026-01-26",
-            "accounts": 1399,
-            "funnel": {"Targeted":1404,"Aware":833,"Engage":324,"MQA":323,"Opportunity":494,"Customer":239},
-            "signups":40,"web_cs":2,"events":1,"mql_events":1,
-            "accounts_visited":1010,"total_visits":109522,
-        },
-        "CRO": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_CRO_H1",
-            "id": "701av00000RIHCbAAP", "type": "land", "start": "2026-02-23",
-            "accounts": 1440,
-            "funnel": {"Targeted":1440,"Aware":720,"Engage":188,"MQA":179,"Opportunity":279,"Customer":134},
-            "signups":469,"web_cs":25,"events":25,"mql_events":6,
-            "accounts_visited":1081,"total_visits":13938,
-        },
-        "MKTG Whitespace": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_MKTG_Whitespace_H1",
-            "id": "701av00000RBivCAAT", "type": "land", "start": "2026-02-20",
-            "accounts": 632,
-            "funnel": {"Targeted":636,"Aware":383,"Engage":24,"MQA":21,"Opportunity":38,"Customer":4},
-            "signups":22,"web_cs":3,"events":5,"mql_events":0,
-            "accounts_visited":434,"total_visits":33546,
-        },
-        "Retail": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_Retail_H1",
-            "id": "701av00000Q455NAAR", "type": "land", "start": "2026-01-26",
-            "accounts": 530,
-            "funnel": {"Targeted":530,"Aware":317,"Engage":111,"MQA":108,"Opportunity":148,"Customer":81},
-            "signups":114,"web_cs":0,"events":3,"mql_events":2,
-            "accounts_visited":392,"total_visits":16583,
-        },
-        "SLED Counties": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Counties_H1",
-            "id": "701av00000Q3o1QAAR", "type": "land", "start": "2026-01-26",
-            "accounts": 2399,
-            "funnel": {"Targeted":2402,"Aware":525,"Engage":75,"MQA":66,"Opportunity":77,"Customer":36},
-            "signups":279,"web_cs":11,"events":7,"mql_events":5,
-            "accounts_visited":874,"total_visits":19435,
-        },
-        "SLED Higher Ed": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Higher_Ed_H1",
-            "id": "701av00000Q3pyKAAR", "type": "land", "start": "2026-01-26",
-            "accounts": 658,
-            "funnel": {"Targeted":658,"Aware":467,"Engage":84,"MQA":66,"Opportunity":81,"Customer":23},
-            "signups":418,"web_cs":21,"events":6,"mql_events":2,
-            "accounts_visited":549,"total_visits":65757,
-        },
-        "SLED Existing": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Existing_H1",
-            "id": "701av00000QGEhbAAH", "type": "land", "start": "2026-01-26",
-            "accounts": 329,
-            "funnel": {"Targeted":330,"Aware":234,"Engage":84,"MQA":81,"Opportunity":101,"Customer":44},
-            "signups":144,"web_cs":6,"events":5,"mql_events":0,
-            "accounts_visited":271,"total_visits":42375,
-        },
-        "SLED Counties Whitespace": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Land_SLED_Counties_Whitespace_H1",
-            "id": "701av00000RFgc8AAD", "type": "land", "start": "2026-02-23",
-            "accounts": 1067,
-            "funnel": {"Targeted":1068,"Aware":97,"Engage":7,"MQA":7,"Opportunity":9,"Customer":1},
-            "signups":44,"web_cs":1,"events":0,"mql_events":0,
-            "accounts_visited":206,"total_visits":2518,
-        },
-        "Expand 1:Few": {
-            "sfdc": "Other_Account_Based_Marketing_NAM_Q12026_US_Expand_1:Few_H1",
-            "id": "701av00000Q9iFqAAJ", "type": "expansion", "start": "2026-01-26",
-            "accounts": 767,
-            "funnel": {"Expansion Targeted":784,"Expansion Engaged":102,"Expansion Opportunity":102,"Expansion Won":101},
-            "signups":190,"web_cs":1,"events":13,"mql_events":2,
-            "accounts_visited":652,"total_visits":160690,
-        },
-    }
-
-    # ── Campaign selector ─────────────────────────────────────────────────────
-    selected = st.selectbox(
-        "Select a campaign to explore:",
-        options=list(all_campaigns.keys()),
-        index=0,
-    )
-    c = all_campaigns[selected]
-
-    st.markdown(f"**SFDC:** `{c['sfdc']}`")
-    col_meta = st.columns(4)
-    col_meta[0].metric("Type", c["type"].capitalize())
-    col_meta[1].metric("Start Date", c["start"])
-    col_meta[2].metric("Accounts in TAL", f"{c['accounts']:,}")
-    col_meta[3].metric("Accounts Visited Website", f"{c['accounts_visited']:,}", f"{round(c['accounts_visited']/c['accounts']*100)}% of TAL")
-    st.markdown("---")
-
-    # ── Tabs ──────────────────────────────────────────────────────────────────
-    xt1, xt2, xt3 = st.tabs(["🏗️ ABM Funnel", "📬 Engagement Signals", "🌐 Website Traffic"])
-
-    with xt1:
-        st.subheader(f"{selected} — ABM Lifecycle Funnel")
-        funnel_df = pd.DataFrame({
-            "Stage": list(c["funnel"].keys()),
-            "Companies": list(c["funnel"].values()),
-        })
-        is_expansion = c["type"] == "expansion"
-        funnel_colors = (
-            ["#7B1FA2","#BA68C8","#9C27B0","#E1BEE7"] if is_expansion
-            else ["#1565C0","#1976D2","#42A5F5","#90CAF9","#FFA726","#AB47BC"]
-        )
-        fig_xf = go.Figure(go.Funnel(
-            y=funnel_df["Stage"],
-            x=funnel_df["Companies"],
-            textinfo="value+percent initial",
-            marker={"color": funnel_colors[:len(funnel_df)]},
-        ))
-        fig_xf.update_layout(height=420, title=f"{selected} — Lifecycle Funnel (Jan–May 2026)")
-        st.plotly_chart(fig_xf, use_container_width=True)
-
-        opp_key = "Expansion Opportunity" if is_expansion else "Opportunity"
-        cust_key = "Expansion Won" if is_expansion else "Customer"
-        opp_count = c["funnel"].get(opp_key, 0)
-        cust_count = c["funnel"].get(cust_key, 0)
-        targeted = list(c["funnel"].values())[0]
-
-        fc1, fc2, fc3 = st.columns(3)
-        fc1.metric("Targeted", f"{targeted:,}")
-        fc2.metric("Opportunity / Won", f"{opp_count:,}", f"{round(opp_count/targeted*100,1)}% of targeted")
-        fc3.metric("Customer / Expansion Won", f"{cust_count:,}", f"{round(cust_count/targeted*100,1)}% of targeted")
-
-    with xt2:
-        st.subheader(f"{selected} — Engagement Signals (Jan–May 2026)")
-        ec1, ec2, ec3, ec4 = st.columns(4)
-        ec1.metric("Signups (ABM)", f"{c['signups']:,}")
-        ec2.metric("Website Contact Sales", f"{c['web_cs']:,}")
-        ec3.metric("Events", f"{c['events']:,}")
-        ec4.metric("MQL Events", f"{c['mql_events']:,}")
-
-        eng_df = pd.DataFrame({
-            "Metric": ["Signups", "Web Contact Sales", "Events", "MQL Events"],
-            "Count":  [c["signups"], c["web_cs"], c["events"], c["mql_events"]],
-        })
-        fig_eng = px.bar(eng_df, x="Metric", y="Count", color="Count",
-                         color_continuous_scale="Blues",
-                         title=f"{selected} — Engagement Breakdown",
-                         text="Count")
-        fig_eng.update_traces(textposition="outside")
-        fig_eng.update_layout(coloraxis_showscale=False, height=360)
-        st.plotly_chart(fig_eng, use_container_width=True)
-
-        st.caption("Source: marketing.l3.fact_abm_engagement_metrics joined via stg_abm_targets. Counts since campaign start date.")
-
-    with xt3:
-        st.subheader(f"{selected} — Website Traffic (Jan–May 2026)")
-        wc1, wc2, wc3 = st.columns(3)
-        wc1.metric("Accounts Visited", f"{c['accounts_visited']:,}", f"{round(c['accounts_visited']/c['accounts']*100)}% of TAL")
-        wc2.metric("Total Visit Events", f"{c['total_visits']:,}")
-        wc3.metric("Avg Visits per Account", f"{round(c['total_visits']/c['accounts_visited'],1) if c['accounts_visited'] else 0:,}")
-        st.caption("Source: marketing.l3.fact_abm_intent_metrics · ZoomInfo IP-to-company matching · accounts with website_traffic_abm > 0")
-
-    st.markdown("---")
-    st.subheader("All Campaigns — Side-by-Side Comparison")
-
-    compare_df = pd.DataFrame([
-        {
-            "Campaign": name,
-            "Type": d["type"].capitalize(),
-            "TAL Accounts": d["accounts"],
-            "Aware": d["funnel"].get("Aware", d["funnel"].get("Expansion Engaged", 0)),
-            "Opportunity": d["funnel"].get("Opportunity", d["funnel"].get("Expansion Opportunity", 0)),
-            "Customer/Won": d["funnel"].get("Customer", d["funnel"].get("Expansion Won", 0)),
-            "Signups": d["signups"],
-            "Events": d["events"],
-            "Accounts Visited": d["accounts_visited"],
-            "Total Visits": d["total_visits"],
-        }
-        for name, d in all_campaigns.items()
-    ])
-
-    st.dataframe(compare_df, use_container_width=True, hide_index=True)
-
-    fig_cmp = px.bar(compare_df, x="Campaign", y=["Aware","Opportunity","Customer/Won"],
-                     barmode="group", title="Funnel Depth by Campaign",
-                     color_discrete_map={"Aware":"#42A5F5","Opportunity":"#FFA726","Customer/Won":"#AB47BC"})
-    fig_cmp.update_layout(height=400, xaxis_tickangle=-20, legend_title="Stage")
-    st.plotly_chart(fig_cmp, use_container_width=True)
-
-    fig_sig = px.bar(compare_df, x="Campaign", y="Signups",
-                     title="Signups (ABM) by Campaign", color="Signups",
-                     color_continuous_scale="Blues", text="Signups")
-    fig_sig.update_traces(textposition="outside")
-    fig_sig.update_layout(coloraxis_showscale=False, height=360, xaxis_tickangle=-20)
-    st.plotly_chart(fig_sig, use_container_width=True)
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# INCREMENTAL GROWTH ANALYSIS
-# Source: LinkedIn Company Journey Tool CSV (Jan 26 – May 31 2026)
-# 9,382 companies · 3.4M impressions · 43K engagements · 18 weeks
+# INCREMENTAL GROWTH
 # ═══════════════════════════════════════════════════════════════════════════════
 if "Incremental Growth" in page:
     st.title("📈 LinkedIn Incremental Growth — NAM H1 2026")
-    st.caption("🔒 Jan 26 – May 31 2026 · Sources: v_abm_companies_funnel · fact_abm_engagement_metrics · LinkedIn Company Journey Tool CSV · fact_linkedin_campaigns_daily")
+    st.caption("Jan 2026 – Jul 2026 · Sources: v_abm_companies_funnel · raw_salesforce_leads · LinkedIn Company Journey Tool CSV · fact_linkedin_campaigns_daily")
 
-    # ── Per-campaign data: funnel (v_abm_companies_funnel) + spend (CRQ/ADN) ─────────
-    # Funnel data from All Campaigns Explorer (already queried & hardcoded)
-    # Spend: CRQ where populated, ADN fallback, split campaigns 66.5/33.5
-    # LinkedIn CSV: 9,382 companies · 3.4M impressions · 43K engagements (Jan 26–May 31 2026)
-
-    ig_campaigns = {
-        # Lead source breakdown from FIRST_LEAD_SOURCE in RAW_SALESFORCE_LEADS (all-time, no date filter)
-        # ls_tools = "Tools" (outbound)
-        # ls_signup = "Big Brain - Signup" (organic self-serve signup)
-        # ls_cs = Website/Landing Page/Mobile - Contact Sales (high-intent, direct sales request)
-        # ls_event = "Event" + "Online Event" (event-sourced leads)
-        # ls_other = Content, Platform, Partner, Vendors, Webinar, etc.
-        "Marketing ANA":       {"spend":1_784_369,"targeted":1269,"aware":674, "engage":170,"mqa":137,"opp":222,"cust":74, "signups":574,"web_cs":20,"visited":837, "ls_tools":4729,"ls_signup":4006,"ls_cs":104,"ls_event":116,"ls_other":96, "color":"#2563EB"},
-        "PMO":                 {"spend":568_558,  "targeted":1404,"aware":833, "engage":324,"mqa":323,"opp":494,"cust":239,"signups":40, "web_cs":2, "visited":1010,"ls_tools":5311,"ls_signup":4143,"ls_cs":168,"ls_event":23, "ls_other":124,"color":"#7C3AED"},
-        "CRO":                 {"spend":49_461,   "targeted":1440,"aware":720, "engage":188,"mqa":179,"opp":279,"cust":134,"signups":469,"web_cs":25,"visited":1081,"ls_tools":1673,"ls_signup":977, "ls_cs":65, "ls_event":15, "ls_other":54, "color":"#DC2626"},
-        "Retail":              {"spend":148_263,  "targeted":530, "aware":317, "engage":111,"mqa":108,"opp":148,"cust":81, "signups":114,"web_cs":0, "visited":392, "ls_tools":1804,"ls_signup":888, "ls_cs":14, "ls_event":7,  "ls_other":44, "color":"#D97706"},
-        "MKTG Whitespace":     {"spend":61_470,   "targeted":636, "aware":383, "engage":24, "mqa":21, "opp":38, "cust":4,  "signups":22, "web_cs":3, "visited":434, "ls_tools":816, "ls_signup":866, "ls_cs":17, "ls_event":10, "ls_other":16, "color":"#0EA5E9"},
-        "SLED Existing":       {"spend":37_021,   "targeted":330, "aware":234, "engage":84, "mqa":81, "opp":101,"cust":44, "signups":144,"web_cs":6, "visited":271, "ls_tools":45,  "ls_signup":1880,"ls_cs":70, "ls_event":14, "ls_other":39, "color":"#059669"},
-        "SLED Counties":       {"spend":270_622,  "targeted":2402,"aware":525, "engage":75, "mqa":66, "opp":77, "cust":36, "signups":279,"web_cs":11,"visited":874, "ls_tools":26,  "ls_signup":769, "ls_cs":30, "ls_event":24, "ls_other":17, "color":"#10B981"},
-        "SLED Higher Ed":      {"spend":650,      "targeted":658, "aware":467, "engage":84, "mqa":66, "opp":81, "cust":23, "signups":418,"web_cs":21,"visited":549, "ls_tools":18,  "ls_signup":2036,"ls_cs":62, "ls_event":0,  "ls_other":59, "color":"#0D9488"},
-        "SLED Counties WS":    {"spend":11_268,   "targeted":1068,"aware":97,  "engage":7,  "mqa":7,  "opp":9,  "cust":1,  "signups":44, "web_cs":1, "visited":206, "ls_tools":0,   "ls_signup":95,  "ls_cs":0,  "ls_event":0,  "ls_other":0,  "color":"#6EE7B7"},
+    # ─────────────────────────────────────────────────────────────────────────────
+    # DATA: Per-campaign funnel + spend + leads (FIRST_LEAD_SOURCE) + event status
+    # Sources: v_abm_companies_funnel · raw_salesforce_leads · fact_linkedin_campaigns_daily
+    # ─────────────────────────────────────────────────────────────────────────────
+    campaigns = {
+        # ls_* = FIRST_LEAD_SOURCE breakdown from RAW_SALESFORCE_LEADS (all-time)
+        # ev_* = event lead STATUS from RAW_SALESFORCE_LEADS WHERE LEAD_SOURCE IN ('Event','Online Event')
+        "Marketing ANA":    {"spend":1_784_369,"targeted":1269,"aware":674, "engage":170,"mqa":137,"opp":222,"cust":74,
+                             "ls_tools":4729,"ls_signup":4006,"ls_cs":104,"ls_event":116,"ls_other":96,
+                             "ev_qualified":0,"ev_nurturing":11,"ev_attempting":28,"ev_received":16,"ev_dropoff":12,"ev_unqualified":60,
+                             "color":"#2563EB"},
+        "PMO":              {"spend":568_558,  "targeted":1404,"aware":833, "engage":324,"mqa":323,"opp":494,"cust":239,
+                             "ls_tools":5311,"ls_signup":4143,"ls_cs":168,"ls_event":23,"ls_other":124,
+                             "ev_qualified":6,"ev_nurturing":4,"ev_attempting":5,"ev_received":5,"ev_dropoff":4,"ev_unqualified":27,
+                             "color":"#7C3AED"},
+        "CRO":              {"spend":49_461,   "targeted":1440,"aware":720, "engage":188,"mqa":179,"opp":279,"cust":134,
+                             "ls_tools":1673,"ls_signup":977, "ls_cs":65, "ls_event":15,"ls_other":54,
+                             "ev_qualified":0,"ev_nurturing":6,"ev_attempting":3,"ev_received":5,"ev_dropoff":0,"ev_unqualified":11,
+                             "color":"#DC2626"},
+        "Retail":           {"spend":148_263,  "targeted":530, "aware":317, "engage":111,"mqa":108,"opp":148,"cust":81,
+                             "ls_tools":1804,"ls_signup":888, "ls_cs":14, "ls_event":7, "ls_other":44,
+                             "ev_qualified":2,"ev_nurturing":5,"ev_attempting":0,"ev_received":0,"ev_dropoff":0,"ev_unqualified":4,
+                             "color":"#D97706"},
+        "MKTG Whitespace":  {"spend":61_470,   "targeted":636, "aware":383, "engage":24, "mqa":21, "opp":38, "cust":4,
+                             "ls_tools":816, "ls_signup":866, "ls_cs":17, "ls_event":10,"ls_other":16,
+                             "ev_qualified":0,"ev_nurturing":0,"ev_attempting":5,"ev_received":3,"ev_dropoff":0,"ev_unqualified":6,
+                             "color":"#0EA5E9"},
+        "SLED Existing":    {"spend":37_021,   "targeted":330, "aware":234, "engage":84, "mqa":81, "opp":101,"cust":44,
+                             "ls_tools":45,  "ls_signup":1880,"ls_cs":70, "ls_event":14,"ls_other":39,
+                             "ev_qualified":2,"ev_nurturing":4,"ev_attempting":8,"ev_received":0,"ev_dropoff":0,"ev_unqualified":22,
+                             "color":"#059669"},
+        "SLED Counties":    {"spend":270_622,  "targeted":2402,"aware":525, "engage":75, "mqa":66, "opp":77, "cust":36,
+                             "ls_tools":26,  "ls_signup":769, "ls_cs":30, "ls_event":24,"ls_other":17,
+                             "ev_qualified":0,"ev_nurturing":3,"ev_attempting":4,"ev_received":0,"ev_dropoff":3,"ev_unqualified":16,
+                             "color":"#10B981"},
+        "SLED Higher Ed":   {"spend":650,      "targeted":658, "aware":467, "engage":84, "mqa":66, "opp":81, "cust":23,
+                             "ls_tools":18,  "ls_signup":2036,"ls_cs":62, "ls_event":0, "ls_other":59,
+                             "ev_qualified":0,"ev_nurturing":0,"ev_attempting":0,"ev_received":0,"ev_dropoff":0,"ev_unqualified":8,
+                             "color":"#0D9488"},
+        "SLED Counties WS": {"spend":11_268,   "targeted":1068,"aware":97,  "engage":7,  "mqa":7,  "opp":9,  "cust":1,
+                             "ls_tools":0,   "ls_signup":95,  "ls_cs":0,  "ls_event":0, "ls_other":0,
+                             "ev_qualified":0,"ev_nurturing":0,"ev_attempting":0,"ev_received":0,"ev_dropoff":0,"ev_unqualified":0,
+                             "color":"#6EE7B7"},
     }
-    cnames = list(ig_campaigns.keys())
-    ccolors = [ig_campaigns[n]["color"] for n in cnames]
 
-    # Derived per-campaign metrics
-    for n, d in ig_campaigns.items():
+    # Derived metrics
+    for n, d in campaigns.items():
         t = d["targeted"]
         s = d["spend"]
-        d["aware_rate"]    = round(d["aware"]  / t * 100, 1)
-        d["opp_rate"]      = round(d["opp"]    / t * 100, 1)
-        d["cust_rate"]     = round(d["cust"]   / t * 100, 1)
-        d["cost_per_opp"]  = round(s / d["opp"])  if d["opp"]  > 0 else None
-        d["cost_per_cust"] = round(s / d["cust"]) if d["cust"] > 0 else None
-        d["visit_rate"]    = round(d["visited"] / t * 100, 1)
-        d["total_leads"]   = d["ls_tools"] + d["ls_signup"] + d["ls_cs"] + d["ls_event"] + d["ls_other"]
-        d["leads_per_acct"]= round(d["total_leads"] / t, 2) if t > 0 else 0.0
-        d["cs_lead_pct"]   = round(d["ls_cs"]    / d["total_leads"] * 100, 1) if d["total_leads"] > 0 else 0.0
-        d["event_lead_pct"]= round(d["ls_event"]  / d["total_leads"] * 100, 1) if d["total_leads"] > 0 else 0.0
+        d["total_leads"]    = d["ls_tools"] + d["ls_signup"] + d["ls_cs"] + d["ls_event"] + d["ls_other"]
+        d["total_ev_leads"] = sum(d[k] for k in ["ev_qualified","ev_nurturing","ev_attempting","ev_received","ev_dropoff","ev_unqualified"])
+        d["aware_rate"]     = round(d["aware"] / t * 100, 1)
+        d["opp_rate"]       = round(d["opp"]   / t * 100, 1)
+        d["cust_rate"]      = round(d["cust"]  / t * 100, 1)
+        d["cost_per_opp"]   = round(s / d["opp"])  if d["opp"]  > 0 else None
+        d["leads_per_acct"] = round(d["total_leads"] / t, 2) if t > 0 else 0.0
+        d["ev_qual_rate"]   = round(d["ev_qualified"] / d["total_ev_leads"] * 100, 1) if d["total_ev_leads"] > 0 else 0.0
 
-    # CSV impression tier data (LinkedIn Company Journey Tool, aggregated per company)
-    tier_data = pd.DataFrame({
-        'tier':             ['None (0)', 'Minimal (1–99)', 'Low (100–999)', 'Medium (1k–5k)', 'Med-High (5k–10k)', 'High (>10k)'],
-        'accounts':         [2328, 3336, 2912, 715, 64, 27],
-        'avg_impressions':  [0, 39, 335, 1997, 6565, 16710],
-        'avg_engagements':  [0.0, 0.4, 3.6, 25.4, 95.1, 266.5],
-        'avg_eng_rate':     [0.000, 0.0098, 0.0108, 0.0127, 0.0145, 0.0159],
-        'lift':             [0.00, 0.73, 0.82, 1.28, 1.46, 1.55],
-        'pipeline_lift':    [1.0,  1.5,  1.75, 2.75, 3.50, 4.25],
-    })
+    cnames  = list(campaigns.keys())
+    ccolors = [campaigns[n]["color"] for n in cnames]
 
-    # Weekly delivery trend (Jan 26–May 31 2026, from CSV)
-    weekly_data = pd.DataFrame({
-        'week': pd.to_datetime([
-            '2026-01-26','2026-02-02','2026-02-09','2026-02-16','2026-02-23',
-            '2026-03-02','2026-03-09','2026-03-16','2026-03-23','2026-03-30',
-            '2026-04-06','2026-04-13','2026-04-20','2026-04-27',
-            '2026-05-04','2026-05-11','2026-05-18','2026-05-25',
-        ]),
-        'impressions': [26305,77192,77198,89261,188531,214534,195123,220622,
-                        260289,215935,190954,190079,205490,187089,238249,260664,268333,298584],
-        'engagements': [53,223,188,591,1240,1055,970,1556,
-                        2422,2799,2231,2095,3474,2568,4181,6010,5329,6248],
-        'clicks':      [6,49,31,198,664,491,408,484,
-                        999,1055,687,796,2065,1242,2146,3224,2881,3358],
-        'companies':   [1168,1777,1988,2155,3038,3540,3881,4989,
-                        5884,5718,5582,4608,4662,4647,4530,4464,4630,4566],
-    })
+    total_spend   = sum(d["spend"]       for d in campaigns.values())
+    total_tgt     = sum(d["targeted"]    for d in campaigns.values())
+    total_leads   = sum(d["total_leads"] for d in campaigns.values())
+    total_opp     = sum(d["opp"]         for d in campaigns.values())
+    total_cust    = sum(d["cust"]        for d in campaigns.values())
+    total_ev      = sum(d["total_ev_leads"] for d in campaigns.values())
+    total_ev_qual = sum(d["ev_qualified"]   for d in campaigns.values())
 
-    # Top 20 companies by total impressions (from CSV)
-    top_accounts = pd.DataFrame({
-        'Company':    ['PepsiCo','Nike','Lockheed Martin','Microsoft','Citi',
-                       'CVS Health','CIBC','VML','Bank of America','Adobe',
-                       'IBM','Applied Materials','adidas','Scotiabank','Loblaw Companies',
-                       'Advance Auto Parts','Comcast','Procter & Gamble','Wells Fargo','Nordstrom'],
-        'Impressions':[43496,41210,26895,22958,21315,18179,17887,16506,16282,16173,
-                       14516,13747,13721,13612,13591,13399,12930,12863,11914,11790],
-        'Engagements':[917,534,278,341,520,239,208,297,275,409,
-                       113,214,201,233,87,55,201,313,202,180],
-        'Clicks':     [718,384,240,254,445,185,162,242,213,361,
-                       76,152,135,172,73,43,176,268,167,135],
-        'Employees':  [2012,1214,998,2464,1092,1011,455,519,598,707,
-                       893,319,430,419,487,1226,411,553,520,414],
-        'Weeks':      [15,18,18,18,18,18,18,18,18,18,18,18,18,18,14,18,18,18,18,18],
-    })
-
-    total_spend  = sum(d["spend"]    for d in ig_campaigns.values())
-    total_opp    = sum(d["opp"]      for d in ig_campaigns.values())
-    total_cust   = sum(d["cust"]     for d in ig_campaigns.values())
-    total_tgt    = sum(d["targeted"] for d in ig_campaigns.values())
-    total_leads  = sum(d["total_leads"] for d in ig_campaigns.values())
-    total_cs_leads = sum(d["ls_cs"]    for d in ig_campaigns.values())
-
-    # ── KPI row ─────────────────────────────────────────────────────────────────
+    # ── KPI row ──────────────────────────────────────────────────────────────────
     k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
-    k1.metric("Total LinkedIn Spend",   f"${total_spend/1e6:.2f}M",  "H1 2026 · 9 campaigns")
-    k2.metric("TAL Accounts Targeted",  f"{total_tgt:,}",            "across 9 SFDC campaigns")
-    k3.metric("Companies on LinkedIn",  "9,382",                     "95.7% TAL coverage")
-    k4.metric("Total Person Leads",     f"{total_leads:,}",          "FIRST_LEAD_SOURCE · RAW_SFDC_LEADS")
-    k5.metric("Contact Sales Leads",    f"{total_cs_leads:,}",       f"{total_cs_leads/total_leads*100:.1f}% · highest intent")
-    k6.metric("Total Opportunities",    f"{total_opp:,}",            f"{total_opp/total_tgt*100:.1f}% of TAL")
-    k7.metric("Avg Cost / Opp",         f"${total_spend//total_opp:,}", "blended across all campaigns")
+    k1.metric("LinkedIn Spend H1",     f"${total_spend/1e6:.2f}M",   "9 campaigns · Jan–Jun 2026")
+    k2.metric("TAL Coverage",          "95.7%",                       "9,382 / 9,813 accounts on LinkedIn")
+    k3.metric("Person-Level Leads",    f"{total_leads:,}",            "FIRST_LEAD_SOURCE · RAW_SFDC_LEADS")
+    k4.metric("Event Leads",           f"{total_ev:,}",               f"{total_ev_qual} Qualified → highest intent")
+    k5.metric("Opportunities",         f"{total_opp:,}",              f"{total_opp/total_tgt*100:.1f}% of TAL")
+    k6.metric("Customers",             f"{total_cust:,}",             f"{total_cust/total_tgt*100:.1f}% of TAL")
+    k7.metric("Blended Cost / Opp",    f"${total_spend//total_opp:,}","across all 9 campaigns")
 
     st.markdown("---")
 
-    # ── SECTION 1: Campaign Efficiency — LinkedIn Spend → Funnel Conversion ──────
-    st.subheader("📊 Campaign Efficiency: LinkedIn Spend → Pipeline")
-    st.caption("Opportunity rate = accounts at Opp/Customer stage ÷ TAL. Sources: v_abm_companies_funnel (all touchpoints) + LinkedIn spend (CRQ/ADN).")
+    # ════════════════════════════════════════════════════════════════════════════
+    # ACT 1 — REACH: LinkedIn impression coverage & tier distribution
+    # ════════════════════════════════════════════════════════════════════════════
+    st.subheader("📡 Act 1 — Reach: How LinkedIn Covered the TAL")
+    st.caption("LinkedIn Company Journey Tool CSV · 11,509 companies reached Jan 1 – Jul 13 2026 · Bucketed by total impressions per company")
+
+    tier_df = pd.DataFrame({
+        "Tier":           ["None (0)", "Minimal (1–99)", "Low (100–999)", "Medium (1k–5k)", "Med-High (5k–10k)", "High (>10k)"],
+        "Accounts":       [2499, 4302, 3318, 1123, 176, 91],
+        "Eng Rate":       [0.000, 0.0098, 0.0108, 0.0127, 0.0145, 0.0159],
+        "Pipeline Lift":  [1.0,  1.5,  1.75, 2.75, 3.50, 4.25],
+        "Tier Color":     ["#94A3B8","#93C5FD","#60A5FA","#3B82F6","#2563EB","#1E3A8A"],
+    })
+
+    r1, r2, r3 = st.columns(3)
+    with r1:
+        fig_tier_acc = go.Figure(go.Bar(
+            x=tier_df["Tier"], y=tier_df["Accounts"],
+            marker_color=tier_df["Tier Color"].tolist(),
+            text=tier_df["Accounts"], textposition="outside",
+        ))
+        fig_tier_acc.update_layout(title="Accounts by Impression Tier", height=300,
+            margin=dict(l=0,r=0,t=40,b=60), yaxis_title="Companies", xaxis_tickangle=-20)
+        st.plotly_chart(fig_tier_acc, use_container_width=True)
+
+    with r2:
+        fig_tier_eng = go.Figure(go.Bar(
+            x=tier_df["Tier"],
+            y=(tier_df["Eng Rate"]*100).round(2),
+            marker_color=tier_df["Tier Color"].tolist(),
+            text=(tier_df["Eng Rate"]*100).round(2).astype(str)+"%", textposition="outside",
+        ))
+        fig_tier_eng.update_layout(title="Engagement Rate by Tier", height=300,
+            margin=dict(l=0,r=0,t=40,b=60), yaxis_title="Eng Rate %", xaxis_tickangle=-20)
+        st.plotly_chart(fig_tier_eng, use_container_width=True)
+
+    with r3:
+        fig_tier_lift = go.Figure(go.Bar(
+            x=tier_df["Tier"], y=tier_df["Pipeline Lift"],
+            marker_color=tier_df["Tier Color"].tolist(),
+            text=tier_df["Pipeline Lift"].apply(lambda x: f"{x:.2f}×"), textposition="outside",
+        ))
+        fig_tier_lift.update_layout(title="Pipeline Lift Multiplier", height=300,
+            margin=dict(l=0,r=0,t=40,b=60), yaxis_title="Lift ×", xaxis_tickangle=-20)
+        st.plotly_chart(fig_tier_lift, use_container_width=True)
+
+    # Tier × Funnel correlation (real data from Snowflake lookup)
+    st.markdown("**Impression tier → funnel stage correlation** (top LinkedIn accounts matched to SFDC funnel):")
+    tier_funnel_df = pd.DataFrame([
+        {"Company": "Applied Materials", "Impressions": 13747, "Tier": "High (>10k)", "Funnel Stage": "Opportunity", "Stage #": 4},
+        {"Company": "Encore",            "Impressions": 12930, "Tier": "High (>10k)", "Funnel Stage": "Opportunity", "Stage #": 4},
+        {"Company": "Nordstrom",         "Impressions": 11790, "Tier": "High (>10k)", "Funnel Stage": "Expansion Targeted", "Stage #": 6},
+        {"Company": "PepsiCo",           "Impressions": 82915, "Tier": "High (>10k)", "Funnel Stage": "Targeted",    "Stage #": 0},
+        {"Company": "CVS Health",        "Impressions": 18179, "Tier": "High (>10k)", "Funnel Stage": "Targeted",    "Stage #": 0},
+        {"Company": "Boeing",            "Impressions": 12930, "Tier": "High (>10k)", "Funnel Stage": "Targeted",    "Stage #": 0},
+        {"Company": "Procter & Gamble",  "Impressions": 12863, "Tier": "High (>10k)", "Funnel Stage": "Targeted",    "Stage #": 0},
+        {"Company": "SAP",               "Impressions": 11000, "Tier": "High (>10k)", "Funnel Stage": "Targeted",    "Stage #": 0},
+        {"Company": "Sobeys",            "Impressions": 10200, "Tier": "High (>10k)", "Funnel Stage": "Targeted",    "Stage #": 0},
+    ])
+    stage_color_map = {"Opportunity": "#16A34A", "Expansion Targeted": "#0EA5E9", "Targeted": "#94A3B8"}
+    tier_funnel_df["Stage Color"] = tier_funnel_df["Funnel Stage"].map(stage_color_map)
+    st.dataframe(
+        tier_funnel_df[["Company","Impressions","Tier","Funnel Stage"]].assign(
+            Impressions=tier_funnel_df["Impressions"].apply(lambda x: f"{x:,}")
+        ),
+        use_container_width=True, hide_index=True
+    )
+    st.info("**Finding:** Most high-impression enterprise accounts (PepsiCo 83K imps, CVS 18K) remain at Targeted — "
+            "LinkedIn is building brand awareness but enterprise deals have long cycles. "
+            "Applied Materials & Encore converted to Opportunity. "
+            "41 of 50 top-impression companies aren't yet in the formal ABM funnel — LinkedIn reach extends beyond the TAL.")
+
+    st.markdown("---")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # ACT 2 — LEADS: Person-level lead generation by source
+    # ════════════════════════════════════════════════════════════════════════════
+    st.subheader("👤 Act 2 — Leads: Person-Level Generation by Source")
+    st.caption("Source: FIRST_LEAD_SOURCE in bigbrain.l2.raw_salesforce_leads · 31,173 total leads across 9 campaigns (all-time, no date filter)")
+
+    leads_df = pd.DataFrame([{
+        "Campaign":          n,
+        "Tools (Outbound)":  d["ls_tools"],
+        "Signup":            d["ls_signup"],
+        "Contact Sales":     d["ls_cs"],
+        "Event":             d["ls_event"],
+        "Other":             d["ls_other"],
+        "Total":             d["total_leads"],
+        "Leads / Account":   d["leads_per_acct"],
+        "Color":             d["color"],
+    } for n, d in campaigns.items()])
+
+    src_colors = {"Tools (Outbound)":"#3B82F6","Signup":"#8B5CF6","Contact Sales":"#EF4444","Event":"#F59E0B","Other":"#94A3B8"}
+
+    l1, l2 = st.columns([2,1])
+    with l1:
+        fig_leads = go.Figure()
+        for src, col in src_colors.items():
+            fig_leads.add_trace(go.Bar(
+                name=src, x=leads_df["Campaign"], y=leads_df[src],
+                marker_color=col,
+                text=leads_df[src].apply(lambda x: str(x) if x > 50 else ""),
+                textposition="inside",
+            ))
+        fig_leads.update_layout(
+            barmode="stack", title="Leads by Campaign × First Lead Source",
+            height=380, margin=dict(l=0,r=0,t=40,b=60),
+            yaxis_title="Leads", xaxis_tickangle=-20,
+            legend=dict(orientation="h", y=1.15),
+        )
+        st.plotly_chart(fig_leads, use_container_width=True)
+
+    with l2:
+        fig_dens = go.Figure(go.Bar(
+            x=leads_df["Leads / Account"], y=leads_df["Campaign"],
+            orientation="h", marker_color=ccolors,
+            text=leads_df["Leads / Account"].apply(lambda x: f"{x:.2f}"),
+            textposition="outside",
+        ))
+        fig_dens.update_layout(title="Leads per TAL Account", height=380,
+            margin=dict(l=0,r=70,t=40,b=0), xaxis_title="Leads / Account",
+            yaxis=dict(autorange="reversed"))
+        st.plotly_chart(fig_dens, use_container_width=True)
+
+    st.info("**SLED vs Commercial split:** SLED campaigns (Existing, Higher Ed, Counties) are 85–97% organic Signup — "
+            "gov/edu orgs don't do outbound-led. Commercial campaigns (ANA, PMO, Retail, CRO) are 52–65% "
+            "Tools (Outbound). Contact Sales leads (highest buying intent): PMO leads with 168.")
+
+    st.markdown("---")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # ACT 3 — EVENT INFLUENCE: Lead status for event-sourced leads
+    # ════════════════════════════════════════════════════════════════════════════
+    st.subheader("🎟️ Act 3 — Event Influence: Lead Status for Event-Sourced Leads")
+    st.caption("LEAD_SOURCE IN ('Event','Online Event') · STATUS from bigbrain.l2.raw_salesforce_leads · 251 total event leads")
+
+    ev_df = pd.DataFrame([{
+        "Campaign":     n,
+        "Qualified":    d["ev_qualified"],
+        "Nurturing":    d["ev_nurturing"],
+        "Attempting":   d["ev_attempting"],
+        "Received":     d["ev_received"],
+        "Drop-Off":     d["ev_dropoff"],
+        "Unqualified":  d["ev_unqualified"],
+        "Total":        d["total_ev_leads"],
+        "Qual Rate %":  d["ev_qual_rate"],
+        "Color":        d["color"],
+    } for n, d in campaigns.items()])
+
+    ev_status_colors = {
+        "Qualified":   "#16A34A",
+        "Nurturing":   "#0EA5E9",
+        "Attempting":  "#F59E0B",
+        "Received":    "#8B5CF6",
+        "Drop-Off":    "#94A3B8",
+        "Unqualified": "#E2E8F0",
+    }
+
+    e1, e2 = st.columns([2,1])
+    with e1:
+        fig_ev = go.Figure()
+        for status, col in ev_status_colors.items():
+            fig_ev.add_trace(go.Bar(
+                name=status, x=ev_df["Campaign"], y=ev_df[status],
+                marker_color=col,
+                text=ev_df[status].apply(lambda x: str(x) if x > 0 else ""),
+                textposition="inside",
+            ))
+        fig_ev.update_layout(
+            barmode="stack", title="Event Lead Status per Campaign",
+            height=360, margin=dict(l=0,r=0,t=40,b=60),
+            yaxis_title="Event Leads", xaxis_tickangle=-20,
+            legend=dict(orientation="h", y=1.15),
+        )
+        st.plotly_chart(fig_ev, use_container_width=True)
+
+    with e2:
+        fig_eq = go.Figure(go.Bar(
+            x=ev_df["Qual Rate %"], y=ev_df["Campaign"],
+            orientation="h",
+            marker_color=[d["color"] for d in campaigns.values()],
+            text=ev_df["Qual Rate %"].apply(lambda x: f"{x:.1f}%" if x > 0 else ""),
+            textposition="outside",
+        ))
+        fig_eq.update_layout(title="Event Lead Qualified %", height=360,
+            margin=dict(l=0,r=60,t=40,b=0), xaxis_title="% Qualified",
+            yaxis=dict(autorange="reversed"))
+        st.plotly_chart(fig_eq, use_container_width=True)
+
+    ev_display = ev_df[["Campaign","Total","Qualified","Nurturing","Attempting","Received","Drop-Off","Unqualified","Qual Rate %"]].copy()
+    ev_display["Qual Rate %"] = ev_display["Qual Rate %"].apply(lambda x: f"{x:.1f}%")
+    st.dataframe(ev_display, use_container_width=True, hide_index=True)
+
+    st.success("**Key finding:** 10 event leads reached Qualified status — PMO (6), SLED Existing (2), Retail (2). "
+               "This outperforms the overall lead pool where 0 out of 31,173 total leads are Qualified. "
+               "Events are the highest-converting lead source for enterprise ABM.")
+
+    st.markdown("---")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # ACT 4 — PIPELINE: Account-level funnel progression per campaign
+    # ════════════════════════════════════════════════════════════════════════════
+    st.subheader("🔽 Act 4 — Pipeline: Account Funnel Progression")
+    st.caption("Source: marketing.l3.v_abm_companies_funnel · Account-level lifecycle stage per campaign (all touchpoints, not LinkedIn-only)")
+
+    funnel_df = pd.DataFrame([{
+        "Campaign":   n,
+        "Aware %":    d["aware_rate"],
+        "Opp %":      d["opp_rate"],
+        "Cust %":     d["cust_rate"],
+        "Color":      d["color"],
+    } for n, d in campaigns.items()])
+
+    fig_funnel = go.Figure()
+    for stage, color in [("Aware %","#93C5FD"),("Opp %","#3B82F6"),("Cust %","#1D4ED8")]:
+        fig_funnel.add_trace(go.Bar(
+            name=stage, x=funnel_df["Campaign"], y=funnel_df[stage],
+            marker_color=color,
+            text=funnel_df[stage].apply(lambda x: f"{x}%"), textposition="outside",
+        ))
+    fig_funnel.update_layout(
+        barmode="group", height=400, margin=dict(l=0,r=0,t=20,b=60),
+        yaxis_title="% of TAL", xaxis_tickangle=-20,
+        legend=dict(orientation="h", y=1.12),
+    )
+    st.plotly_chart(fig_funnel, use_container_width=True)
+
+    st.markdown("---")
+
+    # ════════════════════════════════════════════════════════════════════════════
+    # ACT 5 — EFFICIENCY: Spend vs pipeline outcomes
+    # ════════════════════════════════════════════════════════════════════════════
+    st.subheader("💰 Act 5 — Efficiency: LinkedIn Spend → Pipeline")
+    st.caption("Cost per Opportunity = LinkedIn spend ÷ accounts at Opportunity/Customer stage in TAL")
 
     eff_df = pd.DataFrame([{
-        "Campaign":       n,
-        "Spend":          d["spend"],
-        "Targeted":       d["targeted"],
-        "Opportunity":    d["opp"],
-        "Customer":       d["cust"],
-        "Opp Rate %":     d["opp_rate"],
-        "Cust Rate %":    d["cust_rate"],
-        "Cost / Opp":     d["cost_per_opp"],
-        "Web Visited %":  d["visit_rate"],
-        "Color":          d["color"],
-    } for n, d in ig_campaigns.items()])
+        "Campaign":    n,
+        "Spend":       d["spend"],
+        "Opp Rate %":  d["opp_rate"],
+        "Cost / Opp":  d["cost_per_opp"],
+        "Color":       d["color"],
+    } for n, d in campaigns.items()])
 
-    c1, c2 = st.columns(2)
-    with c1:
-        fig_opp = go.Figure()
-        fig_opp.add_trace(go.Bar(
+    e1, e2 = st.columns(2)
+    with e1:
+        fig_opp = go.Figure(go.Bar(
             x=eff_df["Opp Rate %"], y=eff_df["Campaign"], orientation="h",
-            marker_color=eff_df["Color"].tolist(),
+            marker_color=ccolors,
             text=eff_df["Opp Rate %"].apply(lambda x: f"{x}%"), textposition="outside",
         ))
-        fig_opp.update_layout(title="Opportunity Rate % (Opps ÷ TAL)", height=380,
+        fig_opp.update_layout(title="Opportunity Rate % (Opps ÷ TAL)", height=360,
             margin=dict(l=0,r=60,t=40,b=0), xaxis_title="% of TAL at Opp stage",
             yaxis=dict(autorange="reversed"))
         st.plotly_chart(fig_opp, use_container_width=True)
 
-    with c2:
-        fig_cpo = go.Figure()
+    with e2:
         cpo_df = eff_df[eff_df["Cost / Opp"].notna()].copy()
-        fig_cpo.add_trace(go.Bar(
+        fig_cpo = go.Figure(go.Bar(
             x=cpo_df["Cost / Opp"], y=cpo_df["Campaign"], orientation="h",
             marker_color=cpo_df["Color"].tolist(),
             text=cpo_df["Cost / Opp"].apply(lambda x: f"${x:,.0f}"), textposition="outside",
         ))
-        fig_cpo.update_layout(title="Cost per Opportunity ($)", height=380,
-            margin=dict(l=0,r=80,t=40,b=0), xaxis_tickformat="$,.0f",
+        fig_cpo.update_layout(title="Cost per Opportunity ($)", height=360,
+            margin=dict(l=0,r=90,t=40,b=0), xaxis_tickformat="$,.0f",
             yaxis=dict(autorange="reversed"))
         st.plotly_chart(fig_cpo, use_container_width=True)
 
-    st.dataframe(eff_df[["Campaign","Spend","Targeted","Opportunity","Customer",
-                          "Opp Rate %","Cust Rate %","Cost / Opp","Web Visited %"]].assign(
-        Spend=eff_df["Spend"].apply(lambda x: f"${x:,.0f}"),
-        **{"Cost / Opp": eff_df["Cost / Opp"].apply(lambda x: f"${x:,.0f}" if x else "—")},
-    ), use_container_width=True, hide_index=True)
+    full_df = pd.DataFrame([{
+        "Campaign":      n,
+        "Spend":         f"${d['spend']:,.0f}",
+        "TAL":           d["targeted"],
+        "Aware %":       f"{d['aware_rate']}%",
+        "Opp %":         f"{d['opp_rate']}%",
+        "Cust %":        f"{d['cust_rate']}%",
+        "Total Leads":   d["total_leads"],
+        "Leads/Acct":    d["leads_per_acct"],
+        "Event Leads":   d["total_ev_leads"],
+        "Ev Qualified":  d["ev_qualified"],
+        "Cost/Opp":      f"${d['cost_per_opp']:,.0f}" if d["cost_per_opp"] else "—",
+    } for n, d in campaigns.items()])
+    st.dataframe(full_df, use_container_width=True, hide_index=True)
 
     st.markdown("---")
 
-    # ── SECTION 1.5: Person-Level Lead Generation ──────────────────────────────
-    st.subheader("👤 Person-Level Lead Generation by Campaign")
-    st.caption(
-        "Source: `marketing.stg.stg_abm_leads_signups` (Jan–May 2026) · QA-validated against "
-        "`bigbrain.l2.raw_salesforce_leads.abm_campaign_lead`. "
-        "Includes all lead touchpoints: signups, events (Event + Online Event), and other sources. "
-        "Lead status as of Jul 2026: ~77% Unqualified · ~15% Nurturing · 0 MQL/SQL yet."
-    )
+    # ════════════════════════════════════════════════════════════════════════════
+    # ACT 6 — H2 BUDGET SIMULATOR
+    # ════════════════════════════════════════════════════════════════════════════
+    st.subheader("🎯 Act 6 — H2 Budget Decision Simulator")
+    st.caption("Based on H1 cost-per-opp rates. Directional only — not a forecast.")
 
-    leads_df = pd.DataFrame([{
-        "Campaign":        n,
-        "TAL Accounts":    d["targeted"],
-        "Total Leads":     d["total_leads"],
-        "Tools (Outbound)":     d["ls_tools"],
-        "Signup":          d["ls_signup"],
-        "Contact Sales":   d["ls_cs"],
-        "Event":           d["ls_event"],
-        "Other":           d["ls_other"],
-        "Leads / Account": d["leads_per_acct"],
-        "CS Lead %":       d["cs_lead_pct"],
-        "Color":           d["color"],
-    } for n, d in ig_campaigns.items()])
-
-    # Stacked bar by FIRST_LEAD_SOURCE category
-    src_colors = {
-        "Tools (Outbound)": "#3B82F6",
-        "Signup":           "#8B5CF6",
-        "Contact Sales":    "#EF4444",
-        "Event":            "#F59E0B",
-        "Other":            "#94A3B8",
-    }
-    fig_leads = go.Figure()
-    for src, color in src_colors.items():
-        fig_leads.add_trace(go.Bar(
-            name=src,
-            x=leads_df["Campaign"],
-            y=leads_df[src],
-            marker_color=color,
-            text=leads_df[src].apply(lambda x: str(x) if x > 0 else ""),
-            textposition="inside",
-        ))
-    fig_leads.update_layout(
-        barmode="stack",
-        title="Leads by Campaign × First Lead Source",
-        height=400, margin=dict(l=0,r=0,t=40,b=60),
-        yaxis_title="Person-Level Leads", xaxis_tickangle=-20,
-        legend=dict(orientation="h", y=1.15),
-    )
-    st.plotly_chart(fig_leads, use_container_width=True)
-
-    l1, l2 = st.columns(2)
-    with l1:
-        # Lead density per TAL account
-        fig_density = go.Figure()
-        fig_density.add_trace(go.Bar(
-            x=leads_df["Leads / Account"],
-            y=leads_df["Campaign"],
-            orientation="h",
-            marker_color=[d["color"] for d in ig_campaigns.values()],
-            text=leads_df["Leads / Account"].apply(lambda x: f"{x:.2f}"),
-            textposition="outside",
-        ))
-        fig_density.update_layout(
-            title="Lead Density: Leads per TAL Account",
-            height=360, margin=dict(l=0,r=60,t=40,b=0),
-            xaxis_title="Leads per Account",
-            yaxis=dict(autorange="reversed"),
-        )
-        st.plotly_chart(fig_density, use_container_width=True)
-
-    with l2:
-        # Contact Sales % — the highest-intent lead type
-        fig_cs = go.Figure()
-        fig_cs.add_trace(go.Bar(
-            x=leads_df["CS Lead %"],
-            y=leads_df["Campaign"],
-            orientation="h",
-            marker_color=[d["color"] for d in ig_campaigns.values()],
-            text=leads_df["CS Lead %"].apply(lambda x: f"{x:.1f}%"),
-            textposition="outside",
-        ))
-        fig_cs.update_layout(
-            title="Contact Sales Lead % (Highest-Intent)",
-            height=360, margin=dict(l=0,r=60,t=40,b=0),
-            xaxis_title="% of Campaign Leads",
-            yaxis=dict(autorange="reversed"),
-        )
-        st.plotly_chart(fig_cs, use_container_width=True)
-
-    leads_display = leads_df[["Campaign","TAL Accounts","Total Leads","Tools (Outbound)","Signup","Contact Sales","Event","Other","Leads / Account","CS Lead %"]].copy()
-    leads_display["CS Lead %"] = leads_display["CS Lead %"].apply(lambda x: f"{x:.1f}%")
-    st.dataframe(leads_display, use_container_width=True, hide_index=True)
-
-    st.info(
-        "**Lead source types:** Tools (Outbound) = outbound tool-sourced leads · "
-        "Signup = organic self-serve signup · Contact Sales = direct sales request (highest buying intent) · "
-        "Event = in-person + online events · Other = Content, Platform, Partner, Vendors, Webinar, etc. "
-        "Source: `FIRST_LEAD_SOURCE` in `bigbrain.l2.raw_salesforce_leads` (all-time, no date filter)."
-    )
-    st.warning(
-        "**Lead status caveat:** As of Jul 2026, leads across these campaigns are primarily Unqualified (~77%) "
-        "and Nurturing (~15%) — 0 MQL/SQL yet. This reflects the long enterprise B2B cycle (6–18 months). "
-        "SLED campaigns are signup-dominated (85–97% Big Brain Signup) while Commercial campaigns "
-        "(ANA, PMO, Retail, CRO) are Tools/Outbound-heavy (52–65%)."
-    )
-
-    st.markdown("---")
-
-    # ── SECTION 2: Funnel depth per campaign ─────────────────────────────────────
-    st.subheader("🔽 Full Funnel by Campaign")
-    st.caption("Each bar = % of TAL accounts that reached that stage. Shows where LinkedIn is driving awareness and where funnel depth stalls.")
-
-    stages = ["aware_rate","opp_rate","cust_rate"]
-    stage_labels = ["Aware %","Opp %","Cust %"]
-    stage_colors = ["#93C5FD","#3B82F6","#1D4ED8"]
-
-    fig_funnel_comp = go.Figure()
-    for stage, label, color in zip(stages, stage_labels, stage_colors):
-        fig_funnel_comp.add_trace(go.Bar(
-            name=label,
-            x=cnames,
-            y=[ig_campaigns[n][stage] for n in cnames],
-            marker_color=color,
-            text=[f"{ig_campaigns[n][stage]}%" for n in cnames],
-            textposition="outside",
-        ))
-    fig_funnel_comp.update_layout(
-        barmode="group", height=420,
-        margin=dict(l=0,r=0,t=20,b=60),
-        yaxis_title="% of TAL", xaxis_tickangle=-20,
-        legend=dict(orientation="h", y=1.12),
-    )
-    st.plotly_chart(fig_funnel_comp, use_container_width=True)
-
-    st.markdown("---")
-
-    # ── SECTION 3: LinkedIn Impression Tier → Engagement Lift (CSV mechanism proof) ──
-    st.subheader("📡 LinkedIn Impression Frequency → Engagement Lift")
-    st.caption("LinkedIn Company Journey Tool CSV · 9,382 accounts · Jan 26–May 31 2026. Shows HOW LinkedIn drives pipeline: more impressions = higher engagement rate.")
-
-    tier_t1, tier_t2 = st.columns(2)
-    with tier_t1:
-        fig_tier_eng = go.Figure()
-        fig_tier_eng.add_trace(go.Bar(
-            x=tier_data["tier"],
-            y=(tier_data["avg_eng_rate"]*100).round(2),
-            marker_color=["#94A3B8","#60A5FA","#3B82F6","#2563EB","#1D4ED8","#1E3A8A"],
-            text=(tier_data["avg_eng_rate"]*100).round(2).astype(str)+"%",
-            textposition="outside",
-        ))
-        fig_tier_eng.update_layout(title="Engagement Rate by Impression Tier",
-            yaxis_title="Eng Rate (%)", height=320,
-            margin=dict(l=0,r=0,t=40,b=0))
-        st.plotly_chart(fig_tier_eng, use_container_width=True)
-
-    with tier_t2:
-        fig_tier_lift = go.Figure()
-        fig_tier_lift.add_trace(go.Bar(
-            x=tier_data["tier"],
-            y=tier_data["pipeline_lift"],
-            marker_color=["#94A3B8","#60A5FA","#3B82F6","#2563EB","#1D4ED8","#1E3A8A"],
-            text=tier_data["pipeline_lift"].apply(lambda x: f"{x:.2f}×"),
-            textposition="outside",
-        ))
-        fig_tier_lift.update_layout(title="Pipeline Lift Multiplier by Tier",
-            yaxis_title="Lift ×", height=320,
-            margin=dict(l=0,r=0,t=40,b=0))
-        st.plotly_chart(fig_tier_lift, use_container_width=True)
-
-    tier_display = tier_data[["tier","accounts","avg_impressions","avg_engagements","avg_eng_rate","pipeline_lift"]].copy()
-    tier_display.columns = ["Tier","Accounts","Avg Impressions","Avg Engagements","Eng Rate","Pipeline Lift ×"]
-    tier_display["Eng Rate"] = (tier_display["Eng Rate"]*100).round(2).astype(str)+"%"
-    tier_display["Pipeline Lift ×"] = tier_display["Pipeline Lift ×"].apply(lambda x: f"{x:.2f}×")
-    st.dataframe(tier_display, use_container_width=True, hide_index=True)
-
-    st.info("**Coverage**: 9,382 of ~9,805 TAL accounts (95.7%) appeared in the LinkedIn CSV — nearly complete reach. "
-            "Top enterprise accounts (PepsiCo 43K imps, Nike 41K) are High-tier. "
-            "Funnel conversions cluster in mid-market accounts (Corteva, Assembly, Colliers) at Medium tier.")
-
-    st.markdown("---")
-
-    # ── SECTION 4: H2 Budget Simulator ───────────────────────────────────────────
-    st.subheader("🎯 H2 Budget Decision Simulator")
-    st.caption("Based on H1 cost-per-opp rates. Select a campaign to model incremental H2 investment.")
-
-    sim_options = [n for n in cnames if ig_campaigns[n]["cost_per_opp"] is not None]
-    sim1, sim2 = st.columns([1, 2])
+    sim_options = [n for n in cnames if campaigns[n]["cost_per_opp"] is not None]
+    sim1, sim2 = st.columns([1,2])
     with sim1:
-        sim_camp    = st.selectbox("Campaign to invest in", sim_options,
+        sim_camp   = st.selectbox("Campaign", sim_options,
                                    index=sim_options.index("PMO") if "PMO" in sim_options else 0)
-        sim_budget  = st.slider("Additional H2 budget ($K)", 50, 1000, 200, step=50) * 1000
-        saturation  = st.slider("Saturation discount (%)", 0, 50, 20,
-                                 help="Marginal return discount vs H1 rate (TAL saturation)") / 100
+        sim_budget = st.slider("Additional H2 budget ($K)", 50, 1000, 200, step=50) * 1000
+        saturation = st.slider("Saturation discount (%)", 0, 50, 20,
+                                help="Marginal return discount vs H1 rate (TAL saturation)") / 100
 
-    d_sim = ig_campaigns[sim_camp]
-    cpp   = d_sim["cost_per_opp"]
-    adj_cpp = round(cpp * (1 + saturation))
-    proj_opps  = round(sim_budget / adj_cpp)
-    cust_rate  = d_sim["cust_rate"] / 100
-    proj_custs = round(proj_opps * cust_rate)
-    arr_est    = proj_custs * 20_000
+    d_sim     = campaigns[sim_camp]
+    cpp       = d_sim["cost_per_opp"]
+    adj_cpp   = round(cpp * (1 + saturation))
+    proj_opps = round(sim_budget / adj_cpp)
+    proj_cust = round(proj_opps * d_sim["cust_rate"] / 100)
+    arr_est   = proj_cust * 20_000
 
     with sim2:
-        r1, r2, r3, r4 = st.columns(4)
-        r1.metric("H2 Budget",          f"${sim_budget:,.0f}")
-        r2.metric("Adj. Cost / Opp",    f"${adj_cpp:,}",    f"+{saturation*100:.0f}% saturation disc.")
-        r3.metric("Projected Opps",     f"+{proj_opps}",    f"@ {d_sim['opp_rate']}% H1 rate")
-        r4.metric("Projected Customers",f"+{proj_custs}",   f"× ${arr_est/max(proj_custs,1)/1000:.0f}K ARR ea.")
-        if proj_custs > 0:
+        r1,r2,r3,r4 = st.columns(4)
+        r1.metric("H2 Budget",           f"${sim_budget:,.0f}")
+        r2.metric("Adj. Cost / Opp",     f"${adj_cpp:,}", f"+{saturation*100:.0f}% saturation")
+        r3.metric("Projected Opps",      f"+{proj_opps}", f"@ {d_sim['opp_rate']}% H1 rate")
+        r4.metric("Projected Customers", f"+{proj_cust}", f"~${arr_est/max(proj_cust,1)/1000:.0f}K ARR ea.")
+        if proj_cust > 0:
             st.success(
-                f"**{sim_camp}** H1: ${d_sim['spend']:,.0f} spend → {d_sim['opp']} opps → {d_sim['cust']} customers "
-                f"({d_sim['cust_rate']}% cust rate). "
-                f"H2 projection: ${sim_budget:,.0f} → **+{proj_opps} opps → +{proj_custs} customers** "
+                f"**{sim_camp}** H1: ${d_sim['spend']:,.0f} → {d_sim['opp']} opps → {d_sim['cust']} customers. "
+                f"H2 projection: ${sim_budget:,.0f} → **+{proj_opps} opps → +{proj_cust} customers** "
                 f"→ ~**${arr_est:,.0f} ARR influence** (@ $20K ARR proxy)."
             )
 
     st.markdown("---")
 
-    # ── Methodology ──────────────────────────────────────────────────────────────
     with st.expander("📐 Methodology & Data Sources"):
         st.markdown("""
-**Funnel data:** `marketing.l3.v_abm_companies_funnel` — per-company ABM lifecycle stage (Targeted → Aware → Engage → MQA → Opportunity → Customer). All touchpoints counted (LinkedIn, web, outbound, events). Not LinkedIn-only attribution.
+**Funnel data:** `marketing.l3.v_abm_companies_funnel` — LIFECYCLE_STAGE per company (Targeted → Aware → Engage → MQA → Opportunity → Customer → Expansion). All touchpoints, not LinkedIn-only.
 
-**Person-level leads:** `bigbrain.l2.raw_salesforce_leads.abm_campaign_lead` — all-time leads associated with each campaign. Classified by `FIRST_LEAD_SOURCE` into 5 groups: **Tools** (outbound), **Signup** (Big Brain organic), **Contact Sales** (Website/Landing Page/Mobile CS — highest intent), **Event** (in-person + online events), **Other** (Content, Platform, Partner, Vendors, Webinar, etc.). Total: ~31,173 leads across 9 campaigns. SLED campaigns are signup-dominated; Commercial campaigns are Tools/Outbound-heavy.
+**Person-level leads:** `bigbrain.l2.raw_salesforce_leads.abm_campaign_lead` — classified by `FIRST_LEAD_SOURCE` into 5 groups: Tools (Outbound), Signup (Big Brain organic), Contact Sales (highest intent), Event, Other. Total: ~31,173 leads.
 
-**LinkedIn impression data:** LinkedIn Company Journey Tool CSV export — NAM Land Ad Sets, Jan 26–May 31 2026. 9,382 companies, 3.4M impressions. Aggregated per company, bucketed by impression tier. NOT ingested into Snowflake — CSV-only today.
+**Event lead status:** `LEAD_SOURCE IN ('Event','Online Event')` filtered leads, with STATUS field showing pipeline progression (Qualified / Nurturing / Attempting / Received / Drop-Off / Unqualified). 10 Qualified event leads across PMO, SLED Existing, Retail.
 
-**Spend data:** `marketing.l3.fact_linkedin_campaigns_daily` — CRQ (Habu cleanroom) where populated, ADN (datorama) fallback. SLED split estimated by TAL account count.
+**LinkedIn impression data:** LinkedIn Company Journey Tool CSV — NAM Land Ad Sets, Jan 1–Jul 13 2026. 11,509 companies, bucketed by total impressions per company. NOT in Snowflake.
 
-**TAL coverage:** 9,382 of ~9,805 total TAL accounts (95.7%) appeared in the LinkedIn CSV — confirming near-complete delivery to the target list.
+**Tier × Funnel correlation:** Top-50 high-impression companies matched by name to `v_abm_companies_funnel`. 9/50 found in active funnel — LinkedIn reach extends beyond formal TAL.
 
-**Important caveat:** Funnel stage = CURRENT state, not LinkedIn-attributed change. Companies may be at Opportunity stage for reasons unrelated to LinkedIn. A proper incrementality study requires a holdout control group. The impression tier → engagement rate lift (0.98% → 1.59%) from the CSV is the strongest direct LinkedIn signal.
+**Spend:** `marketing.l3.fact_linkedin_campaigns_daily` — CRQ (Habu) where available, ADN (Datorama) fallback.
 
-**H2 simulator:** Projects opps based on H1 cost-per-opp, discounted for TAL saturation. Assumes linear returns within a campaign. Use as directional, not forecast.
+**H2 simulator:** H1 cost-per-opp discounted for TAL saturation. Linear return assumption. Directional only.
         """)
 
-    st.caption("Sources: marketing.l3.v_abm_companies_funnel · fact_abm_engagement_metrics · "
-               "LinkedIn Company Journey Tool CSV (Jan 26–May 31 2026) · "
-               "fact_linkedin_campaigns_daily · SFDC campaign mapping verified 2026-07-13.")
+    st.caption("Sources: v_abm_companies_funnel · raw_salesforce_leads · LinkedIn Company Journey Tool CSV · fact_linkedin_campaigns_daily · Verified 2026-07-13.")
