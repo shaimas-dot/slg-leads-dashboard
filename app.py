@@ -1664,6 +1664,22 @@ if "Incremental Growth" in page:
     total_ev      = sum(d["total_ev_leads"] for d in campaigns.values())
     total_ev_qual = sum(d["ev_qualified"]   for d in campaigns.values())
 
+    # ── H2 Recommendation table (top of page) ────────────────────────────────────
+    st.markdown("#### 💡 H2 Campaign Recommendations")
+    rec_top = pd.DataFrame([
+        {"Campaign": "PMO",             "Recommendation": "🟢 Scale",    "Opp Rate": "35.2%", "Cost/Opp": "$1,151", "Event Qual Leads": 6,  "Rationale": "Most efficient. Highest event lead qualification. Strong Outbound + CS lead mix."},
+        {"Campaign": "SLED Existing",   "Recommendation": "🟢 Scale",    "Opp Rate": "30.6%", "Cost/Opp": "$367",   "Event Qual Leads": 2,  "Rationale": "Lowest cost/opp. Underinvested at $37K. Event leads converting."},
+        {"Campaign": "CRO",             "Recommendation": "🟢 Scale",    "Opp Rate": "19.4%", "Cost/Opp": "$177",   "Event Qual Leads": 0,  "Rationale": "Very low spend and cost/opp. Strong outbound lead volume."},
+        {"Campaign": "Retail",          "Recommendation": "🟡 Maintain", "Opp Rate": "27.9%", "Cost/Opp": "$1,002", "Event Qual Leads": 2,  "Rationale": "Good opp rate. Event leads qualifying. Reasonable spend."},
+        {"Campaign": "SLED Higher Ed",  "Recommendation": "🟡 Maintain", "Opp Rate": "12.3%", "Cost/Opp": "$28",    "Event Qual Leads": 0,  "Rationale": "Near-zero spend. Decent funnel depth. Monitor before scaling."},
+        {"Campaign": "Marketing ANA",   "Recommendation": "🟡 Optimize", "Opp Rate": "17.5%", "Cost/Opp": "$8,037", "Event Qual Leads": 0,  "Rationale": "Highest spend, highest cost/opp. Rebalance budget toward events."},
+        {"Campaign": "MKTG Whitespace", "Recommendation": "🔴 Reassess", "Opp Rate": "6.0%",  "Cost/Opp": "$1,618", "Event Qual Leads": 0,  "Rationale": "Low opp rate, no qualified leads. Question TAL quality before H2."},
+        {"Campaign": "SLED Counties",   "Recommendation": "🔴 Reassess", "Opp Rate": "3.2%",  "Cost/Opp": "$3,514", "Event Qual Leads": 0,  "Rationale": "Lowest opp rate. Large TAL not converting. LinkedIn alone not enough."},
+        {"Campaign": "SLED Counties WS","Recommendation": "🔴 Pause",   "Opp Rate": "0.8%",  "Cost/Opp": "$1,252", "Event Qual Leads": 0,  "Rationale": "Near-zero pipeline. 0 event leads. Pause and requalify TAL."},
+    ])
+    st.dataframe(rec_top, use_container_width=True, hide_index=True)
+    st.markdown("---")
+
     # ── KPI row ──────────────────────────────────────────────────────────────────
     k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
     k1.metric("LinkedIn Spend H1",     f"${total_spend/1e6:.2f}M",   "9 campaigns · Jan–Jun 2026")
