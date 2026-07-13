@@ -1809,15 +1809,18 @@ if "Incremental Growth" in page:
     # LinkedIn CSV: 9,382 companies · 3.4M impressions · 43K engagements (Jan 26–May 31 2026)
 
     ig_campaigns = {
-        "Marketing ANA":       {"spend":1_784_369,"targeted":1269,"aware":674, "engage":170,"mqa":137,"opp":222,"cust":74, "signups":574,"web_cs":20,"visited":837, "color":"#2563EB"},
-        "PMO":                 {"spend":568_558,  "targeted":1404,"aware":833, "engage":324,"mqa":323,"opp":494,"cust":239,"signups":40, "web_cs":2, "visited":1010,"color":"#7C3AED"},
-        "CRO":                 {"spend":49_461,   "targeted":1440,"aware":720, "engage":188,"mqa":179,"opp":279,"cust":134,"signups":469,"web_cs":25,"visited":1081,"color":"#DC2626"},
-        "Retail":              {"spend":148_263,  "targeted":530, "aware":317, "engage":111,"mqa":108,"opp":148,"cust":81, "signups":114,"web_cs":0, "visited":392, "color":"#D97706"},
-        "MKTG Whitespace":     {"spend":61_470,   "targeted":636, "aware":383, "engage":24, "mqa":21, "opp":38, "cust":4,  "signups":22, "web_cs":3, "visited":434, "color":"#0EA5E9"},
-        "SLED Existing":       {"spend":37_021,   "targeted":330, "aware":234, "engage":84, "mqa":81, "opp":101,"cust":44, "signups":144,"web_cs":6, "visited":271, "color":"#059669"},
-        "SLED Counties":       {"spend":270_622,  "targeted":2402,"aware":525, "engage":75, "mqa":66, "opp":77, "cust":36, "signups":279,"web_cs":11,"visited":874, "color":"#10B981"},
-        "SLED Higher Ed":      {"spend":650,      "targeted":658, "aware":467, "engage":84, "mqa":66, "opp":81, "cust":23, "signups":418,"web_cs":21,"visited":549, "color":"#0D9488"},
-        "SLED Counties WS":    {"spend":11_268,   "targeted":1068,"aware":97,  "engage":7,  "mqa":7,  "opp":9,  "cust":1,  "signups":44, "web_cs":1, "visited":206, "color":"#6EE7B7"},
+        # leads = person-level leads from STG_ABM_LEADS_SIGNUPS (Jan–May 2026, signup-dated)
+        # raw_leads = all-time raw SFDC leads from RAW_SALESFORCE_LEADS.ABM_CAMPAIGN_LEAD (QA ref)
+        # event_leads = leads sourced from LEAD_SOURCE IN ('Event','Online Event') per campaign
+        "Marketing ANA":       {"spend":1_784_369,"targeted":1269,"aware":674, "engage":170,"mqa":137,"opp":222,"cust":74, "signups":574,"web_cs":20,"visited":837, "leads":2791,"raw_leads":9051, "event_leads":133,"color":"#2563EB"},
+        "PMO":                 {"spend":568_558,  "targeted":1404,"aware":833, "engage":324,"mqa":323,"opp":494,"cust":239,"signups":40, "web_cs":2, "visited":1010,"leads":2967,"raw_leads":9770,"event_leads":51, "color":"#7C3AED"},
+        "CRO":                 {"spend":49_461,   "targeted":1440,"aware":720, "engage":188,"mqa":179,"opp":279,"cust":134,"signups":469,"web_cs":25,"visited":1081,"leads":716, "raw_leads":2784,"event_leads":26, "color":"#DC2626"},
+        "Retail":              {"spend":148_263,  "targeted":530, "aware":317, "engage":111,"mqa":108,"opp":148,"cust":81, "signups":114,"web_cs":0, "visited":392, "leads":610, "raw_leads":2756,"event_leads":12, "color":"#D97706"},
+        "MKTG Whitespace":     {"spend":61_470,   "targeted":636, "aware":383, "engage":24, "mqa":21, "opp":38, "cust":4,  "signups":22, "web_cs":3, "visited":434, "leads":606, "raw_leads":1725,"event_leads":18, "color":"#0EA5E9"},
+        "SLED Existing":       {"spend":37_021,   "targeted":330, "aware":234, "engage":84, "mqa":81, "opp":101,"cust":44, "signups":144,"web_cs":6, "visited":271, "leads":1438,"raw_leads":2048,"event_leads":38, "color":"#059669"},
+        "SLED Counties":       {"spend":270_622,  "targeted":2402,"aware":525, "engage":75, "mqa":66, "opp":77, "cust":36, "signups":279,"web_cs":11,"visited":874, "leads":566, "raw_leads":866, "event_leads":28, "color":"#10B981"},
+        "SLED Higher Ed":      {"spend":650,      "targeted":658, "aware":467, "engage":84, "mqa":66, "opp":81, "cust":23, "signups":418,"web_cs":21,"visited":549, "leads":1576,"raw_leads":2175,"event_leads":12, "color":"#0D9488"},
+        "SLED Counties WS":    {"spend":11_268,   "targeted":1068,"aware":97,  "engage":7,  "mqa":7,  "opp":9,  "cust":1,  "signups":44, "web_cs":1, "visited":206, "leads":95,  "raw_leads":95,  "event_leads":0,  "color":"#6EE7B7"},
     }
     cnames = list(ig_campaigns.keys())
     ccolors = [ig_campaigns[n]["color"] for n in cnames]
@@ -1826,12 +1829,14 @@ if "Incremental Growth" in page:
     for n, d in ig_campaigns.items():
         t = d["targeted"]
         s = d["spend"]
-        d["aware_rate"]  = round(d["aware"]  / t * 100, 1)
-        d["opp_rate"]    = round(d["opp"]    / t * 100, 1)
-        d["cust_rate"]   = round(d["cust"]   / t * 100, 1)
+        d["aware_rate"]    = round(d["aware"]  / t * 100, 1)
+        d["opp_rate"]      = round(d["opp"]    / t * 100, 1)
+        d["cust_rate"]     = round(d["cust"]   / t * 100, 1)
         d["cost_per_opp"]  = round(s / d["opp"])  if d["opp"]  > 0 else None
         d["cost_per_cust"] = round(s / d["cust"]) if d["cust"] > 0 else None
         d["visit_rate"]    = round(d["visited"] / t * 100, 1)
+        d["leads_per_acct"]= round(d["leads"] / t, 2)
+        d["event_lead_pct"]= round(d["event_leads"] / d["leads"] * 100, 1) if d["leads"] > 0 else 0.0
 
     # CSV impression tier data (LinkedIn Company Journey Tool, aggregated per company)
     tier_data = pd.DataFrame({
@@ -1879,19 +1884,22 @@ if "Incremental Growth" in page:
         'Weeks':      [15,18,18,18,18,18,18,18,18,18,18,18,18,18,14,18,18,18,18,18],
     })
 
-    total_spend = sum(d["spend"] for d in ig_campaigns.values())
-    total_opp   = sum(d["opp"]   for d in ig_campaigns.values())
-    total_cust  = sum(d["cust"]  for d in ig_campaigns.values())
-    total_tgt   = sum(d["targeted"] for d in ig_campaigns.values())
+    total_spend  = sum(d["spend"]    for d in ig_campaigns.values())
+    total_opp    = sum(d["opp"]      for d in ig_campaigns.values())
+    total_cust   = sum(d["cust"]     for d in ig_campaigns.values())
+    total_tgt    = sum(d["targeted"] for d in ig_campaigns.values())
+    total_leads  = sum(d["leads"]    for d in ig_campaigns.values())
+    total_ev_leads = sum(d["event_leads"] for d in ig_campaigns.values())
 
     # ── KPI row ─────────────────────────────────────────────────────────────────
-    k1,k2,k3,k4,k5,k6 = st.columns(6)
-    k1.metric("Total LinkedIn Spend",   f"${total_spend/1e6:.2f}M", "H1 2026 · 9 campaigns")
-    k2.metric("TAL Accounts Targeted",  f"{total_tgt:,}",           "across 9 SFDC campaigns")
-    k3.metric("Companies on LinkedIn",  "9,382",                    "95.7% TAL coverage")
-    k4.metric("Total Opportunities",    f"{total_opp:,}",           f"{total_opp/total_tgt*100:.1f}% of TAL")
-    k5.metric("Total Customers",        f"{total_cust:,}",          f"{total_cust/total_tgt*100:.1f}% of TAL")
-    k6.metric("Avg Cost / Opp",         f"${total_spend//total_opp:,}", "blended across all campaigns")
+    k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
+    k1.metric("Total LinkedIn Spend",   f"${total_spend/1e6:.2f}M",  "H1 2026 · 9 campaigns")
+    k2.metric("TAL Accounts Targeted",  f"{total_tgt:,}",            "across 9 SFDC campaigns")
+    k3.metric("Companies on LinkedIn",  "9,382",                     "95.7% TAL coverage")
+    k4.metric("Total Person Leads",     f"{total_leads:,}",          "Jan–May 2026 · STG_ABM_LEADS")
+    k5.metric("Event-Sourced Leads",    f"{total_ev_leads:,}",       f"{total_ev_leads/total_leads*100:.1f}% of leads")
+    k6.metric("Total Opportunities",    f"{total_opp:,}",            f"{total_opp/total_tgt*100:.1f}% of TAL")
+    k7.metric("Avg Cost / Opp",         f"${total_spend//total_opp:,}", "blended across all campaigns")
 
     st.markdown("---")
 
@@ -1943,6 +1951,85 @@ if "Incremental Growth" in page:
         Spend=eff_df["Spend"].apply(lambda x: f"${x:,.0f}"),
         **{"Cost / Opp": eff_df["Cost / Opp"].apply(lambda x: f"${x:,.0f}" if x else "—")},
     ), use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    # ── SECTION 1.5: Person-Level Lead Generation ──────────────────────────────
+    st.subheader("👤 Person-Level Lead Generation by Campaign")
+    st.caption(
+        "Source: `marketing.stg.stg_abm_leads_signups` (Jan–May 2026) · QA-validated against "
+        "`bigbrain.l2.raw_salesforce_leads.abm_campaign_lead`. "
+        "Includes all lead touchpoints: signups, events (Event + Online Event), and other sources. "
+        "Lead status as of Jul 2026: ~77% Unqualified · ~15% Nurturing · 0 MQL/SQL yet."
+    )
+
+    leads_df = pd.DataFrame([{
+        "Campaign":        n,
+        "TAL Accounts":    d["targeted"],
+        "Total Leads":     d["leads"],
+        "Event Leads":     d["event_leads"],
+        "Signup Leads":    d["leads"] - d["event_leads"],
+        "Leads / Account": d["leads_per_acct"],
+        "Event Lead %":    d["event_lead_pct"],
+        "Color":           d["color"],
+    } for n, d in ig_campaigns.items()])
+
+    l1, l2 = st.columns(2)
+    with l1:
+        fig_leads = go.Figure()
+        fig_leads.add_trace(go.Bar(
+            name="Signup Leads",
+            x=leads_df["Campaign"],
+            y=leads_df["Signup Leads"],
+            marker_color=[d["color"] for d in ig_campaigns.values()],
+            text=leads_df["Signup Leads"],
+            textposition="inside",
+        ))
+        fig_leads.add_trace(go.Bar(
+            name="Event Leads",
+            x=leads_df["Campaign"],
+            y=leads_df["Event Leads"],
+            marker_color="#F59E0B",
+            text=leads_df["Event Leads"],
+            textposition="inside",
+        ))
+        fig_leads.update_layout(
+            barmode="stack", title="Total Leads by Campaign (Signup + Event)",
+            height=380, margin=dict(l=0,r=0,t=40,b=60),
+            yaxis_title="Person-Level Leads", xaxis_tickangle=-20,
+            legend=dict(orientation="h", y=1.12),
+        )
+        st.plotly_chart(fig_leads, use_container_width=True)
+
+    with l2:
+        fig_density = go.Figure()
+        fig_density.add_trace(go.Bar(
+            x=leads_df["Leads / Account"],
+            y=leads_df["Campaign"],
+            orientation="h",
+            marker_color=[d["color"] for d in ig_campaigns.values()],
+            text=leads_df["Leads / Account"].apply(lambda x: f"{x:.2f}"),
+            textposition="outside",
+        ))
+        fig_density.update_layout(
+            title="Lead Density: Leads per TAL Account",
+            height=380, margin=dict(l=0,r=60,t=40,b=0),
+            xaxis_title="Leads per Account",
+            yaxis=dict(autorange="reversed"),
+        )
+        st.plotly_chart(fig_density, use_container_width=True)
+
+    leads_display = leads_df[["Campaign","TAL Accounts","Total Leads","Signup Leads","Event Leads","Leads / Account","Event Lead %"]].copy()
+    leads_display["Event Lead %"] = leads_display["Event Lead %"].apply(lambda x: f"{x:.1f}%")
+    st.dataframe(leads_display, use_container_width=True, hide_index=True)
+
+    st.warning(
+        "**Lead status caveat:** As of Jul 2026, no leads across these 9 campaigns have progressed "
+        "to MQL or SQL — ~77% are Unqualified, ~15% Nurturing. This reflects the long B2B sales cycle "
+        "for enterprise accounts (typical 6–18 months) and suggests H1 leads are still in early nurture. "
+        "**QA note:** Raw SFDC counts (ABM_CAMPAIGN_LEAD field) are 2–3× higher than STG counts — "
+        "the difference is leads created before Jan 2026 that were later associated to the campaign."
+    )
 
     st.markdown("---")
 
@@ -2060,6 +2147,8 @@ if "Incremental Growth" in page:
     with st.expander("📐 Methodology & Data Sources"):
         st.markdown("""
 **Funnel data:** `marketing.l3.v_abm_companies_funnel` — per-company ABM lifecycle stage (Targeted → Aware → Engage → MQA → Opportunity → Customer). All touchpoints counted (LinkedIn, web, outbound, events). Not LinkedIn-only attribution.
+
+**Person-level leads:** `marketing.stg.stg_abm_leads_signups` — 11,365 leads with ABM_CAMPAIGN_NAME stamped, filtered to signup date Jan–May 2026. Includes all lead sources: self-serve signups, events (LEAD_SOURCE = 'Event' or 'Online Event'), and other inbound. QA-validated against `bigbrain.l2.raw_salesforce_leads.abm_campaign_lead` field — raw SFDC counts are higher because they include pre-2026 leads later associated to the campaign. Event leads = 318 total (249 'Event' + 69 'Online Event').
 
 **LinkedIn impression data:** LinkedIn Company Journey Tool CSV export — NAM Land Ad Sets, Jan 26–May 31 2026. 9,382 companies, 3.4M impressions. Aggregated per company, bucketed by impression tier. NOT ingested into Snowflake — CSV-only today.
 
