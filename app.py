@@ -31,7 +31,7 @@ with st.sidebar:
     else:
         st.code("Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1", language=None)
 
-if "PMO" not in page and "ANA ABM" not in page and "HUB International" not in page:
+if "NAM Marketing" in page:
     st.title("🔵 NAM Marketing — Work Mgmt H1 2026")
     st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1 | 🔒 Data locked: Jan 1 – May 31, 2026")
 
@@ -621,7 +621,7 @@ if "PMO" not in page and "ANA ABM" not in page and "HUB International" not in pa
 
     # ═══════════════════════════════════════════════════════════════════════════════
 
-elif "ANA ABM" not in page and "HUB International" not in page:
+elif "PMO" in page:
     # ═══════════════════════════════════════════════════════════════════════════
     # PMO CAMPAIGN — NAM Land PMO H1 2026
     # ═══════════════════════════════════════════════════════════════════════════
@@ -1168,7 +1168,7 @@ Combined, these two filters reliably capture H1 PMO spend without contaminating 
                                   xaxis_title='Weekly Spend ($)', yaxis_title='Pipeline ROI (x)', height=400)
         st.plotly_chart(fig_roi_p, use_container_width=True)
 
-elif "HUB International" not in page:
+elif "ANA ABM" in page:
     # ═══════════════════════════════════════════════════════════════════════════
     # ANA ABM ACCOUNT REPORT — NAM Marketing ANA H1 2026
     # ═══════════════════════════════════════════════════════════════════════════
@@ -1447,7 +1447,7 @@ elif "HUB International" not in page:
             st.markdown("---")
             st.info("**Key Takeaway** — 10 BigBrain signups pre-campaign created latent intent that LinkedIn impressions activated. Carlos Medina was already evaluating monday.com before campaign launch — ABM coverage accelerated the cycle and brought in a VP-level second stakeholder within 6 weeks.")
 
-else:
+elif "HUB International" in page:
     # ═══════════════════════════════════════════════════════════════════════════
     # HUB INTERNATIONAL — 1:1 ABM ACCOUNT REPORT
     # ═══════════════════════════════════════════════════════════════════════════
