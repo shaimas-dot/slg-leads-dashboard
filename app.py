@@ -52,7 +52,7 @@ if "NAM Marketing" in page:
     # Top 20 companies by impressions
     top_companies = pd.DataFrame({
         'company': ['Adobe','Citi','VML','Procter & Gamble','CIBC','Bank of America','SAP',
-                    'Scotiabank','Wells Fargo','Comcast','Honeywell','JPMorgan Chase',
+                    'Scotiabank','Wells Fargo','Comcast','Honeywell',
                     'Microsoft','Salesforce','Cisco','Oracle','IBM','AT&T','Verizon','Amazon'],
         'impressions': [30289,26272,25245,21475,19929,19719,17846,16996,15311,15302,
                         14800,14200,13500,12800,12100,11500,10900,10200,9800,9200],
@@ -1175,8 +1175,8 @@ elif "ANA ABM" in page:
     st.title("🟢 NAM ANA ABM — Account Report H1 2026")
     st.caption("Campaign: Other_Account_Based_Marketing_NAM_Q12026_US_Land_Marketing_ANA_H1 · Data locked Jan 1 – May 31, 2026")
 
-    tab_ov, tab_wahl, tab_chase, tab_lol, tab_hilton = st.tabs([
-        "📊 Campaign Overview", "🏆 Wahl Clipper", "🏦 JPMorgan Chase",
+    tab_ov, tab_wahl, tab_lol, tab_hilton = st.tabs([
+        "📊 Campaign Overview", "🏆 Wahl Clipper",
         "🌾 Land O'Lakes", "🏨 Hilton Grand Vacations"
     ])
 
@@ -1360,35 +1360,6 @@ elif "ANA ABM" in page:
                 unsafe_allow_html=True)
             st.markdown("---")
             st.info("**Key Takeaway** — Single LinkedIn lead from a targeted HR Manager directly opened the Wahl account. Closed Won $68K in under 5 weeks from first MQA — fastest close in the ANA cohort.")
-
-    # ── JPMORGAN CHASE ───────────────────────────────────────────────────────
-    with tab_chase:
-        st.markdown(acct_header("🏦","JPMorgan Chase",
-            "Financial Services · New York, NY · 290,000 employees",
-            [("#eda100","MQA Stage"),("#2a78d6","7 Leads H1 2026"),("#4a3aa7","14.2K Impressions")]),
-            unsafe_allow_html=True)
-        cl, cr = st.columns([3,2])
-        with cl:
-            st.markdown("**Account High Level Story**")
-            st.markdown(
-                tl_step("Jan 2026","Targeted","JPMorgan Chase added to ANA enterprise tier. LinkedIn campaign coverage begins (14.2K total impressions).",[LI]) +
-                tl_step("Feb 2026","Aware","Multiple employees engaging. 3 BigBrain signups and 2 Web CS visits recorded.",[BB,WEB]) +
-                tl_step("Mar 2026","Engage","Megan Pajarillo (VP Marketing Strategy) submits LinkedIn Lead Gen form. Rachel Kim signs up via BigBrain.",[LI,BB]) +
-                tl_step("Apr 2026","MQA","3 qualified contacts confirmed across 3 channels. Account upgraded to MQA. Enterprise AE assigned.",[LI,BB,WEB]) +
-                tl_step("In Progress","In Progress","Active evaluation underway. James Thompson (Director Ops) added as stakeholder. Largest open enterprise opp in ANA pipeline.",[],is_last=True),
-                unsafe_allow_html=True)
-        with cr:
-            st.markdown("**ABM Funnel — JPMorgan Chase**")
-            st.markdown(funnel_html(["Targeted","Aware","Engage","MQA"]), unsafe_allow_html=True)
-            st.markdown("---")
-            st.markdown("**Key Contacts**")
-            st.markdown(
-                contact_row("MP","Megan Pajarillo","VP Marketing Strategy · LinkedIn Lead",LI) +
-                contact_row("RK","Rachel Kim","Senior Project Manager · BigBrain",BB) +
-                contact_row("JT","James Thompson","Director Operations · Web CS",WEB,border=False),
-                unsafe_allow_html=True)
-            st.markdown("---")
-            st.info("**Key Takeaway** — Enterprise penetration through multi-persona engagement: 7 leads across 3 channels with VP-level champion. 14.2K impressions built brand recall — now the largest open enterprise opportunity in the ANA pipeline.")
 
     # ── LAND O'LAKES ─────────────────────────────────────────────────────────
     with tab_lol:
