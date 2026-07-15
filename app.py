@@ -53,7 +53,7 @@ if "NAM Marketing" in page:
     top_companies = pd.DataFrame({
         'company': ['Adobe','Citi','VML','Procter & Gamble','CIBC','Bank of America','SAP',
                     'Scotiabank','Wells Fargo','Comcast','Honeywell',
-                    'Microsoft','Salesforce','Cisco','Oracle','IBM','AT&T','Verizon','Amazon'],
+                    'Microsoft','Salesforce','Cisco','Oracle','IBM','AT&T','Verizon','Amazon','Intel'],
         'impressions': [30289,26272,25245,21475,19929,19719,17846,16996,15311,15302,
                         14800,14200,13500,12800,12100,11500,10900,10200,9800,9200],
         'engagements': [641,596,412,439,279,294,268,270,221,238,
