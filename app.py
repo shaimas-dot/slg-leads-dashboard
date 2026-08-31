@@ -19,6 +19,7 @@ with st.sidebar:
         "🟢 ANA ABM — Account Report",
         "🛡️ HUB International — 1:1 ABM",
         "📈 Incremental Growth",
+        "🆕 H2 LinkedIn Intel",
     ], index=0)
     st.markdown("---")
     st.caption("Campaign identifiers:")
@@ -2137,3 +2138,167 @@ if "Incremental Growth" in page:
         """)
 
     st.caption("Sources: v_abm_companies_funnel · raw_salesforce_leads · LinkedIn Company Journey Tool CSV · fact_linkedin_campaigns_daily · Verified 2026-07-13.")
+
+if "H2 LinkedIn Intel" in page:
+    st.title("🆕 H2 LinkedIn Company Intelligence")
+    st.caption("Source: MARKETING.playground.linkedin_company_intel_account + linkedin_company_intel_campaign · Snapshot: 2026-08-24 · Window: LAST_30_DAYS")
+
+    st.info("🔬 **New data source for H2:** LinkedIn Company Intelligence API (ingested Aug 2026) — replaces manual CSV export. Account-level and campaign-level paid impressions, engagements, clicks, conversions per company domain. Enables automated refresh without CSV re-exports.")
+
+    # ── KPI ROW ──────────────────────────────────────────────────────────────────
+    st.markdown("## Account-Level Overview (All NAM Ad Accounts)")
+    k1, k2, k3, k4, k5 = st.columns(5)
+    k1.metric("Companies Reached", "427,719", "LAST_30_DAYS · Aug 24")
+    k2.metric("With Paid Impressions", "427,082", "99.85% of reached")
+    k3.metric("Total Paid Impressions", "4,678,759", "account_urn 513496320")
+    k4.metric("Paid Engagements", "2,260", "0.048% eng rate")
+    k5.metric("Conversions", "505", "excl. leads (0 in snapshot)")
+
+    st.markdown("---")
+
+    # ── ENGAGEMENT LEVEL DISTRIBUTION ────────────────────────────────────────────
+    st.markdown("## Company Engagement Level Distribution")
+    st.caption("LinkedIn's proprietary engagement tier — based on paid impressions, clicks, and dwell time in the last 30 days.")
+
+    eng_df = pd.DataFrame({
+        "Engagement Level": ["VERY_LOW", "LOW", "MEDIUM", "HIGH", "VERY_HIGH"],
+        "Companies": [425897, 186, 935, 350, 351],
+        "Pct": [99.57, 0.04, 0.22, 0.08, 0.08],
+    })
+    col_eng, col_eng2 = st.columns([2, 1])
+    with col_eng:
+        color_map = {
+            "VERY_LOW": "#CBD5E1", "LOW": "#93C5FD", "MEDIUM": "#3B82F6",
+            "HIGH": "#1D4ED8", "VERY_HIGH": "#1E3A8A"
+        }
+        fig_eng = px.bar(
+            eng_df, x="Engagement Level", y="Companies",
+            color="Engagement Level", color_discrete_map=color_map,
+            text="Companies",
+            title="Companies by Engagement Level (Aug 24 snapshot)",
+            category_orders={"Engagement Level": ["VERY_LOW","LOW","MEDIUM","HIGH","VERY_HIGH"]}
+        )
+        fig_eng.update_traces(texttemplate="%{text:,}", textposition="outside")
+        fig_eng.update_layout(showlegend=False, height=380)
+        st.plotly_chart(fig_eng, use_container_width=True)
+    with col_eng2:
+        st.markdown("#### Signal tiers")
+        for _, row in eng_df.iterrows():
+            bar_pct = min(row["Pct"], 5) / 5 * 100
+            st.markdown(f"**{row['Engagement Level']}** — {row['Companies']:,} ({row['Pct']}%)")
+        st.markdown("---")
+        st.markdown("**1,822 companies** (0.43%) are LOW or above — these are the highest-signal accounts to prioritise for BDR outreach in H2.")
+
+    st.markdown("---")
+
+    # ── CAMPAIGN-LEVEL BREAKDOWN ──────────────────────────────────────────────────
+    st.markdown("## Campaign-Level Reach by SLG Segment")
+    st.caption("Source: linkedin_company_intel_campaign joined to fact_linkedin_campaigns_daily. Filtered to NAM ABM campaigns only.")
+
+    camp_df = pd.DataFrame({
+        "SLG Segment": ["slg_mktg (Marketing ANA + WS)", "slg_ppm (PMO)", "slg_crol (CRO)", "slg_sled (SLED Counties)", "slg_sled_edu (SLED Higher Ed)", "slg_sled_counties (SLED Counties WS)"],
+        "SFDC Campaign": ["Marketing ANA / MKTG WS", "PMO", "CRO", "SLED Counties", "SLED Higher Ed", "SLED Counties WS"],
+        "Companies": [13650, 4666, 2871, 2351, 1583, 698],
+        "Paid Impressions": [81111670, 21418739, 7506510, 6117984, 1870548, 1362387],
+        "Paid Engagements": [759390, 147586, 1874, 44474, 291, 14475],
+        "Paid Clicks": [510234, 117641, 1574, 16884, 0, 10229],
+        "Eng Rate": [0.94, 0.69, 0.025, 0.73, 0.016, 1.06],
+        "Color": ["#2563EB", "#7C3AED", "#DC2626", "#059669", "#0D9488", "#10B981"],
+    })
+
+    fig_reach = px.bar(
+        camp_df, x="SLG Segment", y="Companies",
+        color="SLG Segment",
+        color_discrete_sequence=camp_df["Color"].tolist(),
+        text="Companies",
+        title="Distinct Companies Reached per Campaign Segment (Aug 24, LAST_30_DAYS)",
+    )
+    fig_reach.update_traces(texttemplate="%{text:,}", textposition="outside")
+    fig_reach.update_layout(showlegend=False, height=420, xaxis_tickangle=-15)
+    st.plotly_chart(fig_reach, use_container_width=True)
+
+    col_imp, col_eng_rate = st.columns(2)
+    with col_imp:
+        fig_impr = px.bar(
+            camp_df, x="SLG Segment", y="Paid Impressions",
+            color="SLG Segment",
+            color_discrete_sequence=camp_df["Color"].tolist(),
+            text="Paid Impressions",
+            title="Paid Impressions per Segment",
+        )
+        fig_impr.update_traces(texttemplate="%{text:,.0f}", textposition="outside")
+        fig_impr.update_layout(showlegend=False, height=380, xaxis_tickangle=-15)
+        st.plotly_chart(fig_impr, use_container_width=True)
+    with col_eng_rate:
+        fig_er = px.bar(
+            camp_df, x="SLG Segment", y="Eng Rate",
+            color="SLG Segment",
+            color_discrete_sequence=camp_df["Color"].tolist(),
+            text="Eng Rate",
+            title="Engagement Rate % per Segment",
+        )
+        fig_er.update_traces(texttemplate="%{text:.2f}%", textposition="outside")
+        fig_er.update_layout(showlegend=False, height=380, xaxis_tickangle=-15)
+        st.plotly_chart(fig_er, use_container_width=True)
+
+    st.markdown("### Campaign Summary Table")
+    display_df = camp_df[["SLG Segment", "SFDC Campaign", "Companies", "Paid Impressions", "Paid Engagements", "Paid Clicks", "Eng Rate"]].copy()
+    display_df["Eng Rate"] = display_df["Eng Rate"].map(lambda x: f"{x:.2f}%")
+    display_df["Paid Impressions"] = display_df["Paid Impressions"].map(lambda x: f"{x:,}")
+    display_df["Paid Engagements"] = display_df["Paid Engagements"].map(lambda x: f"{x:,}")
+    display_df["Paid Clicks"] = display_df["Paid Clicks"].map(lambda x: f"{x:,}")
+    display_df["Companies"] = display_df["Companies"].map(lambda x: f"{x:,}")
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
+
+    st.warning("⚠️ **Retail and MKTG Whitespace** are not present as standalone segments in H2 — either paused or absorbed into slg_mktg. Paid Leads and Qualified Leads are 0 in this snapshot — this field may require Lead Gen campaign type to populate.")
+
+    st.markdown("---")
+
+    # ── H1 vs H2 COMPARISON ──────────────────────────────────────────────────────
+    st.markdown("## H1 vs H2 Source Comparison")
+    st.caption("H1 = LinkedIn Company Journey CSV (Jan 1–Jul 13). H2 = linkedin_company_intel Snowflake tables (Aug 2026 forward).")
+
+    comp_df = pd.DataFrame({
+        "Dimension": [
+            "Data source", "In Snowflake", "Company identifier",
+            "Campaign-level split", "Metrics available",
+            "Lead signal", "Refresh method", "Coverage"
+        ],
+        "H1 (CSV)": [
+            "LinkedIn Company Journey Tool export", "No — manual CSV",
+            "company_name (fuzzy match)", "No — account-level only",
+            "impressions, engagements, clicks",
+            "None (no lead columns)", "Manual re-export", "Jan 1 – Jul 13 2026"
+        ],
+        "H2 (Snowflake)": [
+            "linkedin_company_intel_* tables", "Yes — queryable anytime",
+            "company_domain (clean join key)", "Yes — per campaign URN",
+            "paid impressions, engagements, clicks, leads, qualified leads, conversions",
+            "paid_leads + paid_qualified_leads columns", "Automated ingestion",
+            "Aug 2026 → ongoing (LAST_30/90_DAYS rolling)"
+        ],
+    })
+    st.dataframe(comp_df, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    with st.expander("📐 Data Sources & Join Logic"):
+        st.markdown("""
+**Account table:** `MARKETING.playground.linkedin_company_intel_account`
+- Grain: one row per company × account_urn × lookback_window × snapshot_date
+- Use `LAST_30_DAYS` + most recent `snapshot_date` for current state
+- Join to `STG_ABM_TARGETS` on `company_domain = DOMAIN` for TAL overlap
+
+**Campaign table:** `MARKETING.playground.linkedin_company_intel_campaign`
+- Grain: one row per company × campaign_urn × lookback_window × snapshot_date
+- Join to `fact_linkedin_campaigns_daily` on: `SPLIT_PART(campaign_urn, ':', 4) = campaign_id`
+- Filter NAM ABM: `campaign_name ILIKE 'nam%abm%'`
+
+**Account URNs in data:**
+- `urn:li:sponsoredAccount:507706187` · `513496320` · `514560303` (campaign table)
+- `+ 511042694` · `515190139` (account table only)
+
+**Snapshot dates available:** Aug 3, Aug 10, Aug 17, Aug 24, 2026
+        """)
+
+    st.caption("Source: MARKETING.playground.linkedin_company_intel_account · linkedin_company_intel_campaign · Queried 2026-08-31.")
