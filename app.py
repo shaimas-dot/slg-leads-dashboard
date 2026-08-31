@@ -2141,7 +2141,7 @@ if "Incremental Growth" in page:
 
 if "H2 LinkedIn Intel" in page:
     st.title("📡 H2 LinkedIn Incrementality")
-    st.caption("Source: linkedin_company_intel_account + linkedin_company_intel_campaign · Filter: (nam-%  OR us-en-% OR us_%) AND %abm% · Snapshot: 2026-08-24 · Window: LAST_30_DAYS")
+    st.caption("LinkedIn scope: Campaign group 'Marketing Program - ABM' · Ad sets containing 'NAM' · Source: linkedin_company_intel_campaign × fact_linkedin_campaigns_daily · Snapshot: 2026-08-24 · LAST_30_DAYS")
 
     st.info("**The core question:** Do TAL accounts that receive more LinkedIn impressions progress further in the ABM funnel? If yes — LinkedIn creates incremental pipeline lift, not just brand noise.")
 
@@ -2203,7 +2203,7 @@ if "H2 LinkedIn Intel" in page:
 
     # ── CAMPAIGN REACH BY SLG SEGMENT ────────────────────────────────────────────
     st.markdown("## Campaign Reach by SLG Program (H2 Aug 2026)")
-    st.caption("Corrected filter: campaign_name LIKE 'nam-%' OR 'us-en-%' OR 'us_%' AND '%abm%' · linkedin_company_intel_campaign × fact_linkedin_campaigns_daily")
+    st.caption("LinkedIn campaign group: 'Marketing Program - ABM' · Ad sets containing 'NAM' · linkedin_company_intel_campaign × fact_linkedin_campaigns_daily")
 
     camp_df = pd.DataFrame({
         "Program": ["slg_mktg", "slg_ppm", "slg_sled", "slg_crol"],
@@ -2271,11 +2271,10 @@ if "H2 LinkedIn Intel" in page:
 
     with st.expander("📐 Data Sources, Filter Logic & Limitations"):
         st.markdown("""
-**Campaign group "Marketing Program - ABM" is not ingested into Snowflake. Filter derived from ad set naming convention:**
+**LinkedIn scope:** Campaign group "Marketing Program - ABM", ad sets containing "NAM".
+The campaign group hierarchy is not ingested into Snowflake. Filter approximated as:
 ```sql
-WHERE (campaign_name LIKE 'nam-%' OR campaign_name LIKE 'us-en-%' OR campaign_name LIKE 'us\\_%')
-  AND campaign_name LIKE '%abm%'
--- Excludes slg_aiwp, slg_crm, and other non-ABM campaign groups
+WHERE campaign_name LIKE '%nam%' AND campaign_name LIKE '%abm%'
 ```
 
 **Incrementality join chain:**
