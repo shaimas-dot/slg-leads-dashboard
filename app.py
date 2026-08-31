@@ -2150,9 +2150,9 @@ if "H2 LinkedIn Intel" in page:
     k1.metric("TAL Accounts in Data", "56,490", "STG_ABM_TARGETS")
     k2.metric("Received Impressions", "13,396", "23.7% of TAL")
     k3.metric("Zero Impressions", "43,094", "76.3% — untouched")
-    k4.metric("Total ABM Impressions", "123.5M", "28,719 companies (all accounts)")
-    k5.metric("Paid Qualified Leads", "725", "slg_aiwp only — lead gen format")
-    k6.metric("H1 ABM Spend (ADN)", "$1.07M", "corrected ABM filter")
+    k4.metric("Total ABM Impressions", "119.4M", "25,504 companies")
+    k5.metric("Paid Clicks", "657K", "Marketing Program - ABM only")
+    k6.metric("H1 ABM Spend (ADN)", "$1.03M", "Marketing Program - ABM only")
 
     st.markdown("---")
 
@@ -2206,16 +2206,15 @@ if "H2 LinkedIn Intel" in page:
     st.caption("Corrected filter: campaign_name LIKE 'nam-%' OR 'us-en-%' OR 'us_%' AND '%abm%' · linkedin_company_intel_campaign × fact_linkedin_campaigns_daily")
 
     camp_df = pd.DataFrame({
-        "Program": ["slg_mktg", "slg_ppm", "slg_sled", "slg_crol", "slg_aiwp", "slg_crm"],
-        "SFDC Campaigns": ["Marketing ANA / MKTG WS", "PMO", "SLED (all)", "CRO", "AI Work Platform (new H2)", "CRM"],
-        "Companies": [13612, 4662, 4364, 2866, 6214, 1081],
-        "Paid Impressions": [81111670, 21418739, 9350919, 7506510, 2665975, 1442236],
-        "Paid Engagements": [759390, 147586, 59240, 1874, 975, 3021],
-        "Paid Clicks": [510234, 117641, 27113, 1574, 0, 1378],
-        "Qual Leads": [0, 0, 0, 0, 725, 0],
-        "Eng Rate (%)": [0.94, 0.69, 0.63, 0.025, 0.037, 0.21],
-        "H1 Spend ($)": [373398, 221025, 95955, 59838, 0, 35181],
-        "Color": ["#2563EB", "#7C3AED", "#059669", "#DC2626", "#F59E0B", "#0EA5E9"],
+        "Program": ["slg_mktg", "slg_ppm", "slg_sled", "slg_crol"],
+        "SFDC Campaigns": ["Marketing ANA / MKTG WS", "PMO", "SLED (all)", "CRO"],
+        "Companies": [13612, 4662, 4364, 2866],
+        "Paid Impressions": [81111670, 21418739, 9350919, 7506510],
+        "Paid Engagements": [759390, 147586, 59240, 1874],
+        "Paid Clicks": [510234, 117641, 27113, 1574],
+        "Eng Rate (%)": [0.94, 0.69, 0.63, 0.025],
+        "H1 Spend ($)": [373398, 221025, 95955, 59838],
+        "Color": ["#2563EB", "#7C3AED", "#059669", "#DC2626"],
     })
 
     col_r1, col_r2 = st.columns(2)
@@ -2239,7 +2238,7 @@ if "H2 LinkedIn Intel" in page:
         st.plotly_chart(fig_impr, use_container_width=True)
 
     st.markdown("### Full Program Summary")
-    disp = camp_df[["Program","SFDC Campaigns","Companies","Paid Impressions","Paid Engagements","Paid Clicks","Qual Leads","Eng Rate (%)","H1 Spend ($)"]].copy()
+    disp = camp_df[["Program","SFDC Campaigns","Companies","Paid Impressions","Paid Engagements","Paid Clicks","Eng Rate (%)","H1 Spend ($)"]].copy()
     disp["Paid Impressions"] = disp["Paid Impressions"].map(lambda x: f"{x:,}")
     disp["Paid Engagements"] = disp["Paid Engagements"].map(lambda x: f"{x:,}")
     disp["Paid Clicks"] = disp["Paid Clicks"].map(lambda x: f"{x:,}")
@@ -2248,7 +2247,7 @@ if "H2 LinkedIn Intel" in page:
     disp["Eng Rate (%)"] = disp["Eng Rate (%)"].map(lambda x: f"{x:.2f}%")
     st.dataframe(disp, use_container_width=True, hide_index=True)
 
-    st.info("**slg_aiwp** is a new H2 program (AI Work Platform) with 6,214 companies and 725 Paid Qualified Leads — the only program generating leads. Uses lead-gen ad format. **Retail and MKTG Whitespace** not found as standalone H2 segments — either paused or consolidated into slg_mktg.")
+    st.info("**Retail and MKTG Whitespace** not found as standalone H2 segments — likely paused or consolidated into slg_mktg. No lead-gen format campaigns detected under Marketing Program - ABM (all Qual Leads = 0 for impression-based formats).")
 
     st.markdown("---")
 
@@ -2257,15 +2256,13 @@ if "H2 LinkedIn Intel" in page:
     st.caption("Based on impression→funnel correlation + H1 spend efficiency + H2 reach data")
 
     opt_df = pd.DataFrame({
-        "Program": ["slg_aiwp", "slg_ppm", "slg_sled", "slg_mktg", "slg_crol", "slg_crm"],
-        "Action": ["🟢 Scale", "🟢 Scale", "🟡 Maintain", "🟡 Optimize", "🟡 Maintain", "🔴 Reassess"],
+        "Program": ["slg_ppm", "slg_sled", "slg_mktg", "slg_crol"],
+        "Action": ["🟢 Scale", "🟡 Maintain", "🟡 Optimize", "🔴 Reassess"],
         "Why": [
-            "Only program generating Qualified Leads (725). Lead-gen format converts — allocate dedicated budget in H2.",
-            "Strong reach (4,662 cos), $221K H1 spend, highest click volume after mktg. Good opp rate from H1 (35.2%).",
-            "4,364 cos reached, covers 3 sub-segments. SLED Existing was most efficient in H1 ($367/opp) — increase frequency here.",
-            "Largest reach (13.6K cos, 81M imps) but $373K H1 spend and highest cost/opp ($8K). Shift budget to lead-gen formats.",
-            "7.5M impressions but near-zero engagement (0.03%). Creative or audience issue — test new formats before scaling.",
-            "Only 1,081 companies, $35K spend, low engagement. Reassess TAL quality and audience match before H2 investment.",
+            "Strong reach (4,662 cos), $221K H1 spend, highest click volume after mktg. 35.2% opp rate from H1 data.",
+            "4,364 cos reached, covers SLED sub-segments. SLED Existing was most efficient in H1 ($367/opp) — increase frequency there.",
+            "Largest reach (13.6K cos, 81M imps) but $373K H1 spend and highest cost/opp ($8K). Rebalance budget toward events and higher-frequency SLED/PPM.",
+            "7.5M impressions but near-zero engagement rate (0.025%). Creative or audience mismatch — test new ad formats before committing more budget.",
         ],
     })
     st.dataframe(opt_df, use_container_width=True, hide_index=True)
@@ -2274,10 +2271,11 @@ if "H2 LinkedIn Intel" in page:
 
     with st.expander("📐 Data Sources, Filter Logic & Limitations"):
         st.markdown("""
-**Correct ABM campaign filter (campaign group not in Snowflake):**
+**Campaign group "Marketing Program - ABM" is not ingested into Snowflake. Filter derived from ad set naming convention:**
 ```sql
 WHERE (campaign_name LIKE 'nam-%' OR campaign_name LIKE 'us-en-%' OR campaign_name LIKE 'us\\_%')
   AND campaign_name LIKE '%abm%'
+-- Excludes slg_aiwp, slg_crm, and other non-ABM campaign groups
 ```
 
 **Incrementality join chain:**
