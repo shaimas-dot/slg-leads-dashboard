@@ -2283,9 +2283,59 @@ if "H2 LinkedIn Intel" in page:
     st.markdown("---")
 
     # ── TABS ──────────────────────────────────────────────────────────────────────
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    # Events spend (Regional Marketing NAM P5 · 65500005 Global Events + 65500020 SWAG)
+    events_items = pd.DataFrame({
+        'Vendor': [
+            'Upstaging (ANA NY Event)', 'ANA Conf (Advertising Financial Mgmt)',
+            'Marketing Dive Webinar', 'Marketing Dive Trendline',
+            'Marketing Dive Virtual Event Add-On', 'Q1 Event Related Spend (Mesh)',
+            'Marketing Dive Virtual Event', 'Marketing Dive Email Blast',
+            'SHOTO DC / DC Supper Club', '2026 Swag Refresh (Mesh)',
+            'Pop Life Photo (ANA NY)', 'Chicago Fabrications (ANA NY)',
+            'Q1 Events Small Production (Mesh)', 'Custom Trendline Form Field',
+            'Encore (ANA NY – 12531)', 'Encore (ANA NY – 13162)',
+        ],
+        'Amount': [
+            151850, 100000,
+            28000, 27500,
+            22000, 20000,
+            18000, 17000,
+            15774, 15000,
+            12984, 10400,
+            10000, 6500,
+            6267, 7655,
+        ],
+        'Month': [
+            'Jun', 'May',
+            'Jan', 'May',
+            'Jan', 'Q1 (Jan–Mar)',
+            'Jan', 'Jan',
+            'Jun', 'Jan',
+            'Jun', 'Jun',
+            'Jan', 'May',
+            'Jun', 'Jun',
+        ],
+        'Type': [
+            'Event', 'Event',
+            'Event', 'Event',
+            'Event', 'Event',
+            'Event', 'Event',
+            'Event', 'Swag',
+            'Event', 'Event',
+            'Event', 'Event',
+            'Event', 'Event',
+        ],
+    })
+
+    # Monthly events spend (Q1 event spread evenly across Jan/Feb/Mar at $6,667/mo)
+    events_monthly = pd.DataFrame({
+        'Month': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+        'Events': [116667, 6667, 6667, 0, 134000, 204930, 0, 0],
+    })
+
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "📊 Impressions", "🔗 Incrementality", "🗺️ Funnel",
-        "📅 Spend Trend", "📈 Incremental Model", "💰 Budget Tool"
+        "📅 Spend Trend", "📈 Incremental Model", "💰 Budget Tool", "💸 Cost Per Lead"
     ])
 
     # ── TAB 1: Impressions ────────────────────────────────────────────────────────
@@ -2590,4 +2640,126 @@ Incremental %   = (Opp Rate_exposed − Opp Rate_baseline) / Opp Rate_exposed ×
             st.metric("Projected ARR", f"${prop_proj['arr']:,}")
             roi_badge(prop_proj['roi'])
 
-    st.caption("Sources: FACT_LINKEDIN_CAMPAIGNS_DAILY · linkedin_company_intel_account · v_abm_companies_funnel · RAW_SALESFORCE_CAMPAIGN_MEMBERS · SFDC campaigns 701av00000Q3zkmAAB + 701av00000VpLbdAAF · Data as of Aug 2026.")
+    # ── TAB 7: Cost Per Lead ──────────────────────────────────────────────────────
+    with tab7:
+        st.subheader("💸 Cost Per Lead & MQL — Events + LinkedIn Combined")
+        st.caption("Events spend: Regional Marketing NAM P5 · LinkedIn ADN: FACT_LINKEDIN_CAMPAIGNS_DAILY · Funnel: v_abm_companies_funnel Aug 2026")
+
+        # Combined monthly spend
+        combined = spend_df[['Month', 'ADN']].copy()
+        combined = combined.merge(events_monthly, on='Month', how='left')
+        combined['Events'] = combined['Events'].fillna(0)
+        combined['Total'] = combined['ADN'] + combined['Events']
+
+        cpl1, cpl2, cpl3 = st.columns(3)
+        total_events_spend = int(events_monthly['Events'].sum())
+        total_linkedin_adn = int(spend_df['ADN'].sum())
+        total_combined = total_events_spend + total_linkedin_adn
+        cpl1.metric("Total Events Spend (YTD)", f"${total_events_spend:,}", "Jan–Jun 2026")
+        cpl2.metric("Total LinkedIn ADN (YTD)", f"${total_linkedin_adn:,}", "Jan–Aug 2026")
+        cpl3.metric("Combined NAM Investment", f"${total_combined:,}", "Events + LinkedIn")
+
+        st.markdown("---")
+        st.subheader("Monthly Spend Breakdown — Events vs LinkedIn")
+
+        fig_comb = go.Figure()
+        fig_comb.add_trace(go.Bar(
+            x=combined['Month'], y=combined['Events'],
+            name='Events Spend', marker_color='#F59E0B',
+            text=combined['Events'].map(lambda x: f'${x:,.0f}' if x > 0 else ''),
+            textposition='inside',
+        ))
+        fig_comb.add_trace(go.Bar(
+            x=combined['Month'], y=combined['ADN'],
+            name='LinkedIn ADN', marker_color='#0A66C2',
+            text=combined['ADN'].map(lambda x: f'${x:,.0f}'),
+            textposition='inside',
+        ))
+        fig_comb.update_layout(
+            barmode='stack', height=400,
+            title='NAM Marketing — Total Monthly Investment (Events + LinkedIn ADN)',
+            yaxis_title='Spend ($)',
+        )
+        st.plotly_chart(fig_comb, use_container_width=True)
+
+        st.dataframe(
+            combined.assign(
+                **{'Events ($)': combined['Events'].map(lambda x: f'${x:,.0f}'),
+                   'LinkedIn ADN ($)': combined['ADN'].map(lambda x: f'${x:,.0f}'),
+                   'Total ($)': combined['Total'].map(lambda x: f'${x:,.0f}')}
+            )[['Month', 'Events ($)', 'LinkedIn ADN ($)', 'Total ($)']],
+            use_container_width=True, hide_index=True
+        )
+
+        st.markdown("---")
+        st.subheader("Events Spend Detail")
+        st.dataframe(
+            events_items.assign(**{'Amount ($)': events_items['Amount'].map(lambda x: f'${x:,}')})[
+                ['Vendor', 'Amount ($)', 'Month', 'Type']
+            ].sort_values('Month'),
+            use_container_width=True, hide_index=True
+        )
+        totals_by_type = events_items.groupby('Type')['Amount'].sum().reset_index()
+        for _, r in totals_by_type.iterrows():
+            st.metric(f"Total {r['Type']} spend", f"${r['Amount']:,}")
+
+        st.markdown("---")
+        st.subheader("Cost Per Lead / MQL — Funnel Efficiency Metrics")
+        st.caption("Funnel denominators from v_abm_companies_funnel (Aug 2026, STAGE_END_DATE IS NULL). Enter actuals to override.")
+
+        fi1, fi2, fi3, fi4 = st.columns(4)
+        n_aware  = fi1.number_input("Aware accounts (funnel)", value=486, step=1, key="cpl_aware")
+        n_engage = fi2.number_input("Engage accounts", value=41, step=1, key="cpl_engage")
+        n_mqa    = fi3.number_input("MQA accounts", value=17, step=1, key="cpl_mqa")
+        n_opp    = fi4.number_input("Opportunity accounts", value=190, step=1, key="cpl_opp")
+
+        fi5, fi6 = st.columns(2)
+        ref_spend_type = fi5.radio("Spend basis for cost metrics", ["LinkedIn ADN only", "Events only", "Combined (Events + LinkedIn)"], index=2, key="cpl_basis")
+        ref_spend = total_linkedin_adn if ref_spend_type == "LinkedIn ADN only" else (total_events_spend if ref_spend_type == "Events only" else total_combined)
+
+        fi6.metric("Selected spend basis", f"${ref_spend:,}", ref_spend_type)
+
+        def safe_div(n, d): return round(n / d) if d > 0 else 0
+
+        mc1, mc2, mc3, mc4 = st.columns(4)
+        mc1.metric("Cost per Aware account", f"${safe_div(ref_spend, n_aware):,}", f"{n_aware} accounts")
+        mc2.metric("Cost per Engage account", f"${safe_div(ref_spend, n_engage):,}", f"{n_engage} accounts")
+        mc3.metric("Cost per MQA", f"${safe_div(ref_spend, n_mqa):,}", f"{n_mqa} MQAs")
+        mc4.metric("Cost per Opportunity", f"${safe_div(ref_spend, n_opp):,}", f"{n_opp} opps")
+
+        # Monthly cost per lead trend (events months only — LinkedIn every month)
+        st.markdown("### Monthly Cost Per Lead Trend")
+        st.caption("Cost per Aware account = monthly total spend ÷ cumulative Aware accounts (scaled by month weight). Useful for tracking efficiency over time.")
+
+        # Estimate cumulative aware by month (scaled linearly from 0 → 486 over 8 months)
+        combined['Cumul_Aware'] = [int(486 * (i+1) / 8) for i in range(8)]
+        combined['Cost_Per_Aware'] = (combined['Total'] / combined['Cumul_Aware']).round().astype(int)
+        combined['Cost_Per_Opp'] = ((combined['Total'] / (190 * (combined.index + 1) / 8)).round()).astype(int)
+
+        fig_cpl = go.Figure()
+        fig_cpl.add_trace(go.Scatter(
+            x=combined['Month'], y=combined['Cost_Per_Aware'],
+            mode='lines+markers+text', name='Cost per Aware acct',
+            line=dict(color='#10B981', width=2),
+            text=combined['Cost_Per_Aware'].map(lambda x: f'${x:,}'),
+            textposition='top center',
+        ))
+        fig_cpl.add_trace(go.Scatter(
+            x=combined['Month'], y=combined['Cost_Per_Opp'],
+            mode='lines+markers+text', name='Cost per Opp acct',
+            line=dict(color='#6366F1', width=2),
+            text=combined['Cost_Per_Opp'].map(lambda x: f'${x:,}'),
+            textposition='bottom center',
+        ))
+        fig_cpl.update_layout(
+            title='Monthly Cost per Aware Account & per Opportunity (cumulative funnel basis)',
+            height=380, yaxis_title='Cost ($)', yaxis_tickprefix='$'
+        )
+        st.plotly_chart(fig_cpl, use_container_width=True)
+
+        st.info("💡 **How to read this:** Cost per Aware/Opp drops as the cumulative funnel grows relative to total spend. A rising line means spend is outpacing funnel progression — time to optimize targeting or pause low-engagement ad sets.")
+
+        st.markdown("### June Spike Context")
+        st.warning(f"**June events spend was $204,930** (Upstaging $151,850 + production/venue). This is a one-time ANA NY event cost — it inflates June's cost-per-lead but should drive outsized brand impact. Exclude it to see the steady-state media efficiency: LinkedIn ADN alone = **${total_linkedin_adn:,}** for the full period.")
+
+    st.caption("Sources: FACT_LINKEDIN_CAMPAIGNS_DAILY · linkedin_company_intel_account · v_abm_companies_funnel · RAW_SALESFORCE_CAMPAIGN_MEMBERS · SFDC campaigns 701av00000Q3zkmAAB + 701av00000VpLbdAAF · Events: Regional Marketing NAM P5 budget data · Data as of Aug 2026.")
